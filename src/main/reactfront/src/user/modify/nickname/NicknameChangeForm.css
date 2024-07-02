@@ -1,0 +1,71 @@
+.nickname-change-form-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.nickname-change-form-container {
+    background: #444;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    width: 300px;
+    max-width: 100%;
+    text-align: center;
+}
+
+.nickname-change-form h2 {
+    margin-bottom: 20px;
+}
+
+.nickname-change-form .form-item {
+    margin-bottom: 15px;
+}
+
+.nickname-change-form .form-control {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    box-sizing: border-box;
+}
+
+.nickname-change-form .btn {
+    width: 100%;
+    padding: 10px;
+    border: none;
+    border-radius: 4px;
+    background-color: #007bff;
+    color: white;
+    cursor: pointer;
+    font-size: 16px;
+    margin-bottom: 10px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.nickname-change-form .btn-secondary {
+    background-color: #6c757d;
+}
+
+.nickname-change-form .btn:hover {
+    opacity: 0.8;
+}
+
+.nickname-change-form .form-buttons {
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+}
+
+.nickname-change-form .form-buttons .btn {
+    flex: 1;
+}
