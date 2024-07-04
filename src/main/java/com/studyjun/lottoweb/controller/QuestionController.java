@@ -39,7 +39,6 @@ public class QuestionController {
             @Parameter(description = "Accesstoken을 입력해주세요.", required = true) @CurrentUser UserPrincipal userPrincipal,
             @Parameter(description = "Schemas의 CreateQuestionRequest를 참고해주세요.", required = true) @RequestBody CreateQuestionRequest createQuestionRequest
     ) {
-        System.out.println("CreateQuestionRequest: " + createQuestionRequest);
         return questionService.createQuestion(userPrincipal, createQuestionRequest);
     }
 

@@ -21,7 +21,12 @@ class AppHeader extends Component {
                                         <NavLink to="/profile">내 정보</NavLink>
                                     </li>
                                     <li>
-                                        <a href="/" onClick={(e) => { e.preventDefault(); this.props.onLogout(); }}>로그아웃</a>
+                                        <a href="/" onClick={
+                                            (e) => {
+                                                e.preventDefault();
+                                                this.props.onLogout();
+                                            }
+                                        }>로그아웃</a>
                                     </li>
                                 </ul>
                             ) : (

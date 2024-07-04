@@ -36,14 +36,14 @@ const Login = ({ authenticated, onLoginSuccess, onLoginFailure }) => {
     return (
         <div className="login-container">
             <div className="login-content">
-                <h1 className="login-title">Sign In</h1>
+                <h1 className="login-title">로그인</h1>
                 <SocialLogin />
                 <div className="or-separator">
                     <span className="or-text">OR</span>
                 </div>
                 <LoginForm onLoginSuccess={onLoginSuccess} onLoginFailure={onLoginFailure} />
-                <span className="signup-link">New user? <Link to="/signup">SignUp!<br/></Link></span>
-                <span className="find-password-link"><button type="button" className="link-button" onClick={toggleFindPasswordForm}>Forgot your password?</button></span>
+                <span className="signup-link">아이디가 없으신가요? <Link to="/signup">회원가입<br/></Link></span>
+                <span className="find-password-link"><button type="button" className="link-button" onClick={toggleFindPasswordForm}>비밀번호를 잊으셨나요?</button></span>
             </div>
             {showFindPasswordForm && (
                 <div className="password-modal">
@@ -79,38 +79,39 @@ const LoginForm = ({ onLoginSuccess, onLoginFailure }) => {
         if (name === 'password') setPassword(value);
     };
 
-    const handleSubmit = (event) => {
+    const handleSubmit = async (event) => {
         event.preventDefault();
-
+    
         const loginRequest = { email, password };
-
-        login(loginRequest)
-            .then(response => {
-                localStorage.setItem(ACCESS_TOKEN, response.accessToken);
-                localStorage.setItem(REFRESH_TOKEN, response.refreshToken);
-                toast.success("로그인에 성공하였습니다.");
-                onLoginSuccess(); // 로그인 성공 처리
-                navigate("/");
-            }).catch(error => {
-                toast.error((error && error.message) || '로그인에 실패하였습니다.');
-                onLoginFailure(error); // 로그인 실패 처리
-            });
+    
+        try {
+            const response = await login(loginRequest);
+            localStorage.setItem(ACCESS_TOKEN, response.accessToken);
+            localStorage.setItem(REFRESH_TOKEN, response.refreshToken);
+            toast.success("로그인에 성공하였습니다.");
+            onLoginSuccess(); // 로그인 성공 처리
+            navigate("/");
+        } catch (error) {
+            console.error('Login request failed:', error);
+            onLoginFailure(error); // 로그인 실패 처리
+            toast.error((error && error.message) || '로그인에 실패하였습니다.');
+        }
     };
 
     return (
         <form onSubmit={handleSubmit}>
             <div className="form-item">
                 <input type="email" name="email"
-                    className="form-control" placeholder="Email"
+                    className="form-control" placeholder="이메일"
                     value={email} onChange={handleInputChange} required />
             </div>
             <div className="form-item">
                 <input type="password" name="password"
-                    className="form-control" placeholder="Password"
+                    className="form-control" placeholder="비밀번호"
                     value={password} onChange={handleInputChange} required />
             </div>
             <div className="form-item">
-                <button type="submit" className="btn btn-block btn-primary">Login</button>
+                <button type="submit" className="btn btn-block btn-primary">로그인</button>
             </div>
         </form>
     );

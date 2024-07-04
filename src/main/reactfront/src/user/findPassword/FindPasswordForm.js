@@ -10,7 +10,9 @@ const FindPasswordForm = ({ onClose }) => {
     const handleSubmit = (event) => {
         event.preventDefault();
 
-        findPassword(email) // 실제로 비밀번호 찾기 API를 호출하는 함수로 대체하세요.
+        const findPasswordRequest = { email }; // 객체로 감싸서 전달
+
+        findPassword(findPasswordRequest)
             .then(response => {
                 toast.success('비밀번호 찾기 이메일이 발송되었습니다.');
                 onClose();
@@ -36,7 +38,7 @@ const FindPasswordForm = ({ onClose }) => {
         <div className="find-password-form-overlay">
             <div className="find-password-form-container" ref={modalRef}>
                 <form onSubmit={handleSubmit} className="find-password-form">
-                    <h2>비밀번호 찾기</h2>
+                    <h2>임시 비밀번호</h2>
                     <div className="form-item">
                         <input type="email" name="email"
                             className="form-control" placeholder="이메일"

@@ -18,13 +18,13 @@ const SignUp = ({ authenticated }) => {
     return (
         <div className="signup-container">
             <div className="signup-content">
-                <h1 className="signup-title">Sign Up</h1>
+                <h1 className="signup-title">회원가입</h1>
                 <SocialSignUp />
                 <div className="or-separator">
                     <span className="or-text">OR</span>
                 </div>
                 <SignUpForm />
-                <span className="login-link">Already have an account? <Link to="/login">Login!</Link></span>
+                <span className="login-link">이미 아이디가 있으신가요? <Link to="/login">로그인</Link></span>
             </div>
             <ToastContainer />
         </div>
@@ -78,22 +78,22 @@ const SignUpForm = () => {
     return (
         <form onSubmit={handleSubmit}>
             <div className="form-item">
-                <input type="text" name="name"
-                    className="form-control" placeholder="Nickname"
-                    value={name} onChange={handleInputChange} required />
-            </div>
-            <div className="form-item">
                 <input type="email" name="email"
-                    className="form-control" placeholder="Email"
+                    className="form-control" placeholder="이메일"
                     value={email} onChange={handleInputChange} required />
             </div>
             <div className="form-item">
+                <input type="text" name="name"
+                    className="form-control" placeholder="닉네임"
+                    value={name} onChange={handleInputChange} required />
+            </div>
+            <div className="form-item">
                 <input type="password" name="password"
-                    className="form-control" placeholder="Password"
+                    className="form-control" placeholder="비밀번호"
                     value={password} onChange={handleInputChange} required />
             </div>
             <div className="form-item">
-                <button type="submit" className="btn btn-block btn-primary">Sign Up</button>
+                <button type="submit" className="btn btn-block btn-primary">회원가입</button>
             </div>
         </form>
     );

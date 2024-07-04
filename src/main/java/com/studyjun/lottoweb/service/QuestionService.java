@@ -37,8 +37,6 @@ public class QuestionService {
         Optional<User> userOptional = userRepository.findById(userPrincipal.getId());
         DefaultAssert.isTrue(userOptional.isPresent(), "사용자를 찾을 수 없습니다.");
 
-        System.out.println("CreateQuestionRequest isPrivate : " + createQuestionRequest.getIsPrivate());
-
         Question question = Question.builder()
                 .subject(createQuestionRequest.getSubject())
                 .content(createQuestionRequest.getContent())

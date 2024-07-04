@@ -6,6 +6,7 @@ import { deleteAccount } from '../../util/UserAPIUtils';
 import { getMyQuestions } from '../../util/QuestionAPIUtils';
 import { toast } from 'react-toastify';
 import MyQuestions from '../question/MyQuestions';
+import LoadingIndicator from '../../common/LoadingIndicator';
 
 class Profile extends Component {
     constructor(props) {
@@ -15,16 +16,16 @@ class Profile extends Component {
             showNicknameChangeForm: false,
             showMyQuestionsModal: false,
             myQuestions: [],
-            currentUser: props.currentUser
+            isDeleting: false,
         };
     }
 
     togglePasswordChangeForm = () => {
-        this.setState({ showPasswordChangeForm: !this.state.showPasswordChangeForm });
+        this.setState(prevState => ({ showPasswordChangeForm: !prevState.showPasswordChangeForm }));
     }
 
     toggleNicknameChangeForm = () => {
-        this.setState({ showNicknameChangeForm: !this.state.showNicknameChangeForm });
+        this.setState(prevState => ({ showNicknameChangeForm: !prevState.showNicknameChangeForm }));
     }
 
     toggleMyQuestionsModal = async () => {
@@ -36,37 +37,55 @@ class Profile extends Component {
                 toast.error('내 질문 목록을 불러오는데 실패했습니다.');
             }
         }
-        this.setState({ showMyQuestionsModal: !this.state.showMyQuestionsModal });
+        this.setState(prevState => ({ showMyQuestionsModal: !prevState.showMyQuestionsModal }));
     }
 
     handleNicknameChangeSuccess = (newNickname) => {
-        this.setState(prevState => ({
-            showNicknameChangeForm: false,
-            currentUser: {
-                ...prevState.currentUser,
-                information: {
-                    ...prevState.currentUser.information,
-                    nickname: newNickname
-                }
+        const { updateCurrentUser } = this.props;
+        const updatedUser = {
+            ...this.props.currentUser,
+            information: {
+                ...this.props.currentUser.information,
+                nickname: newNickname
             }
-        }));
+        };
+
+        this.setState({
+            currentUser: updatedUser
+        }, () => {
+            if (updateCurrentUser) {
+                updateCurrentUser(updatedUser);
+            }
+
+            this.setState({ showNicknameChangeForm: false }, () => {
+                toast.success('닉네임이 성공적으로 변경되었습니다.');
+            });
+        });
     }
 
-    handleAccountDeletion = () => {
-        deleteAccount()
-            .then(response => {
-                toast.success('회원 탈퇴가 성공적으로 완료되었습니다.');
-                this.props.onLogout();
-            }).catch(error => {
-                toast.error((error && error.message) || '회원 탈퇴에 실패하였습니다.');
-            });
+    handleAccountDeletion = async () => {
+        this.setState({ isDeleting: true });
+        try {
+            await deleteAccount();
+            toast.success('회원 탈퇴가 성공적으로 완료되었습니다.');
+            this.props.onLogout();
+        } catch (error) {
+            console.error('Error deleting account:', error);
+            toast.error((error && error.message) || '회원 탈퇴에 실패하였습니다.');
+            this.setState({ isDeleting: false });
+        }
     }
 
     render() {
-        const { currentUser, myQuestions, showMyQuestionsModal } = this.state;
+        const { myQuestions, showMyQuestionsModal, isDeleting } = this.state;
+        const { currentUser } = this.props;
+
+        if (isDeleting) {
+            return <LoadingIndicator />;
+        }
 
         if (!currentUser) {
-            return <div className="profile-container">Loading...</div>;
+            return null; // LoadingIndicator 대신 null 반환
         }
 
         return (

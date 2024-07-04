@@ -42,7 +42,6 @@ public class CustomDefaultOAuth2UserService extends DefaultOAuth2UserService{
         if(userOptional.isPresent()) {
             user = userOptional.get();
             DefaultAssert.isAuthentication(user.getProvider().equals(Provider.valueOf(oAuth2UserRequest.getClientRegistration().getRegistrationId())));
-            user = updateExistingUser(user, oAuth2UserInfo);
         } else {
             user = registerNewUser(oAuth2UserRequest, oAuth2UserInfo);
         }
@@ -59,12 +58,6 @@ public class CustomDefaultOAuth2UserService extends DefaultOAuth2UserService{
                     .role("USER")
                     .build();
         
-        return userRepository.save(user);
-    }
-
-    private User updateExistingUser(User user, OAuth2UserInfo oAuth2UserInfo) {
-        user.updateNickname(oAuth2UserInfo.getName());
-
         return userRepository.save(user);
     }
 }

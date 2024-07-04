@@ -4,6 +4,9 @@ import { getCurrentUser } from '../util/UserAPIUtils';
 import './QuestionService.css';
 import QuestionDetail from './QuestionDetail';
 import CreateQuestion from './CreateQuestion';
+import LoadingIndicator from '../common/LoadingIndicator';
+import { toast, ToastContainer } from 'react-toastify'; // toast 및 ToastContainer 추가
+import 'react-toastify/dist/ReactToastify.css'; // toast 스타일 추가
 
 const QuestionService = () => {
     const [questions, setQuestions] = useState([]);
@@ -44,19 +47,19 @@ const QuestionService = () => {
     };
 
     const handleCreateQuestion = async (questionData) => {
-        console.log("Creating question with data:", questionData);
         try {
             await createQuestion(questionData);
             const questionsResponse = await getAllQuestions();
             setQuestions(questionsResponse);
             setIsCreateModalOpen(false);
+            toast.success("질문이 작성되었습니다."); // toast 메시지 추가
         } catch (error) {
             setError(error);
+            toast.error("질문 작성에 실패하였습니다."); // 실패 메시지 추가
         }
     };
 
     const handleAnswerSubmit = async (questionId, answerData) => {
-        console.log("Submitting answer with data:", answerData);
         try {
             await createAnswer(questionId, answerData);
             const response = await getQuestionDetail(questionId);
@@ -64,8 +67,10 @@ const QuestionService = () => {
             const questionsResponse = await getAllQuestions();
             setQuestions(questionsResponse); // Update the list of questions
             setSelectedQuestion(null); // Close the modal after submitting the answer
+            toast.success("답변이 작성되었습니다."); // 답변 작성 성공 메시지 추가
         } catch (error) {
             setError(error);
+            toast.error("답변 작성에 실패하였습니다."); // 실패 메시지 추가
         }
     };
 
@@ -126,7 +131,7 @@ const QuestionService = () => {
     );
 
     if (loading) {
-        return <div>Loading...</div>;
+        return <LoadingIndicator />;
     }
 
     if (error) {
@@ -185,6 +190,7 @@ const QuestionService = () => {
             {isCreateModalOpen && (
                 <CreateQuestion onCreate={handleCreateQuestion} onClose={handleCloseCreateModal} />
             )}
+            <ToastContainer />
         </div>
     );
 };

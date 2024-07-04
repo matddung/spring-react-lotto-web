@@ -15,6 +15,7 @@ import PrivateRoute from '../common/PrivateRoute';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import './App.css';
+import withRouter from '../common/withRouter';
 
 class App extends Component {
   constructor(props) {
@@ -33,17 +34,14 @@ class App extends Component {
   }
 
   loadCurrentlyLoggedInUser() {
-    console.log('Fetching current user...');
     getCurrentUser()
       .then(response => {
-        console.log('User fetched successfully:', response);
         this.setState({
           currentUser: response,
           authenticated: true,
           loading: false
         });
       }).catch(error => {
-        console.log('Error fetching user:', error);
         this.setState({
           loading: false
         });
@@ -51,24 +49,22 @@ class App extends Component {
   }
 
   handleLogout() {
-    console.log('Logging out...');
     localStorage.removeItem(ACCESS_TOKEN);
     localStorage.removeItem(REFRESH_TOKEN);
     this.setState({
       authenticated: false,
-      currentUser: null
+      currentUser: null,
+      loading: false
     });
-    toast.success("로그아웃 했습니다.");
+    this.props.navigate('/', { state: { fromLogout: true } });
   }
 
   handleLoginSuccess() {
-    console.log('Login successful');
     this.loadCurrentlyLoggedInUser();
     toast.success("로그인에 성공하였습니다.");
   }
 
   handleLoginFailure(error) {
-    console.log('Login failed:', error);
     toast.error(`로그인에 실패하였습니다: ${error}`);
   }
 
@@ -81,7 +77,6 @@ class App extends Component {
   }
 
   render() {
-    console.log('Rendering App with state:', this.state);
     if (this.state.loading) {
       return <LoadingIndicator />
     }
@@ -118,4 +113,4 @@ class App extends Component {
   }
 }
 
-export default App;
+export default withRouter(App);

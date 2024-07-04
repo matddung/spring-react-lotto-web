@@ -42,7 +42,6 @@ const MyQuestions = ({ questions = [], onClose, currentUser }) => {
         <div className="my-questions-overlay">
             <div className="my-questions-container" ref={modalRef}>
                 <h2>내 질문 목록</h2>
-                <button className="btn btn-secondary" onClick={onClose}>닫기</button>
                 <div className="question-list">
                     <ul>
                         {questions.map(question => (

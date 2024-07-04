@@ -8,7 +8,6 @@ const CreateQuestion = ({ onCreate, onClose }) => {
 
     const handleSubmit = () => {
         const questionData = { subject, content, isPrivate };
-        console.log('Creating question with data: ', questionData);
         onCreate(questionData);
         onClose();
     };

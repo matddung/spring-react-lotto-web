@@ -12,8 +12,6 @@ const QuestionDetail = ({ question, currentUser, onClose, onSubmitAnswer }) => {
     const [answerContent, setAnswerContent] = useState('');
 
     useEffect(() => {
-        console.log("Question Detail:", question);
-        console.log("Current User:", currentUser);
     }, [question, currentUser]);
 
     if (!question) {
@@ -25,7 +23,6 @@ const QuestionDetail = ({ question, currentUser, onClose, onSubmitAnswer }) => {
             subject: answerSubject,
             content: answerContent
         };
-        console.log('Submitting answer:', answer);
         await onSubmitAnswer(question.id, answer);
         onClose(); // Close the modal after submitting the answer
         setIsAnswerFormVisible(false); // Hide the form after submitting
