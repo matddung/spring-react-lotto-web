@@ -6,7 +6,7 @@ import { Link, useLocation, useNavigate, Navigate } from 'react-router-dom';
 import googleLogo from '../../img/google-logo.png';
 import kakaoLogo from '../../img/kakao-logo.png';
 import naverLogo from '../../img/naver-logo.png';
-import { toast, ToastContainer } from 'react-toastify';
+import { toast } from 'react-toastify';
 import FindPasswordForm from '../findPassword/FindPasswordForm';
 
 const Login = ({ authenticated, onLoginSuccess, onLoginFailure }) => {
@@ -50,7 +50,6 @@ const Login = ({ authenticated, onLoginSuccess, onLoginFailure }) => {
                     <FindPasswordForm onClose={toggleFindPasswordForm} />
                 </div>
             )}
-            <ToastContainer />
         </div>
     );
 };
@@ -88,13 +87,10 @@ const LoginForm = ({ onLoginSuccess, onLoginFailure }) => {
             const response = await login(loginRequest);
             localStorage.setItem(ACCESS_TOKEN, response.accessToken);
             localStorage.setItem(REFRESH_TOKEN, response.refreshToken);
-            toast.success("로그인에 성공하였습니다.");
             onLoginSuccess(); // 로그인 성공 처리
             navigate("/");
         } catch (error) {
-            console.error('Login request failed:', error);
             onLoginFailure(error); // 로그인 실패 처리
-            toast.error((error && error.message) || '로그인에 실패하였습니다.');
         }
     };
 

@@ -1,5 +1,5 @@
-import React, { Component } from 'react';
-import { Route, Routes } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { Route, Routes, useNavigate } from 'react-router-dom';
 import AppHeader from '../common/AppHeader';
 import Home from '../home/Home';
 import Login from '../user/login/Login';
@@ -15,102 +15,84 @@ import PrivateRoute from '../common/PrivateRoute';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import './App.css';
-import withRouter from '../common/withRouter';
 
-class App extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      authenticated: false,
-      currentUser: null,
-      loading: true
-    };
+const App = () => {
+  const [authenticated, setAuthenticated] = useState(false);
+  const [currentUser, setCurrentUser] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
 
-    this.loadCurrentlyLoggedInUser = this.loadCurrentlyLoggedInUser.bind(this);
-    this.handleLogout = this.handleLogout.bind(this);
-    this.handleLoginSuccess = this.handleLoginSuccess.bind(this);
-    this.handleLoginFailure = this.handleLoginFailure.bind(this);
-    this.updateCurrentUser = this.updateCurrentUser.bind(this);
-  }
-
-  loadCurrentlyLoggedInUser() {
+  const loadCurrentlyLoggedInUser = () => {
     getCurrentUser()
       .then(response => {
-        this.setState({
-          currentUser: response,
-          authenticated: true,
-          loading: false
-        });
-      }).catch(error => {
-        this.setState({
-          loading: false
-        });
+        setCurrentUser(response);
+        setAuthenticated(true);
+        setLoading(false);
+      }).catch(() => {
+        setLoading(false);
       });
-  }
+  };
 
-  handleLogout() {
+  const handleLogout = () => {
     localStorage.removeItem(ACCESS_TOKEN);
     localStorage.removeItem(REFRESH_TOKEN);
-    this.setState({
-      authenticated: false,
-      currentUser: null,
-      loading: false
-    });
-    this.props.navigate('/', { state: { fromLogout: true } });
-  }
+    setAuthenticated(false);
+    setCurrentUser(null);
+    setLoading(false);
 
-  handleLoginSuccess() {
-    this.loadCurrentlyLoggedInUser();
+    navigate('/', { state: { fromLogout: true } });
+  };
+
+  const handleLoginSuccess = () => {
+    loadCurrentlyLoggedInUser();
     toast.success("로그인에 성공하였습니다.");
+  };
+
+  const handleLoginFailure = (error) => {
+    toast.error(<div>로그인에 실패하였습니다.<br />이메일 또는 비밀번호를 확인해주세요. </div>);
+  };
+
+  const updateCurrentUser = (newUser) => {
+    setCurrentUser(newUser);
+  };
+
+  useEffect(() => {
+    loadCurrentlyLoggedInUser();
+  }, []);
+
+  if (loading) {
+    return <LoadingIndicator />;
   }
 
-  handleLoginFailure(error) {
-    toast.error(`로그인에 실패하였습니다: ${error}`);
-  }
-
-  updateCurrentUser(newUser) {
-    this.setState({ currentUser: newUser });
-  }
-
-  componentDidMount() {
-    this.loadCurrentlyLoggedInUser();
-  }
-
-  render() {
-    if (this.state.loading) {
-      return <LoadingIndicator />
-    }
-
-    return (
-      <div className="app">
-        <div className="app-top-box">
-          <AppHeader authenticated={this.state.authenticated} onLogout={this.handleLogout} />
-        </div>
-        <div className="app-body">
-          <Routes>
-            <Route path="/" element={<Home />} />
-            <Route path="/profile" element={
-              <PrivateRoute authenticated={this.state.authenticated}>
-                <Profile currentUser={this.state.currentUser} updateCurrentUser={this.updateCurrentUser} onLogout={this.handleLogout} />
-              </PrivateRoute>
-            } />
-            <Route path='/question-service' element={
-              <PrivateRoute authenticated={this.state.authenticated}>
-                <QuestionService />
-              </PrivateRoute>
-            } />
-            <Route path="/login" element={<Login authenticated={this.state.authenticated} onLoginSuccess={this.handleLoginSuccess} onLoginFailure={this.handleLoginFailure} />} />
-            <Route path="/signup" element={<Signup authenticated={this.state.authenticated} />} />
-            <Route path="/oauth2/redirect" element={
-              <OAuth2RedirectHandler onLoginSuccess={this.handleLoginSuccess} onLoginFailure={this.handleLoginFailure} />
-            } />
-            <Route path="*" element={<NotFound />} />
-          </Routes>
-        </div>
-        <ToastContainer limit={3} autoClose={3000} position="top-right" />
+  return (
+    <div className="app">
+      <div className="app-top-box">
+        <AppHeader authenticated={authenticated} onLogout={handleLogout} />
       </div>
-    );
-  }
-}
+      <div className="app-body">
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/profile" element={
+            <PrivateRoute authenticated={authenticated}>
+              <Profile currentUser={currentUser} updateCurrentUser={updateCurrentUser} onLogout={handleLogout} />
+            </PrivateRoute>
+          } />
+          <Route path='/question-service' element={
+            <PrivateRoute authenticated={authenticated}>
+              <QuestionService />
+            </PrivateRoute>
+          } />
+          <Route path="/login" element={<Login authenticated={authenticated} onLoginSuccess={handleLoginSuccess} onLoginFailure={handleLoginFailure} />} />
+          <Route path="/signup" element={<Signup authenticated={authenticated} />} />
+          <Route path="/oauth2/redirect" element={
+            <OAuth2RedirectHandler onLoginSuccess={handleLoginSuccess} onLoginFailure={handleLoginFailure} />
+          } />
+          <Route path="*" element={<NotFound />} />
+        </Routes>
+      </div>
+      <ToastContainer limit={3} autoClose={3000} position="top-right" />
+    </div>
+  );
+};
 
-export default withRouter(App);
+export default App;

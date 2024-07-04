@@ -14,8 +14,8 @@ const NicknameChangeForm = ({ onClose, onNicknameChangeSuccess }) => {
 
         changeNickname(nicknameChangeRequest)
             .then(response => {
-                onNicknameChangeSuccess(newNickname); // 닉네임 변경 성공 시 호출
-                onClose(); // 모달 닫기
+                onNicknameChangeSuccess(newNickname);
+                onClose();
             }).catch(error => {
                 toast.error((error && error.message) || '중복된 닉네임이거나 사용 불가능한 닉네임입니다.');
             });
@@ -45,7 +45,7 @@ const NicknameChangeForm = ({ onClose, onNicknameChangeSuccess }) => {
                             value={newNickname} onChange={(e) => setNewNickname(e.target.value)} required />
                     </div>
                     <div className="form-buttons">
-                        <button type="button" className="btn btn-secondary" onClick={() => { onClose(); }}>취소</button>
+                        <button type="button" className="btn btn-secondary" onClick={onClose}>취소</button>
                         <button type="submit" className="btn">닉네임 변경</button>
                     </div>
                 </form>

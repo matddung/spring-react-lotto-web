@@ -5,7 +5,7 @@ import './QuestionService.css';
 import QuestionDetail from './QuestionDetail';
 import CreateQuestion from './CreateQuestion';
 import LoadingIndicator from '../common/LoadingIndicator';
-import { toast, ToastContainer } from 'react-toastify'; // toast 및 ToastContainer 추가
+import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css'; // toast 스타일 추가
 
 const QuestionService = () => {
@@ -190,7 +190,6 @@ const QuestionService = () => {
             {isCreateModalOpen && (
                 <CreateQuestion onCreate={handleCreateQuestion} onClose={handleCloseCreateModal} />
             )}
-            <ToastContainer />
         </div>
     );
 };

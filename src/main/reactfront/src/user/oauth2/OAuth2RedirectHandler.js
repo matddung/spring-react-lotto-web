@@ -1,44 +1,33 @@
-import React, { Component } from 'react';
+import { useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { ACCESS_TOKEN, REFRESH_TOKEN } from '../../constants';
-import { Navigate } from 'react-router-dom'
 
-class OAuth2RedirectHandler extends Component {
-    getUrlParameter(name) {
+const OAuth2RedirectHandler = ({ onLoginSuccess, onLoginFailure }) => {
+    const navigate = useNavigate();
+
+    const getUrlParameter = (name) => {
         name = name.replace(/[\\[]/, '\\[').replace(/[\]]/, '\\]');
-        var regex = new RegExp('[\\?&]' + name + '=([^&#]*)');
-
-        var results = regex.exec(window.location.search); // Updated to use window.location.search
+        const regex = new RegExp('[\\?&]' + name + '=([^&#]*)');
+        const results = regex.exec(window.location.search);
         return results === null ? '' : decodeURIComponent(results[1].replace(/\+/g, ' '));
     };
 
-    componentDidMount() {
-        const token = this.getUrlParameter('token');
-        const error = this.getUrlParameter('error');
+    useEffect(() => {
+        const token = getUrlParameter('token');
+        const error = getUrlParameter('error');
 
         if (token) {
             localStorage.setItem(ACCESS_TOKEN, token);
             localStorage.setItem(REFRESH_TOKEN, null);
-            this.props.onLoginSuccess();
+            onLoginSuccess();
+            navigate('/');
         } else {
-            this.props.onLoginFailure(error);
+            onLoginFailure(error);
+            navigate('/login', { state: { error: error } });
         }
-    }
+    }, [navigate, onLoginSuccess, onLoginFailure]);
 
-    render() {
-        const token = this.getUrlParameter('token');
-        const error = this.getUrlParameter('error');
-
-        if (token) {
-            return <Navigate to="/" />;
-        } else {
-            return <Navigate to={{
-                pathname: "/login",
-                state: { 
-                    error: error 
-                }
-            }} />;
-        }
-    }
-}
+    return null;
+};
 
 export default OAuth2RedirectHandler;

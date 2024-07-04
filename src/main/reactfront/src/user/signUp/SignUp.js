@@ -7,7 +7,7 @@ import googleLogo from '../../img/google-logo.png';
 import kakaoLogo from '../../img/kakao-logo.png';
 import naverLogo from '../../img/naver-logo.png';
 
-import { toast, ToastContainer } from 'react-toastify';
+import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
 const SignUp = ({ authenticated }) => {
@@ -26,7 +26,6 @@ const SignUp = ({ authenticated }) => {
                 <SignUpForm />
                 <span className="login-link">이미 아이디가 있으신가요? <Link to="/login">로그인</Link></span>
             </div>
-            <ToastContainer />
         </div>
     );
 };

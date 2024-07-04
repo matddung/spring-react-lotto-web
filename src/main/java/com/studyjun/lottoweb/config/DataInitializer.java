@@ -37,6 +37,7 @@ public class DataInitializer implements ApplicationRunner {
                 .email("string@aa.bb")
                 .nickname("string")
                 .password(encoder.encode("string"))
+                .provider(Provider.local)
                 .role("USER")
                 .build());
 
@@ -44,6 +45,7 @@ public class DataInitializer implements ApplicationRunner {
                 .email("string1@aa.bb")
                 .nickname("string1")
                 .password(encoder.encode("string"))
+                .provider(Provider.local)
                 .role("USER")
                 .build());
 
