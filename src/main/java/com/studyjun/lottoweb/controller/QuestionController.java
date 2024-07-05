@@ -71,7 +71,7 @@ public class QuestionController {
     })
     @GetMapping(value = "/detail")
     public ResponseEntity<?> showQuestionDetail(
-            @Parameter(description = "Accesstoken을 입력해주세요.", required = true) @RequestParam long id,
+            @Parameter(description = "Question의 id(PK)를 입력해주세요", required = true) @RequestParam long id,
             @Parameter(description = "Accesstoken을 입력해주세요.", required = true) @CurrentUser UserPrincipal userPrincipal
     ) {
         return questionService.showQuestionDetail(id, userPrincipal);
