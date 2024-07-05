@@ -7,13 +7,29 @@ const PasswordChangeForm = ({ onClose }) => {
     const [oldPassword, setOldPassword] = useState('');
     const [newPassword, setNewPassword] = useState('');
     const [reNewPassword, setReNewPassword] = useState('');
+    const [errors, setErrors] = useState({});
     const modalRef = useRef();
+
+    const validatePassword = (password) => {
+        const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$/;
+        return passwordRegex.test(password);
+    };
 
     const handleSubmit = (event) => {
         event.preventDefault();
 
+        const newErrors = {};
+
+        if (!validatePassword(newPassword)) {
+            newErrors.newPassword = '비밀번호는 8자 이상이어야 하며, 숫자와 특수 문자를 포함해야 합니다.';
+        }
+
         if (newPassword !== reNewPassword) {
-            toast.error('신규 등록 비밀번호 값이 일치하지 않습니다.');
+            newErrors.reNewPassword = '신규 등록 비밀번호 값이 일치하지 않습니다.';
+        }
+
+        if (Object.keys(newErrors).length > 0) {
+            setErrors(newErrors);
             return;
         }
 
@@ -24,7 +40,7 @@ const PasswordChangeForm = ({ onClose }) => {
                 toast.success('비밀번호가 성공적으로 변경되었습니다.');
                 onClose();
             }).catch(error => {
-                toast.error((error && error.message) || '비밀번호 변경에 실패하였습니다.');
+                setErrors({ submit: (error && error.message) || '비밀번호 변경에 실패하였습니다.' });
             });
     };
 
@@ -55,12 +71,30 @@ const PasswordChangeForm = ({ onClose }) => {
                         <input type="password" name="newPassword"
                             className="form-control" placeholder="신규 비밀번호"
                             value={newPassword} onChange={(e) => setNewPassword(e.target.value)} required />
+                        {errors.newPassword && (
+                            <div className="error-message">
+                                <span className="error-icon">⚠️</span>
+                                {errors.newPassword}
+                            </div>
+                        )}
                     </div>
                     <div className="form-item">
                         <input type="password" name="reNewPassword"
                             className="form-control" placeholder="신규 비밀번호 확인"
                             value={reNewPassword} onChange={(e) => setReNewPassword(e.target.value)} required />
+                        {errors.reNewPassword && (
+                            <div className="error-message">
+                                <span className="error-icon">⚠️</span>
+                                {errors.reNewPassword}
+                            </div>
+                        )}
                     </div>
+                    {errors.submit && (
+                        <div className="error-message">
+                            <span className="error-icon">⚠️</span>
+                            {errors.submit}
+                        </div>
+                    )}
                     <div className="form-buttons">
                         <button type="button" className="btn btn-secondary" onClick={onClose}>취소</button>
                         <button type="submit" className="btn">비밀번호 변경</button>

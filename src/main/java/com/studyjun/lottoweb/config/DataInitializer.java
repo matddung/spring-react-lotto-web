@@ -25,12 +25,12 @@ public class DataInitializer implements ApplicationRunner {
     @Override
     public void run(ApplicationArguments args) {
         userRepository.save(User.builder()
-                .email("admin1@admin.a")
-                .password(encoder.encode("admin1"))
-                .nickname("1번 관리자")
+                .email("admin@admin.a")
+                .password(encoder.encode("admin"))
+                .nickname("관리자")
                 .role("ADMIN")
                 .provider(Provider.local)
-                .providerId("local.admin1")
+                .providerId("local.admin")
                 .build());
 
         userRepository.save(User.builder()

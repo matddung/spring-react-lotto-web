@@ -5,10 +5,24 @@ import './NicknameChangeForm.css';
 
 const NicknameChangeForm = ({ onClose, onNicknameChangeSuccess }) => {
     const [newNickname, setNewNickname] = useState('');
+    const [errors, setErrors] = useState({});
     const modalRef = useRef();
+
+    const validateNickname = (nickname) => {
+        const nicknameRegex = /^[A-Za-z0-9가-힣]{2,8}$/;
+        return nicknameRegex.test(nickname);
+    };
 
     const handleSubmit = (event) => {
         event.preventDefault();
+
+        const newErrors = {};
+        
+        if (!validateNickname(newNickname)) {
+            newErrors.newNickname = '닉네임은 2자 이상 8자 이하로 입력하고, 특수 문자를 포함할 수 없습니다.';
+            setErrors(newErrors);
+            return;
+        }
 
         const nicknameChangeRequest = { newNickname };
 
@@ -43,7 +57,19 @@ const NicknameChangeForm = ({ onClose, onNicknameChangeSuccess }) => {
                         <input type="text" name="newNickname"
                             className="form-control" placeholder="신규 닉네임"
                             value={newNickname} onChange={(e) => setNewNickname(e.target.value)} required />
+                        {errors.newNickname && (
+                            <div className="error-message">
+                                <span className="error-icon">⚠️</span>
+                                {errors.newNickname}
+                            </div>
+                        )}
                     </div>
+                    {errors.submit && (
+                        <div className="error-message">
+                            <span className="error-icon">⚠️</span>
+                            {errors.submit}
+                        </div>
+                    )}
                     <div className="form-buttons">
                         <button type="button" className="btn btn-secondary" onClick={onClose}>취소</button>
                         <button type="submit" className="btn">닉네임 변경</button>
