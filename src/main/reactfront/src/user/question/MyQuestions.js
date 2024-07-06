@@ -1,29 +1,15 @@
-import React, { useEffect, useRef, useState } from 'react';
-import './MyQuestions.css';
-import QuestionDetail from '../../question/QuestionDetail'; // Import QuestionDetail
-import { getQuestionDetail } from '../../util/QuestionAPIUtils'; // Import getQuestionDetail
+import React, { useRef, useState } from 'react';
 
-const formatDate = (dateString) => {
-    const options = { year: 'numeric', month: 'numeric', day: 'numeric', hour: '2-digit', minute: '2-digit', second: '2-digit' };
-    return new Date(dateString).toLocaleDateString('ko-KR', options).replace(',', '');
-};
+import QuestionDetail from '../../question/detail/QuestionDetail';
+import { getQuestionDetail } from '../../util/QuestionAPIUtils';
+import { formatDate, useOutsideClick } from '../../common/UtilCollection';
+import './MyQuestions.css';
 
 const MyQuestions = ({ questions = [], onClose, currentUser }) => {
     const modalRef = useRef();
     const [selectedQuestion, setSelectedQuestion] = useState(null);
 
-    useEffect(() => {
-        const handleClickOutside = (event) => {
-            if (modalRef.current && !modalRef.current.contains(event.target)) {
-                onClose();
-            }
-        };
-
-        document.addEventListener('mousedown', handleClickOutside);
-        return () => {
-            document.removeEventListener('mousedown', handleClickOutside);
-        };
-    }, [onClose]);
+    useOutsideClick(modalRef, onClose);
 
     const handleQuestionClick = async (questionId) => {
         try {

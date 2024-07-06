@@ -1,5 +1,7 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useRef } from 'react';
 import { toast } from 'react-toastify';
+
+import { validatePassword, useOutsideClick } from '../../../common/UtilCollection';
 import { changePassword } from '../../../util/UserAPIUtils';
 import './PasswordChangeForm.css';
 
@@ -9,11 +11,6 @@ const PasswordChangeForm = ({ onClose }) => {
     const [reNewPassword, setReNewPassword] = useState('');
     const [errors, setErrors] = useState({});
     const modalRef = useRef();
-
-    const validatePassword = (password) => {
-        const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$/;
-        return passwordRegex.test(password);
-    };
 
     const handleSubmit = (event) => {
         event.preventDefault();
@@ -44,18 +41,7 @@ const PasswordChangeForm = ({ onClose }) => {
             });
     };
 
-    useEffect(() => {
-        const handleClickOutside = (event) => {
-            if (modalRef.current && !modalRef.current.contains(event.target)) {
-                onClose();
-            }
-        };
-
-        document.addEventListener('mousedown', handleClickOutside);
-        return () => {
-            document.removeEventListener('mousedown', handleClickOutside);
-        };
-    }, [onClose]);
+    useOutsideClick(modalRef, onClose);
 
     return (
         <div className="password-change-form-overlay">

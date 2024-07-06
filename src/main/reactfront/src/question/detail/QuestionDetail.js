@@ -1,38 +1,27 @@
-import React, { useEffect, useState } from 'react';
-import './QuestionDetail.css';
+import React, { useEffect, useState, useRef } from 'react';
 
-const formatDate = (dateString) => {
-    const options = { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit' };
-    return new Date(dateString).toLocaleDateString('ko-KR', options).replace(',', '');
-};
+import { useOutsideClick } from '../../common/UtilCollection';
+import { formatDate } from '../../common/UtilCollection';
+import AnswerForm from '../create/answer/CreateAnswer';
+import './QuestionDetail.css';
 
 const QuestionDetail = ({ question, currentUser, onClose, onSubmitAnswer }) => {
     const [isAnswerFormVisible, setIsAnswerFormVisible] = useState(false);
-    const [answerSubject, setAnswerSubject] = useState('');
-    const [answerContent, setAnswerContent] = useState('');
+    const modalRef = useRef();
 
-    useEffect(() => {
-    }, [question, currentUser]);
+    useOutsideClick(modalRef, onClose);
+
+    useEffect(() => {}, [question, currentUser]);
 
     if (!question) {
         return null;
     }
 
-    const handleAnswerSubmit = async () => {
-        const answer = {
-            subject: answerSubject,
-            content: answerContent
-        };
-        await onSubmitAnswer(question.id, answer);
-        onClose(); // Close the modal after submitting the answer
-        setIsAnswerFormVisible(false); // Hide the form after submitting
-        setAnswerSubject('');
-        setAnswerContent('');
-    };
+    const isUserAdmin = currentUser && currentUser.information.role === 'ADMIN';
 
     return (
         <div className="question-detail-overlay">
-            <div className="question-detail-container">
+            <div className="question-detail-container" ref={modalRef}>
                 <h2>질문 상세 정보</h2>
                 <div className="modal-content">
                     <div className="question-section">
@@ -56,7 +45,7 @@ const QuestionDetail = ({ question, currentUser, onClose, onSubmitAnswer }) => {
                     </div>
                     <div className="modal-actions">
                         <button className="btn btn-secondary" onClick={onClose}>닫기</button>
-                        {currentUser && currentUser.information.role === 'ADMIN' && !question.answer && (
+                        {isUserAdmin && !question.answer && (
                             <button
                                 className="btn btn-primary"
                                 onClick={() => setIsAnswerFormVisible(!isAnswerFormVisible)}
@@ -66,25 +55,14 @@ const QuestionDetail = ({ question, currentUser, onClose, onSubmitAnswer }) => {
                         )}
                     </div>
                     {isAnswerFormVisible && (
-                        <div className="answer-form">
-                            <h3>답변 작성</h3>
-                            <input
-                                type="text"
-                                placeholder="답변 제목"
-                                value={answerSubject}
-                                onChange={(e) => setAnswerSubject(e.target.value)}
-                            />
-                            <textarea
-                                placeholder="답변 내용"
-                                value={answerContent}
-                                onChange={(e) => setAnswerContent(e.target.value)}
-                            ></textarea>
-                            <div className="submit-actions">
-                                <button className="btn btn-secondary" onClick={handleAnswerSubmit}>
-                                    제출
-                                </button>
-                            </div>
-                        </div>
+                        <AnswerForm
+                            onSubmitAnswer={onSubmitAnswer}
+                            questionId={question.id}
+                            onClose={() => {
+                                setIsAnswerFormVisible(false);
+                                onClose();
+                            }}
+                        />
                     )}
                 </div>
             </div>

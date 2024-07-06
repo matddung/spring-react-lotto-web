@@ -71,15 +71,6 @@
     background-color: #6c757d;
 }
 
-.profile-actions .btn-secondary {
-    background-color: #6c757d;
-}
-
-.profile-actions .btn-danger {
-    background-color: #6c757d;
-}
-
 .profile-actions .btn:hover {
     opacity: 0.8;
 }
-

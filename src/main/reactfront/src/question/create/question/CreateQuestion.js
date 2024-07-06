@@ -1,12 +1,17 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
+
+import { useOutsideClick } from '../../../common/UtilCollection';
 import './CreateQuestion.css';
 
 const CreateQuestion = ({ onCreate, onClose }) => {
     const [subject, setSubject] = useState('');
     const [content, setContent] = useState('');
     const [isPrivate, setIsPrivate] = useState(false);
+    const modalRef = useRef();
 
-    const handleSubmit = () => {
+    useOutsideClick(modalRef, onClose);
+
+    const handleQuestionSubmit = () => {
         const questionData = { subject, content, isPrivate };
         onCreate(questionData);
         onClose();
@@ -14,7 +19,7 @@ const CreateQuestion = ({ onCreate, onClose }) => {
 
     return (
         <div className="create-question-overlay">
-            <div className="create-question-container">
+            <div className="create-question-container" ref={modalRef}>
                 <h2>질문 작성</h2>
                 <div className="form-check">
                     <label>
@@ -44,8 +49,8 @@ const CreateQuestion = ({ onCreate, onClose }) => {
                     ></textarea>
                 </div>
                 <div className="form-buttons">
-                    <button className="btn btn-primary" onClick={handleSubmit}>제출</button>
-                    <button className="btn btn-secondary" onClick={onClose}>닫기</button>
+                    <button className="btn btn-question-cancle" onClick={onClose}>닫기</button>
+                    <button className="btn btn-question-submit" onClick={handleQuestionSubmit}>제출</button>
                 </div>
             </div>
         </div>

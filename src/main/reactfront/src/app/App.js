@@ -5,10 +5,11 @@ import Home from '../home/Home';
 import Login from '../user/login/Login';
 import Signup from '../user/signUp/SignUp';
 import Profile from '../user/profile/Profile';
-import QuestionService from '../question/QuestionService';
+import QuestionService from '../question/page/QuestionPage';
 import OAuth2RedirectHandler from '../user/oauth2/OAuth2RedirectHandler';
 import NotFound from '../common/NotFound';
 import LoadingIndicator from '../common/LoadingIndicator';
+import AdminPage from '../user/admin/page/AdminPage';
 import { getCurrentUser } from '../util/UserAPIUtils';
 import { ACCESS_TOKEN, REFRESH_TOKEN } from '../constants';
 import PrivateRoute from '../common/PrivateRoute';
@@ -67,7 +68,7 @@ const App = () => {
   return (
     <div className="app">
       <div className="app-top-box">
-        <AppHeader authenticated={authenticated} onLogout={handleLogout} />
+        <AppHeader authenticated={authenticated} onLogout={handleLogout} currentUser={currentUser} />
       </div>
       <div className="app-body">
         <Routes>
@@ -87,6 +88,13 @@ const App = () => {
           <Route path="/oauth2/redirect" element={
             <OAuth2RedirectHandler onLoginSuccess={handleLoginSuccess} onLoginFailure={handleLoginFailure} />
           } />
+          {currentUser && currentUser.information.role === 'ADMIN' && (
+            <Route path="/admin" element={
+              <PrivateRoute authenticated={authenticated}>
+                <AdminPage />
+              </PrivateRoute>
+            } />
+          )}
           <Route path="*" element={<NotFound />} />
         </Routes>
       </div>

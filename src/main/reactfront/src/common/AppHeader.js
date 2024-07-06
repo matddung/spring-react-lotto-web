@@ -3,7 +3,7 @@ import { Link, NavLink } from 'react-router-dom';
 import './AppHeader.css';
 import { toast } from 'react-toastify';
 
-const AppHeader = ({ authenticated, onLogout }) => {
+const AppHeader = ({ authenticated, currentUser, onLogout }) => {
     return (
         <header className="app-header">
             <div className="container">
@@ -17,9 +17,17 @@ const AppHeader = ({ authenticated, onLogout }) => {
                                 <li>
                                     <NavLink to="/question-service">고객센터</NavLink>
                                 </li>
-                                <li>
-                                    <NavLink to="/profile">내 정보</NavLink>
-                                </li>
+                                {currentUser && currentUser.information.role === 'ADMIN' ? (
+                                    <>
+                                        <li>
+                                            <NavLink to="/admin">관리자페이지</NavLink>
+                                        </li>
+                                    </>
+                                ) : (
+                                    <li>
+                                        <NavLink to="/profile">내 정보</NavLink>
+                                    </li>
+                                )}
                                 <li>
                                     <a href="/" onClick={(e) => {
                                         e.preventDefault();

@@ -106,11 +106,8 @@ public class CustomTokenProviderService {
     }
 
     public Long getExpiration(String token) {
-        // accessToken 남은 유효시간
         Date expiration = Jwts.parserBuilder().setSigningKey(oAuth2Config.getAuth().getTokenSecret()).build().parseClaimsJws(token).getBody().getExpiration();
-        // 현재 시간
         Long now = new Date().getTime();
-        //시간 계산
         return (expiration.getTime() - now);
     }
 

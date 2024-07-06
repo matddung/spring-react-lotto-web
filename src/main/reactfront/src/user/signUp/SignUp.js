@@ -1,11 +1,9 @@
 import React, { useState } from 'react';
-import './SignUp.css';
 import { Link, Navigate, useNavigate } from 'react-router-dom';
-import { NAVER_AUTH_URL, KAKAO_AUTH_URL, GOOGLE_AUTH_URL } from '../../constants';
+
+import { SocialLogin, validateEmail, validateNickname, validatePassword } from '../../common/UtilCollection'
 import { signup } from '../../util/UserAPIUtils';
-import googleLogo from '../../img/google-logo.png';
-import kakaoLogo from '../../img/kakao-logo.png';
-import naverLogo from '../../img/naver-logo.png';
+import './SignUp.css';
 
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -19,26 +17,13 @@ const SignUp = ({ authenticated }) => {
         <div className="signup-container">
             <div className="signup-content">
                 <h1 className="signup-title">회원가입</h1>
-                <SocialSignUp />
+                <SocialLogin />
                 <div className="or-separator">
                     <span className="or-text">OR</span>
                 </div>
                 <SignUpForm />
                 <span className="login-link">이미 아이디가 있으신가요? <Link to="/login">로그인</Link></span>
             </div>
-        </div>
-    );
-};
-
-const SocialSignUp = () => {
-    return (
-        <div className="social-signup">
-            <a className="btn btn-block social-btn google" href={GOOGLE_AUTH_URL}>
-                <img src={googleLogo} alt="Google" /> with Google</a>
-            <a className="btn btn-block social-btn kakao" href={KAKAO_AUTH_URL}>
-                <img src={kakaoLogo} alt="Kakao" /> with Kakao</a>
-            <a className="btn btn-block social-btn naver" href={NAVER_AUTH_URL}>
-                <img src={naverLogo} alt="Naver" /> with Naver</a>
         </div>
     );
 };
@@ -50,21 +35,6 @@ const SignUpForm = () => {
     const [confirmPassword, setConfirmPassword] = useState('');
     const [errors, setErrors] = useState({});
     const navigate = useNavigate();
-
-    const validateEmail = (email) => {
-        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        return emailRegex.test(email);
-    };
-
-    const validateNickname = (nickname) => {
-        const nicknameRegex = /^[A-Za-z0-9가-힣]{2,8}$/; // 특수문자 제외, 2자 이상 8자 이하
-        return nicknameRegex.test(nickname);
-    };
-
-    const validatePassword = (password) => {
-        const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$/;
-        return passwordRegex.test(password);
-    };
 
     const handleInputChange = (event) => {
         const { name, value } = event.target;
@@ -100,7 +70,7 @@ const SignUpForm = () => {
         }
 
         if (!validatePassword(password)) {
-            newErrors.password = '비밀번호는 8자 이상이어야 하며, 숫자와 특수 문자를 포함해야 합니다.';
+            newErrors.password = '비밀번호는 8자 이상이어야 하며, 영어와 숫자와 특수 문자를 모두 포함해야 합니다.';
         }
 
         if (password !== confirmPassword) {
@@ -116,10 +86,10 @@ const SignUpForm = () => {
 
         signup(signUpRequest)
             .then(response => {
-                toast.success(<div>회원가입에 성공하셨습니다.<br />3초후 로그인 페이지로 이동합니다.</div>);
+                toast.success("회원가입에 성공하셨습니다.");
                 setTimeout(() => {
                     navigate("/login");
-                }, 3000);
+                });
             }).catch(error => {
                 console.error('Signup error:', error);
                 const errorMessage = error.information?.message || '예기치 않은 문제가 발생하였습니다.';

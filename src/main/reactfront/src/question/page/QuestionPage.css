@@ -76,13 +76,13 @@
     justify-self: end;
 }
 
-.question-list-header {
+.question-create-header {
     display: flex;
     justify-content: flex-end; /* 버튼을 오른쪽으로 정렬 */
     margin-bottom: 10px;
 }
 
-.btn-primary {
+.btn-creat-question {
     background-color: #007bff;
     color: white;
     border: none;
@@ -92,11 +92,10 @@
     transition: background 0.3s ease;
 }
 
-.btn-primary:hover {
+.btn-creat-question:hover {
     background-color: #0056b3;
 }
 
-/* Pagination styles */
 .pagination {
     display: flex;
     justify-content: center;
@@ -106,7 +105,7 @@
 }
 
 .pagination button {
-    background: #333;
+    background: #666;
     color: white;
     border: none;
     padding: 10px 15px;
@@ -124,6 +123,6 @@
 }
 
 .pagination button:disabled {
-    background: #666;
+    background: #333;
     cursor: not-allowed;
 }

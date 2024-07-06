@@ -24,7 +24,7 @@ public class AdminService {
     private final QuestionRepository questionRepository;
     private final TokenRepository tokenRepository;
 
-    public List<User> getAllUser(UserPrincipal userPrincipal) {
+    public List<User> getAllUsers(UserPrincipal userPrincipal) {
         isAdmin(userPrincipal);
 
         return userRepository.findAll();
@@ -38,7 +38,7 @@ public class AdminService {
 
         User user = userOptional.get();
 
-        List<Question> questions = questionRepository.findByAuthorId(user.getId());
+        List<Question> questions = questionRepository.findByAuthorIdOrderByCreatedDateDesc(user.getId());
 
         HistoryResponse historyResponse = HistoryResponse.builder()
                 .user(user)

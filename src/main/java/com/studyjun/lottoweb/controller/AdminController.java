@@ -33,10 +33,10 @@ public class AdminController {
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "400", description = "불러오기 실패", content = {@Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))}),
     })
     @GetMapping(value = "/user-list")
-    public List<User> getAllUser(
+    public List<User> getAllUsers(
             @Parameter(description = "Accesstoken을 입력해주세요.", required = true) @CurrentUser UserPrincipal userPrincipal
     ) {
-        return adminService.getAllUser(userPrincipal);
+        return adminService.getAllUsers(userPrincipal);
     }
 
     @Operation(summary = "특정 유저 활동 내역", description = "특정 유저의 상세 활동 내용을 확인합니다.")
@@ -46,7 +46,7 @@ public class AdminController {
     })
     @GetMapping(value = "/user-detail")
     public ResponseEntity<?> getUserHistory(
-            @Parameter(description = "User의 id(PK)를 입력해주세요.", required = true) @RequestParam long id,
+            @Parameter(description = "User의 id(PK)를 입력해주세요.", required = true) @RequestParam Long id,
             @Parameter(description = "Accesstoken을 입력해주세요.", required = true) @CurrentUser UserPrincipal userPrincipal
     ) {
         return adminService.getUserHistory(id, userPrincipal);
@@ -70,7 +70,7 @@ public class AdminController {
             @ApiResponse(responseCode = "400", description = "불러오기 실패", content = {@Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))}),
     })
     @DeleteMapping(value = "/user-delete")
-    public ResponseEntity<?> getUnansweredQuestions(
+    public ResponseEntity<?> deleteUser(
             @Parameter(description = "User의 id(PK)를 입력해주세요.", required = true) @RequestParam long id,
             @Parameter(description = "Accesstoken을 입력해주세요.", required = true) @CurrentUser UserPrincipal userPrincipal
     ) {

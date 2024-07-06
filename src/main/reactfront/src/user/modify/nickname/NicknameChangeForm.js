@@ -1,6 +1,8 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useRef } from 'react';
 import { toast } from 'react-toastify';
+
 import { changeNickname } from '../../../util/UserAPIUtils';
+import { validateNickname, useOutsideClick } from '../../../common/UtilCollection';
 import './NicknameChangeForm.css';
 
 const NicknameChangeForm = ({ onClose, onNicknameChangeSuccess }) => {
@@ -8,16 +10,11 @@ const NicknameChangeForm = ({ onClose, onNicknameChangeSuccess }) => {
     const [errors, setErrors] = useState({});
     const modalRef = useRef();
 
-    const validateNickname = (nickname) => {
-        const nicknameRegex = /^[A-Za-z0-9가-힣]{2,8}$/;
-        return nicknameRegex.test(nickname);
-    };
-
     const handleSubmit = (event) => {
         event.preventDefault();
 
         const newErrors = {};
-        
+
         if (!validateNickname(newNickname)) {
             newErrors.newNickname = '닉네임은 2자 이상 8자 이하로 입력하고, 특수 문자를 포함할 수 없습니다.';
             setErrors(newErrors);
@@ -35,18 +32,7 @@ const NicknameChangeForm = ({ onClose, onNicknameChangeSuccess }) => {
             });
     };
 
-    useEffect(() => {
-        const handleClickOutside = (event) => {
-            if (modalRef.current && !modalRef.current.contains(event.target)) {
-                onClose();
-            }
-        };
-
-        document.addEventListener('mousedown', handleClickOutside);
-        return () => {
-            document.removeEventListener('mousedown', handleClickOutside);
-        };
-    }, [onClose]);
+    useOutsideClick(modalRef, onClose);
 
     return (
         <div className="nickname-change-form-overlay">

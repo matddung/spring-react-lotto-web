@@ -1,13 +1,12 @@
 import React, { useEffect, useState } from 'react';
-import './Login.css';
-import { NAVER_AUTH_URL, KAKAO_AUTH_URL, GOOGLE_AUTH_URL, ACCESS_TOKEN, REFRESH_TOKEN } from '../../constants';
-import { login } from '../../util/UserAPIUtils';
-import { Link, useLocation, useNavigate, Navigate } from 'react-router-dom';
-import googleLogo from '../../img/google-logo.png';
-import kakaoLogo from '../../img/kakao-logo.png';
-import naverLogo from '../../img/naver-logo.png';
 import { toast } from 'react-toastify';
+import { Link, useLocation, useNavigate, Navigate } from 'react-router-dom';
+
+import { ACCESS_TOKEN, REFRESH_TOKEN } from '../../constants';
+import { SocialLogin } from '../../common/UtilCollection';
+import { login } from '../../util/UserAPIUtils';
 import FindPasswordForm from '../findPassword/FindPasswordForm';
+import './Login.css';
 
 const Login = ({ authenticated, onLoginSuccess, onLoginFailure }) => {
     const location = useLocation();
@@ -42,7 +41,7 @@ const Login = ({ authenticated, onLoginSuccess, onLoginFailure }) => {
                     <span className="or-text">OR</span>
                 </div>
                 <LoginForm onLoginSuccess={onLoginSuccess} onLoginFailure={onLoginFailure} />
-                <span className="signup-link">아이디가 없으신가요? <Link to="/signup">회원가입<br/></Link></span>
+                <span className="signup-link">아이디가 없으신가요? <Link to="/signup">회원가입<br /></Link></span>
                 <span className="find-password-link"><button type="button" className="link-button" onClick={toggleFindPasswordForm}>비밀번호를 잊으셨나요?</button></span>
             </div>
             {showFindPasswordForm && (
@@ -50,19 +49,6 @@ const Login = ({ authenticated, onLoginSuccess, onLoginFailure }) => {
                     <FindPasswordForm onClose={toggleFindPasswordForm} />
                 </div>
             )}
-        </div>
-    );
-};
-
-const SocialLogin = () => {
-    return (
-        <div className="social-login">
-            <a className="btn btn-block social-btn google" href={GOOGLE_AUTH_URL}>
-                <img src={googleLogo} alt="Google" /> with Google</a>
-            <a className="btn btn-block social-btn kakao" href={KAKAO_AUTH_URL}>
-                <img src={kakaoLogo} alt="Kakao" /> with Kakao</a>
-            <a className="btn btn-block social-btn naver" href={NAVER_AUTH_URL}>
-                <img src={naverLogo} alt="Naver" /> with Naver</a>
         </div>
     );
 };
@@ -80,17 +66,17 @@ const LoginForm = ({ onLoginSuccess, onLoginFailure }) => {
 
     const handleSubmit = async (event) => {
         event.preventDefault();
-    
+
         const loginRequest = { email, password };
-    
+
         try {
             const response = await login(loginRequest);
             localStorage.setItem(ACCESS_TOKEN, response.accessToken);
             localStorage.setItem(REFRESH_TOKEN, response.refreshToken);
-            onLoginSuccess(); // 로그인 성공 처리
+            onLoginSuccess();
             navigate("/");
         } catch (error) {
-            onLoginFailure(error); // 로그인 실패 처리
+            onLoginFailure(error);
         }
     };
 

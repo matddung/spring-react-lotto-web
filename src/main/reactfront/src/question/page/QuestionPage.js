@@ -1,12 +1,14 @@
 import React, { useEffect, useState } from 'react';
-import { getAllQuestions, getQuestionDetail, createQuestion, createAnswer } from '../util/QuestionAPIUtils'; // createAnswer 추가
-import { getCurrentUser } from '../util/UserAPIUtils';
-import './QuestionService.css';
-import QuestionDetail from './QuestionDetail';
-import CreateQuestion from './CreateQuestion';
-import LoadingIndicator from '../common/LoadingIndicator';
 import { toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css'; // toast 스타일 추가
+
+import { getAllQuestions, getQuestionDetail, createQuestion, createAnswer } from '../../util/QuestionAPIUtils';
+import { getCurrentUser } from '../../util/UserAPIUtils';
+import QuestionDetail from '../detail/QuestionDetail';
+import CreateQuestion from '../create/question/CreateQuestion';
+import LoadingIndicator from '../../common/LoadingIndicator';
+import Pagination from '../../common/Pagination';
+import 'react-toastify/dist/ReactToastify.css';
+import './QuestionPage.css';
 
 const QuestionService = () => {
     const [questions, setQuestions] = useState([]);
@@ -23,10 +25,10 @@ const QuestionService = () => {
             try {
                 const questionsResponse = await getAllQuestions();
                 setQuestions(questionsResponse);
-                
+
                 const userResponse = await getCurrentUser();
                 setCurrentUser(userResponse);
-                
+
                 setLoading(false);
             } catch (error) {
                 setError(error);
@@ -36,6 +38,18 @@ const QuestionService = () => {
 
         fetchData();
     }, []);
+
+    const {
+        startIndex,
+        endIndex,
+        displayedPageNumbers,
+        totalPages,
+        handlePageChange,
+        handlePreviousPages,
+        handleNextPages,
+        handleFirstPage,
+        handleLastPage
+    } = Pagination(questions.length, itemsPerPage, currentPage, setCurrentPage);
 
     const handleQuestionClick = async (questionId) => {
         try {
@@ -52,10 +66,10 @@ const QuestionService = () => {
             const questionsResponse = await getAllQuestions();
             setQuestions(questionsResponse);
             setIsCreateModalOpen(false);
-            toast.success("질문이 작성되었습니다."); // toast 메시지 추가
+            toast.success("질문이 작성되었습니다.");
         } catch (error) {
             setError(error);
-            toast.error("질문 작성에 실패하였습니다."); // 실패 메시지 추가
+            toast.error("질문 작성에 실패하였습니다.");
         }
     };
 
@@ -63,14 +77,14 @@ const QuestionService = () => {
         try {
             await createAnswer(questionId, answerData);
             const response = await getQuestionDetail(questionId);
-            setSelectedQuestion(response); // Update the selected question with the new answer
+            setSelectedQuestion(response);
             const questionsResponse = await getAllQuestions();
-            setQuestions(questionsResponse); // Update the list of questions
-            setSelectedQuestion(null); // Close the modal after submitting the answer
-            toast.success("답변이 작성되었습니다."); // 답변 작성 성공 메시지 추가
+            setQuestions(questionsResponse);
+            setSelectedQuestion(null);
+            toast.success("답변이 작성되었습니다.");
         } catch (error) {
             setError(error);
-            toast.error("답변 작성에 실패하였습니다."); // 실패 메시지 추가
+            toast.error("답변 작성에 실패하였습니다.");
         }
     };
 
@@ -86,26 +100,6 @@ const QuestionService = () => {
         setIsCreateModalOpen(false);
     };
 
-    const handlePageChange = (pageNumber) => {
-        setCurrentPage(pageNumber);
-    };
-
-    const handlePreviousPages = () => {
-        setCurrentPage(prevPage => Math.max(prevPage - 10, 1));
-    };
-
-    const handleNextPages = () => {
-        setCurrentPage(prevPage => Math.min(prevPage + 10, Math.ceil(questions.length / itemsPerPage)));
-    };
-
-    const handleFirstPage = () => {
-        setCurrentPage(1);
-    };
-
-    const handleLastPage = () => {
-        setCurrentPage(Math.ceil(questions.length / itemsPerPage));
-    };
-
     const isPrivateVisible = (question) => {
         if (!question.private) {
             return true;
@@ -116,19 +110,7 @@ const QuestionService = () => {
         return false;
     };
 
-    const indexOfLastQuestion = currentPage * itemsPerPage;
-    const indexOfFirstQuestion = indexOfLastQuestion - itemsPerPage;
-    const currentQuestions = questions.slice(indexOfFirstQuestion, indexOfLastQuestion);
-
-    const pageNumbers = [];
-    for (let i = 1; i <= Math.ceil(questions.length / itemsPerPage); i++) {
-        pageNumbers.push(i);
-    }
-
-    const displayedPageNumbers = pageNumbers.slice(
-        Math.floor((currentPage - 1) / 10) * 10,
-        Math.floor((currentPage - 1) / 10) * 10 + 10
-    );
+    const currentQuestions = questions.slice(startIndex, endIndex);
 
     if (loading) {
         return <LoadingIndicator />;
@@ -142,8 +124,8 @@ const QuestionService = () => {
         <div className="question-service-container">
             <h1>고객센터</h1>
             <div className="question-list">
-                <div className="question-list-header">
-                    <button className="btn btn-primary" onClick={handleOpenCreateModal}>글쓰기</button>
+                <div className="question-create-header">
+                    <button className="btn btn-creat-question" onClick={handleOpenCreateModal}>글쓰기</button>
                 </div>
                 <div className="question-header">
                     <span className="question-id">질문 번호</span>
@@ -175,8 +157,8 @@ const QuestionService = () => {
                             {number}
                         </button>
                     ))}
-                    <button onClick={handleNextPages} disabled={currentPage === pageNumbers.length}>	&gt;</button>
-                    <button onClick={handleLastPage} disabled={currentPage === pageNumbers.length}>	&gt;&gt;</button>
+                    <button onClick={handleNextPages} disabled={currentPage === totalPages}>	&gt;</button>
+                    <button onClick={handleLastPage} disabled={currentPage === totalPages}>	&gt;&gt;</button>
                 </div>
             </div>
             {selectedQuestion && (
@@ -184,7 +166,7 @@ const QuestionService = () => {
                     question={selectedQuestion}
                     currentUser={currentUser}
                     onClose={handleCloseModal}
-                    onSubmitAnswer={handleAnswerSubmit} // onSubmitAnswer 전달
+                    onSubmitAnswer={handleAnswerSubmit}
                 />
             )}
             {isCreateModalOpen && (

@@ -1,13 +1,14 @@
 import React, { useState } from 'react';
-import './Profile.css';
+import { useNavigate } from 'react-router-dom';
+import { toast } from 'react-toastify';
+
 import PasswordChangeForm from '../modify/password/PasswordChangeForm';
 import NicknameChangeForm from '../modify/nickname/NicknameChangeForm';
 import { deleteAccount } from '../../util/UserAPIUtils';
 import { getMyQuestions } from '../../util/QuestionAPIUtils';
-import { toast } from 'react-toastify';
 import MyQuestions from '../question/MyQuestions';
 import LoadingIndicator from '../../common/LoadingIndicator';
-import { useNavigate } from 'react-router-dom';
+import './Profile.css';
 
 const Profile = ({ currentUser, updateCurrentUser, onLogout }) => {
     const [showPasswordChangeForm, setShowPasswordChangeForm] = useState(false);
@@ -72,7 +73,7 @@ const Profile = ({ currentUser, updateCurrentUser, onLogout }) => {
     }
 
     if (!currentUser) {
-        return null; // LoadingIndicator 대신 null 반환
+        return null;
     }
 
     return (
@@ -87,9 +88,9 @@ const Profile = ({ currentUser, updateCurrentUser, onLogout }) => {
                         {currentUser.information.provider === 'local' && (
                             <button className="btn btn-primary" onClick={togglePasswordChangeForm}>비밀번호 수정</button>
                         )}
-                        <button className="btn btn-secondary" onClick={toggleNicknameChangeForm}>닉네임 수정</button>
-                        <button className="btn btn-secondary" onClick={toggleMyQuestionsModal}>내 질문 목록</button>
-                        <button className="btn btn-danger" onClick={handleAccountDeletion}>회원탈퇴</button>
+                        <button className="btn btn-primary" onClick={toggleNicknameChangeForm}>닉네임 수정</button>
+                        <button className="btn btn-primary" onClick={toggleMyQuestionsModal}>내 질문 목록</button>
+                        <button className="btn btn-primary" onClick={handleAccountDeletion}>회원탈퇴</button>
                     </div>
                 </div>
             </div>

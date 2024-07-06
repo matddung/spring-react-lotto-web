@@ -1,4 +1,3 @@
-// withRouter.js
 import { useNavigate } from 'react-router-dom';
 
 function withRouter(Component) {

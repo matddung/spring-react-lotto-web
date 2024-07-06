@@ -1,6 +1,8 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useRef } from 'react';
 import { toast } from 'react-toastify';
-import { findPassword } from '../../util/UserAPIUtils'; // 실제로 비밀번호 찾기 API를 호출해야 합니다.
+
+import { useOutsideClick } from '../../common/UtilCollection'
+import { findPassword } from '../../util/UserAPIUtils';
 import './FindPasswordForm.css';
 
 const FindPasswordForm = ({ onClose }) => {
@@ -10,7 +12,7 @@ const FindPasswordForm = ({ onClose }) => {
     const handleSubmit = (event) => {
         event.preventDefault();
 
-        const findPasswordRequest = { email }; // 객체로 감싸서 전달
+        const findPasswordRequest = { email };
 
         findPassword(findPasswordRequest)
             .then(response => {
@@ -21,18 +23,7 @@ const FindPasswordForm = ({ onClose }) => {
             });
     };
 
-    useEffect(() => {
-        const handleClickOutside = (event) => {
-            if (modalRef.current && !modalRef.current.contains(event.target)) {
-                onClose();
-            }
-        };
-
-        document.addEventListener('mousedown', handleClickOutside);
-        return () => {
-            document.removeEventListener('mousedown', handleClickOutside);
-        };
-    }, [onClose]);
+    useOutsideClick(modalRef, onClose);
 
     return (
         <div className="find-password-form-overlay">
