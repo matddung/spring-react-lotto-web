@@ -1,17 +1,16 @@
 package com.studyjun.lottoweb.util;
 
-import com.studyjun.lottoweb.exception.ErrorCode;
 import com.studyjun.lottoweb.exception.DefaultAuthenticationException;
 import com.studyjun.lottoweb.exception.DefaultException;
 import com.studyjun.lottoweb.exception.DefaultNullPointerException;
-import org.springframework.util.Assert;
+import com.studyjun.lottoweb.exception.ErrorCode;
 import org.springframework.validation.Errors;
 
 import java.security.InvalidParameterException;
 import java.util.List;
 import java.util.Optional;
 
-public class DefaultAssert extends Assert {
+public class DefaultAssert {
 
     public static void isTrue(boolean value){
         if(!value){
@@ -38,13 +37,13 @@ public class DefaultAssert extends Assert {
     }
 
     public static void isListNull(List<Object> values){
-        if(values.isEmpty()){
+        if(values == null || values.isEmpty()){
             throw new DefaultException(ErrorCode.INVALID_FILE_PATH);
         }
     }
 
     public static void isListNull(Object[] values){
-        if(values == null){
+        if(values == null || values.length == 0){
             throw new DefaultException(ErrorCode.INVALID_FILE_PATH);
         }
     }

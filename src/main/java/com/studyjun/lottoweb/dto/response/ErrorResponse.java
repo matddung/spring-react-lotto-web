@@ -31,12 +31,11 @@ public class ErrorResponse {
     }
 
     @Builder
-    public ErrorResponse(String code, int status, String message, String clazz, List<FieldError> fieldErrors) {
+    public ErrorResponse(String code, int status, String message, String clazz) {
         this.code = code;
         this.status = status;
         this.message = message;
         this.clazz = clazz;
-        //setFieldErrors(fieldErrors);
     }
 
     public void setFieldErrors(List<FieldError> fieldErrors) {
