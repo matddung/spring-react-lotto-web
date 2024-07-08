@@ -106,7 +106,7 @@ const App = () => {
           <Route path="*" element={<NotFound />} />
         </Routes>
       </div>
-      <ToastContainer limit={3} autoClose={3000} position="top-right" />
+      <ToastContainer limit={3} autoClose={2000} position="top-right" />
     </div>
   );
 };
