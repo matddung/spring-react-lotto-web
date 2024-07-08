@@ -6,7 +6,7 @@ import lombok.NoArgsConstructor;
 
 @NoArgsConstructor
 @Data
-public class TokenDto {
+public class  TokenDto {
     private String userEmail;
     private String accessToken;
     private String refreshToken;

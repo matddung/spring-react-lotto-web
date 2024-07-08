@@ -17,6 +17,9 @@ const AppHeader = ({ authenticated, currentUser, onLogout }) => {
                                 <li>
                                     <NavLink to="/question-service">고객센터</NavLink>
                                 </li>
+                                <li>
+                                    <NavLink to="/recommended-num">번호 받기</NavLink>
+                                </li>
                                 {currentUser && currentUser.information.role === 'ADMIN' ? (
                                     <>
                                         <li>

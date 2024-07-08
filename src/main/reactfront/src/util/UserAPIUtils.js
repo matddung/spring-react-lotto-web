@@ -3,7 +3,7 @@ import { request } from './APIRequest';
 
 export function getCurrentUser() {
     return request({
-        url: API_BASE_URL + '/user/',
+        url: API_BASE_URL + '/user',
         method: 'GET'
     });
 }
@@ -42,7 +42,7 @@ export function changeNickname(nicknameChangeRequest) {
 
 export function deleteAccount() {
     return request({
-        url: API_BASE_URL + '/user/',
+        url: API_BASE_URL + '/user',
         method: 'DELETE'
     });
 }

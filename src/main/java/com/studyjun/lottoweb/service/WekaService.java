@@ -1,5 +1,12 @@
 package com.studyjun.lottoweb.service;
 
+import com.studyjun.lottoweb.dto.response.ApiResponse;
+import com.studyjun.lottoweb.dto.response.Message;
+import com.studyjun.lottoweb.entity.UserLotto;
+import com.studyjun.lottoweb.repository.UserLottoRepository;
+import com.studyjun.lottoweb.repository.UserRepository;
+import com.studyjun.lottoweb.security.UserPrincipal;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import weka.classifiers.functions.MultilayerPerceptron;
@@ -23,6 +30,12 @@ public class WekaService {
 
     private static final int NUMBER_OF_LOTTO_NUMBERS = 6;
     private static final int MAX_LOTTO_NUMBER = 45;
+
+    @Autowired
+    private UserLottoRepository userLottoRepository;
+
+    @Autowired
+    private UserRepository userRepository;
 
     public WekaService() throws Exception {
         try {
@@ -67,7 +80,7 @@ public class WekaService {
     }
 
     // 통계적 접근을 통해 나온 값으로 상위 6개 추출
-    public ResponseEntity<?> top6Frequencies() {
+    public ResponseEntity<?> top6Frequencies(UserPrincipal userPrincipal) {
         HashMap<Integer, Integer> frequencyMap = calculateFrequencies();
         List<Integer> top6Numbers = frequencyMap.entrySet()
                 .stream()
@@ -76,14 +89,31 @@ public class WekaService {
                 .map(Map.Entry::getKey)
                 .collect(Collectors.toList());
 
-        return ResponseEntity.ok(top6Numbers);
+        String top6NumbersString = top6Numbers.stream()
+                .map(String::valueOf)
+                .collect(Collectors.joining(" "));
+
+        UserLotto userLotto = userLottoRepository.findByUserEmail(userPrincipal.getUsername())
+                .orElseGet(() -> {
+                    UserLotto newUserLotto = new UserLotto();
+                    newUserLotto.setUserEmail(userPrincipal.getUsername());
+                    return newUserLotto;
+                });
+
+        if (userLotto.getTop6Frequencies().isEmpty()) {
+            userLotto.setTop6Frequencies(top6NumbersString);
+            userLottoRepository.save(userLotto);
+            return ResponseEntity.ok(top6Numbers);
+        } else {
+            ApiResponse apiResponse = ApiResponse.builder().check(true).information(Message.builder().message("금주의 번호를 이미 받아보셨습니다.").build()).build();
+            return ResponseEntity.ok(apiResponse);
+        }
     }
 
     // 패턴 인식 - Weka의 분류기를 사용하여 패턴을 인식
-    public ResponseEntity<?> patternRecognition() throws Exception {
+    public ResponseEntity<?> patternRecognition(String date, UserPrincipal userPrincipal) throws Exception {
         double[] instanceValue = new double[data.numAttributes()];
 
-        String date = "2024-07-12";
         instanceValue[data.numAttributes() - 1] = Double.parseDouble(date.replaceAll("-", ""));
 
         for (int i = 0; i < data.numAttributes() - 1; i++) {
@@ -126,7 +156,25 @@ public class WekaService {
             predictedNumbers = numberSet.stream().mapToInt(Integer::intValue).sorted().toArray();
         }
 
-        return ResponseEntity.ok(predictedNumbers);
+        String numbersString = Arrays.stream(predictedNumbers)
+                .mapToObj(String::valueOf)
+                .collect(Collectors.joining(" "));
+
+        UserLotto userLotto = userLottoRepository.findByUserEmail(userPrincipal.getUsername())
+                .orElseGet(() -> {
+                    UserLotto newUserLotto = new UserLotto();
+                    newUserLotto.setUserEmail(userPrincipal.getUsername());
+                    return newUserLotto;
+                });
+
+        if (userLotto.getPatternRecognition().isEmpty()) {
+            userLotto.setPatternRecognition(numbersString);
+            userLottoRepository.save(userLotto);
+            return ResponseEntity.ok(predictedNumbers);
+        } else {
+            ApiResponse apiResponse = ApiResponse.builder().check(true).information(Message.builder().message("금주의 번호를 이미 받아보셨습니다.").build()).build();
+            return ResponseEntity.ok(apiResponse);
+        }
     }
 
     private int[] generateFallbackLottoNumbers() {
@@ -141,21 +189,39 @@ public class WekaService {
     }
 
     // 무작위 샘플링 - 무작위 숫자 생성
-    public ResponseEntity<?> generateRandom() {
+    public ResponseEntity<?> generateRandom(UserPrincipal userPrincipal) {
         Set<Integer> lottoNumbers = new HashSet<>();
 
         while (lottoNumbers.size() < NUMBER_OF_LOTTO_NUMBERS) {
             int randomNum = random.nextInt(MAX_LOTTO_NUMBER) + 1;
             lottoNumbers.add(randomNum);
         }
-        return ResponseEntity.ok(lottoNumbers);
+
+        String numbersString = lottoNumbers.stream()
+                .map(String::valueOf)
+                .collect(Collectors.joining(" "));
+
+        UserLotto userLotto = userLottoRepository.findByUserEmail(userPrincipal.getUsername())
+                .orElseGet(() -> {
+                    UserLotto newUserLotto = new UserLotto();
+                    newUserLotto.setUserEmail(userPrincipal.getUsername());
+                    return newUserLotto;
+                });
+
+        if (userLotto.getGenerateRandom().isEmpty()) {
+            userLotto.setGenerateRandom(numbersString);
+            userLottoRepository.save(userLotto);
+            return ResponseEntity.ok(lottoNumbers);
+        } else {
+            ApiResponse apiResponse = ApiResponse.builder().check(true).information(Message.builder().message("금주의 번호를 이미 받아보셨습니다.").build()).build();
+            return ResponseEntity.ok(apiResponse);
+        }
     }
 
     // 합의 알고리즘 - 앙상블 학습을 사용
-    public ResponseEntity<?> ensembleLottoPredictionLogic() throws Exception {
+    public ResponseEntity<?> ensembleLottoPrediction(String date, UserPrincipal userPrincipal) throws Exception {
         double[] instanceValue = new double[data.numAttributes()];
 
-        String date = "2024-07-12";
         instanceValue[data.numAttributes() - 1] = Double.parseDouble(date.replaceAll("-", ""));
 
         Instance newInstance = new DenseInstance(1.0, instanceValue);
@@ -185,19 +251,43 @@ public class WekaService {
                 .sorted()
                 .collect(Collectors.toList());
 
-        return ResponseEntity.ok(sortedLottoNumbers);
+        String numbersString = sortedLottoNumbers.stream()
+                .map(String::valueOf)
+                .collect(Collectors.joining(" "));
+
+        UserLotto userLotto = userLottoRepository.findByUserEmail(userPrincipal.getUsername())
+                .orElseGet(() -> {
+                    UserLotto newUserLotto = new UserLotto();
+                    newUserLotto.setUserEmail(userPrincipal.getUsername());
+                    return newUserLotto;
+                });
+
+        if (userLotto.getEnsembleLottoPrediction().isEmpty()) {
+            userLotto.setEnsembleLottoPrediction(numbersString);
+            userLottoRepository.save(userLotto);
+            return ResponseEntity.ok(sortedLottoNumbers);
+        } else {
+            ApiResponse apiResponse = ApiResponse.builder().check(true).information(Message.builder().message("금주의 번호를 이미 받아보셨습니다.").build()).build();
+            return ResponseEntity.ok(apiResponse);
+        }
     }
 
     // 시뮬레이션 - 몬테카를로 시뮬레이션을 통합
-    public ResponseEntity<?> monteCarloSimulation() {
+    public ResponseEntity<?> monteCarloSimulation(UserPrincipal userPrincipal) {
         int simulations = 10000;
         int[] counts = new int[MAX_LOTTO_NUMBER + 1];
 
+        Set<Integer> lottoNumbers = new HashSet<>();
+
+        while (lottoNumbers.size() < NUMBER_OF_LOTTO_NUMBERS) {
+            int randomNum = random.nextInt(MAX_LOTTO_NUMBER) + 1;
+            lottoNumbers.add(randomNum);
+        }
+
         Random random = new Random();
+
         for (int i = 0; i < simulations; i++) {
-            Set<Integer> numbers = (Set<Integer>) generateRandom().getBody();
-            assert numbers != null;
-            for (int num : numbers) {
+            for (int num : lottoNumbers) {
                 counts[num]++;
             }
         }
@@ -206,12 +296,40 @@ public class WekaService {
                 .boxed()
                 .sorted((i, j) -> Integer.compare(counts[j], counts[i]))
                 .limit(NUMBER_OF_LOTTO_NUMBERS)
-                .toList();
-
-        List<Integer> sortedLottoNumbers = topNumbers.stream()
                 .sorted()
                 .toList();
 
-        return ResponseEntity.ok(sortedLottoNumbers);
+        String numbersString = topNumbers.stream()
+                .map(String::valueOf)
+                .collect(Collectors.joining(" "));
+
+        UserLotto userLotto = userLottoRepository.findByUserEmail(userPrincipal.getUsername())
+                .orElseGet(() -> {
+                    UserLotto newUserLotto = new UserLotto();
+                    newUserLotto.setUserEmail(userPrincipal.getUsername());
+                    return newUserLotto;
+                });
+
+        if (userLotto.getMonteCarloSimulation().isEmpty()) {
+            userLotto.setMonteCarloSimulation(numbersString);
+            userLottoRepository.save(userLotto);
+            return ResponseEntity.ok(topNumbers);
+        } else {
+            ApiResponse apiResponse = ApiResponse.builder().check(true).information(Message.builder().message("금주의 번호를 이미 받아보셨습니다.").build()).build();
+            return ResponseEntity.ok(apiResponse);
+        }
+    }
+
+    public ResponseEntity<?> getCurrentUserLottoInfo(UserPrincipal userPrincipal) {
+        Optional<UserLotto> optionalUserLotto = userLottoRepository.findByUserEmail(userPrincipal.getUsername());
+
+        if (optionalUserLotto.isPresent()) {
+            return ResponseEntity.ok(optionalUserLotto.get());
+        } else {
+            UserLotto userLotto = new UserLotto();
+            userLotto.setUserEmail(userPrincipal.getUsername());
+            userLottoRepository.save(userLotto);
+            return ResponseEntity.ok(userLotto);
+        }
     }
 }

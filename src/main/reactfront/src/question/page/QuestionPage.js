@@ -24,6 +24,7 @@ const QuestionService = () => {
         const fetchData = async () => {
             try {
                 const questionsResponse = await getAllQuestions();
+                console.log("Fetched questions:", questionsResponse);
                 setQuestions(questionsResponse);
 
                 const userResponse = await getCurrentUser();
@@ -144,7 +145,7 @@ const QuestionService = () => {
                             <span className="question-subject">
                                 {isPrivateVisible(question) ? question.subject : "🔒 비밀글 입니다."}
                             </span>
-                            <span className="question-author">{question.author.nickname}</span>
+                            <span className="question-author">{question.author ? question.author.nickname : "알 수 없음"}</span>
                             <span className="question-answer">{question.answer ? "답변 완료" : "답변 대기"}</span>
                         </li>
                     ))}

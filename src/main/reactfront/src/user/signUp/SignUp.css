@@ -1,9 +1,11 @@
 .signup-container {
-    background-color: rgb(31, 31, 31);
+    background-color: #1f1f1f;
+    color: #fff;
     min-height: calc(100vh - 60px);
     text-align: center;
+    padding: 20px;
+    box-sizing: border-box;
 }
-
 
 .signup-content {
     background: rgb(25, 25, 25);

@@ -45,9 +45,8 @@ public class SecurityConfig {
                 .exceptionHandling(h -> h
                         .authenticationEntryPoint(new CustomAuthenticationEntryPoint()))
                 .authorizeHttpRequests(request -> request
-//                        .requestMatchers(ALLOWED_URIS).permitAll()
-//                        .anyRequest().authenticated())
-                        .anyRequest().permitAll())
+                        .requestMatchers(ALLOWED_URIS).permitAll()
+                        .anyRequest().authenticated())
                 .oauth2Login(o -> o
                         .authorizationEndpoint(a -> a
                                 .baseUri("/oauth2/authorize")

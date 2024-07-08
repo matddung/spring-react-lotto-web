@@ -10,6 +10,7 @@ import OAuth2RedirectHandler from '../user/oauth2/OAuth2RedirectHandler';
 import NotFound from '../common/NotFound';
 import LoadingIndicator from '../common/LoadingIndicator';
 import AdminPage from '../user/admin/page/AdminPage';
+import WekaPage from '../user/weka/WekaPage'
 import { getCurrentUser } from '../util/UserAPIUtils';
 import { ACCESS_TOKEN, REFRESH_TOKEN } from '../constants';
 import PrivateRoute from '../common/PrivateRoute';
@@ -30,6 +31,8 @@ const App = () => {
         setAuthenticated(true);
         setLoading(false);
       }).catch(() => {
+        localStorage.removeItem(ACCESS_TOKEN);
+        localStorage.removeItem(REFRESH_TOKEN);
         setLoading(false);
       });
   };
@@ -81,6 +84,11 @@ const App = () => {
           <Route path='/question-service' element={
             <PrivateRoute authenticated={authenticated}>
               <QuestionService />
+            </PrivateRoute>
+          } />
+          <Route path='/recommended-num' element={
+            <PrivateRoute authenticated={authenticated}>
+              <WekaPage />
             </PrivateRoute>
           } />
           <Route path="/login" element={<Login authenticated={authenticated} onLoginSuccess={handleLoginSuccess} onLoginFailure={handleLoginFailure} />} />

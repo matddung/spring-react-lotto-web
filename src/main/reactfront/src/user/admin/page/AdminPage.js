@@ -40,6 +40,8 @@ const AdminPage = () => {
                 const usersResponse = await getAllUsers();
                 setUsers(usersResponse);
 
+                console.log(usersResponse);
+
                 const unansweredQuestionsResponse = await getUnansweredQuestions();
                 setUnansweredQuestions(unansweredQuestionsResponse);
 

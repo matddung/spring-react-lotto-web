@@ -23,6 +23,7 @@ public class Question {
     private String content;
 
     @ManyToOne
+    @JoinColumn(name = "author_id")
     private User author;
 
     private LocalDateTime createdDate;
