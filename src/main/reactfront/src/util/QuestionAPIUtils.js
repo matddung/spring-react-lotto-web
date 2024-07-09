@@ -3,7 +3,7 @@ import { request } from './APIRequest';
 
 export function getAllQuestions() {
     return request({
-        url: API_BASE_URL + '/question/list',
+        url: `${API_BASE_URL}/question/list`,
         method: 'GET',
     });
 }
@@ -33,7 +33,7 @@ export function createQuestion(createQuestionRequest) {
 
 export function getMyQuestions() {
     return request({
-        url: API_BASE_URL + '/question/my-list',
+        url: `${API_BASE_URL}/question/my-list`,
         method: 'GET',
     });
 }

@@ -113,9 +113,9 @@ public class UserController {
     })
     @PostMapping(value = "/refresh")
     public ResponseEntity<?> refresh(
-            @Parameter(description = "Schemas의 RefreshTokenRequest를 참고해주세요.", required = true) @Valid @RequestBody RefreshTokenRequest tokenRefreshRequest
+            @Parameter(description = "Schemas의 RefreshTokenRequest를 참고해주세요.", required = true) @RequestBody RefreshTokenRequest refreshTokenRequest
     ) {
-        return userService.refresh(tokenRefreshRequest);
+        return userService.refresh(refreshTokenRequest);
     }
 
     @Operation(summary = "유저 로그아웃", description = "유저 로그아웃을 수행합니다.")

@@ -31,8 +31,6 @@ const App = () => {
         setAuthenticated(true);
         setLoading(false);
       }).catch(() => {
-        localStorage.removeItem(ACCESS_TOKEN);
-        localStorage.removeItem(REFRESH_TOKEN);
         setLoading(false);
       });
   };

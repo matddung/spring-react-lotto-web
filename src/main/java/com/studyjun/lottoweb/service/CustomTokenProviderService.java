@@ -6,6 +6,7 @@ import com.studyjun.lottoweb.dto.TokenDto;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
+import io.jsonwebtoken.security.SecurityException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -115,9 +116,7 @@ public class CustomTokenProviderService {
         try {
             Jwts.parserBuilder().setSigningKey(oAuth2Config.getAuth().getTokenSecret()).build().parseClaimsJws(token);
             return true;
-        } catch (io.jsonwebtoken.security.SecurityException ex) {
-            log.error("잘못된 JWT 서명입니다.");
-        } catch (MalformedJwtException ex) {
+        } catch (SecurityException | MalformedJwtException ex) {
             log.error("잘못된 JWT 서명입니다.");
         } catch (ExpiredJwtException ex) {
             log.error("만료된 JWT 토큰입니다.");

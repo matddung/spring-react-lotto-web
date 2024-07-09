@@ -15,7 +15,8 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 public class Answer {
     @Id
-    private Long questionId;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
     private String subject;
 

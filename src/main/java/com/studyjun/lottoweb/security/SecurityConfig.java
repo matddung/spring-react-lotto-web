@@ -30,7 +30,7 @@ public class SecurityConfig {
     private static final String[] ALLOWED_URIS = {
             "/", "/error", "/favicon.ico", "/*.html", "/*.css", "/*.js",
             "/swagger", "/swagger-ui.html", "/swagger-ui/**", "/api-docs", "/api-docs/**", "/v3/api-docs/**",
-            "/login/**", "/user/signUp", "/user/signIn", "/oauth2/**", "/user/find-password"
+            "/login/**", "/user/signUp", "/user/signIn", "/oauth2/**", "/user/find-password", "/user/refresh"
     };
 
     @Bean

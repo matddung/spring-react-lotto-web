@@ -24,8 +24,13 @@ const QuestionService = () => {
         const fetchData = async () => {
             try {
                 const questionsResponse = await getAllQuestions();
-                console.log("Fetched questions:", questionsResponse);
-                setQuestions(questionsResponse);
+                // 응답이 배열인지 확인
+                if (Array.isArray(questionsResponse)) {
+                    setQuestions(questionsResponse);
+                } else {
+                    console.error("Unexpected response format:", questionsResponse);
+                    setQuestions([]);
+                }
 
                 const userResponse = await getCurrentUser();
                 setCurrentUser(userResponse);
@@ -151,15 +156,15 @@ const QuestionService = () => {
                     ))}
                 </ul>
                 <div className="pagination">
-                    <button onClick={handleFirstPage} disabled={currentPage === 1}>	&lt;&lt;</button>
-                    <button onClick={handlePreviousPages} disabled={currentPage === 1}>	&lt;</button>
+                    <button onClick={handleFirstPage} disabled={currentPage === 1}>&lt;&lt;</button>
+                    <button onClick={handlePreviousPages} disabled={currentPage === 1}>&lt;</button>
                     {displayedPageNumbers.map(number => (
                         <button key={number} onClick={() => handlePageChange(number)} className={currentPage === number ? 'active' : ''}>
                             {number}
                         </button>
                     ))}
-                    <button onClick={handleNextPages} disabled={currentPage === totalPages}>	&gt;</button>
-                    <button onClick={handleLastPage} disabled={currentPage === totalPages}>	&gt;&gt;</button>
+                    <button onClick={handleNextPages} disabled={currentPage === totalPages}>&gt;</button>
+                    <button onClick={handleLastPage} disabled={currentPage === totalPages}>&gt;&gt;</button>
                 </div>
             </div>
             {selectedQuestion && (

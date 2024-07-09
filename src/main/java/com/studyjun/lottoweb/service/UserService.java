@@ -15,6 +15,7 @@ import com.studyjun.lottoweb.repository.UserRepository;
 import com.studyjun.lottoweb.security.UserPrincipal;
 import com.studyjun.lottoweb.util.DefaultAssert;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -28,6 +29,7 @@ import java.net.URI;
 import java.util.List;
 import java.util.Optional;
 
+@Slf4j
 @RequiredArgsConstructor
 @Service
 public class UserService {
@@ -155,12 +157,14 @@ public class UserService {
             tokenDto = customTokenProviderService.refreshToken(authentication, token.get().getRefreshToken());
         } else {
             tokenDto = customTokenProviderService.createToken(authentication);
-        }
+        }        
 
         Token updateToken = token.get().updateRefreshToken(tokenDto.getRefreshToken());
         tokenRepository.save(updateToken);
 
         AuthResponse authResponse = AuthResponse.builder().accessToken(tokenDto.getAccessToken()).refreshToken(updateToken.getRefreshToken()).build();
+
+        log.info("authResponse : {}", authResponse);
 
         return ResponseEntity.ok(authResponse);
     }
