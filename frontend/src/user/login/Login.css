@@ -1,0 +1,114 @@
+.login-container {
+    background-color: rgb(31, 31, 31);
+    min-height: calc(100vh - 60px);
+    text-align: center;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+}
+
+.login-content {
+    background: rgb(25, 25, 25);
+    box-shadow: 0 1px 11px rgba(0, 0, 0, 0.27);
+    border-radius: 2px;
+    width: 500px;
+    display: inline-block;
+    margin-top: 30px;
+    vertical-align: middle;
+    position: relative;    
+    padding: 35px;
+}
+
+.social-btn {
+    color: azure;
+    margin-bottom: 15px;
+    font-weight: 400;
+    font-size: 16px;
+    border-color: rgb(62, 62, 62);
+    background-color: rgb(82, 82, 82);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.social-btn:hover {
+    color: aliceblue;
+}
+
+.social-btn img {
+    height: 32px;
+    margin-right: 10px; /* Adjust this value to ensure proper spacing between the icon and text */
+}
+
+.signup-link {
+    color: azure;
+    font-size: 14px;
+}
+
+.login-title {
+    font-size: 1.5em;
+    font-weight: 500;
+    margin-top: 0;
+    margin-bottom: 30px;
+    color: azure;
+}
+
+.link-button {
+    background: none;
+    color: #007bff;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+    font-size: 14px;
+    text-decoration: underline;
+    margin-top: 10px; /* Add margin to align with "SignUp!" */
+}
+
+.extra-links {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.password-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: rgba(0, 0, 0, 0.5);
+}
+
+.password-modal .find-password-form-container {
+    background: rgb(25, 25, 25);
+    box-shadow: 0 1px 11px rgba(0, 0, 0, 0.27);
+    border-radius: 2px;
+    width: 300px;
+    padding: 20px;
+    text-align: center;
+}
+
+.btn {
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    color: #fff;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+.btn.btn-secondary {
+    background-color: #6c757d;
+}
+
+.btn.btn-primary {
+    background-color: #007bff;
+}
