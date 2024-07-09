@@ -1,1 +1,0 @@
-react project - lotto winning number recommended
