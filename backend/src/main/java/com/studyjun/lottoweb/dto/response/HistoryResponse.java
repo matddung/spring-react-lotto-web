@@ -5,8 +5,7 @@ import com.studyjun.lottoweb.entity.User;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
 import lombok.Data;
-
-import java.util.List;
+import org.springframework.data.domain.Page;
 
 @Data
 public class HistoryResponse {
@@ -14,10 +13,10 @@ public class HistoryResponse {
     private User user;
 
     @Schema( type = "string", example = "eyJhbGciOiJIUzUxMiJ9.eyJleHAiOjE2NTI3OTgxOTh9.asdf8as4df865as4dfasdf65_asdfweioufsdoiuf_432jdsaFEWFSDV_sadf" , description="refresh token 을 출력합니다.")
-    private List<Question> question;
+    private Page<Question> question;
 
     @Builder
-    public HistoryResponse(User user, List<Question> question) {
+    public HistoryResponse(User user, Page<Question> question) {
         this.user = user;
         this.question = question;
     }

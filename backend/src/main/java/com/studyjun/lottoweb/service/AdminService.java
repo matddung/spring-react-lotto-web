@@ -4,11 +4,14 @@ import com.studyjun.lottoweb.dto.response.HistoryResponse;
 import com.studyjun.lottoweb.entity.Question;
 import com.studyjun.lottoweb.entity.User;
 import com.studyjun.lottoweb.repository.QuestionRepository;
-import com.studyjun.lottoweb.repository.TokenRepository;
 import com.studyjun.lottoweb.repository.UserRepository;
 import com.studyjun.lottoweb.security.UserPrincipal;
 import com.studyjun.lottoweb.util.DefaultAssert;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,23 +25,22 @@ import java.util.Optional;
 public class AdminService {
     private final UserRepository userRepository;
     private final QuestionRepository questionRepository;
-    private final TokenRepository tokenRepository;
 
-    public List<User> getAllUsers(UserPrincipal userPrincipal) {
+    public Page<User> getAllUsers(UserPrincipal userPrincipal, int page) {
         isAdmin(userPrincipal);
-
-        return userRepository.findAll();
+        Pageable pageable = PageRequest.of(page, 10, Sort.by(Sort.Direction.DESC, "id"));
+        return userRepository.findAll(pageable);
     }
 
-    public ResponseEntity<?> getUserHistory(Long id, UserPrincipal userPrincipal) {
+    public ResponseEntity<?> getUserHistory(Long id, UserPrincipal userPrincipal, int page) {
         isAdmin(userPrincipal);
 
         Optional<User> userOptional = userRepository.findById(id);
         DefaultAssert.isTrue(userOptional.isPresent(), "사용자를 찾을 수 없습니다.");
 
         User user = userOptional.get();
-
-        List<Question> questions = questionRepository.findByAuthorIdOrderByCreatedDateDesc(user.getId());
+        Pageable pageable = PageRequest.of(page, 10, Sort.by(Sort.Direction.DESC, "id"));
+        Page<Question> questions = questionRepository.findByAuthorIdOrderByCreatedDateDesc(pageable, user.getId());
 
         HistoryResponse historyResponse = HistoryResponse.builder()
                 .user(user)
@@ -48,10 +50,10 @@ public class AdminService {
         return ResponseEntity.ok(historyResponse);
     }
 
-    public List<Question> getUnansweredQuestions(UserPrincipal userPrincipal) {
+    public Page<Question> getUnansweredQuestions(UserPrincipal userPrincipal, int page) {
         isAdmin(userPrincipal);
-
-        return questionRepository.findByAnswerIsNull();
+        Pageable pageable = PageRequest.of(page, 10, Sort.by(Sort.Direction.DESC, "id"));
+        return questionRepository.findByAnswerIsNull(pageable);
     }
 
     public ResponseEntity<?> deleteUser(Long id, UserPrincipal userPrincipal) {

@@ -7,7 +7,7 @@ import { getCurrentUser } from '../../../util/UserAPIUtils';
 import QuestionDetail from '../../../question/detail/QuestionDetail';
 import { getAllUsers, getUserHistory, getUnansweredQuestions, deleteUser } from '../../../util/AdminAPIUtil';
 import LoadingIndicator from '../../../common/LoadingIndicator';
-import Pagination from '../../../common/Pagination';
+import usePagination from '../../../common/Pagination';
 import UserDetail from '../userDetail/UserDetail';
 import './AdminPage.css';
 
@@ -23,25 +23,20 @@ const AdminPage = () => {
     const [currentPageUsers, setCurrentPageUsers] = useState(1);
     const [currentPageQuestions, setCurrentPageQuestions] = useState(1);
     const [currentPageUserQuestions, setCurrentPageUserQuestions] = useState(1);
+    const [totalElementsUsers, setTotalElementsUsers] = useState(0);
+    const [totalElementsQuestions, setTotalElementsQuestions] = useState(0);
     const itemsPerPage = 10;
-
-    const fetchUsers = async () => {
-        try {
-            const usersResponse = await getAllUsers();
-            setUsers(usersResponse);
-        } catch (error) {
-            setError(error);
-        }
-    };
 
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const usersResponse = await getAllUsers();
-                setUsers(usersResponse);
+                const usersResponse = await getAllUsers(currentPageUsers - 1);
+                setUsers(usersResponse.content);
+                setTotalElementsUsers(usersResponse.totalElements);
 
-                const unansweredQuestionsResponse = await getUnansweredQuestions();
-                setUnansweredQuestions(unansweredQuestionsResponse);
+                const unansweredQuestionsResponse = await getUnansweredQuestions(currentPageQuestions - 1);
+                setUnansweredQuestions(unansweredQuestionsResponse.content);
+                setTotalElementsQuestions(unansweredQuestionsResponse.totalElements);
 
                 const currentUserResponse = await getCurrentUser();
                 setCurrentUser(currentUserResponse);
@@ -54,11 +49,20 @@ const AdminPage = () => {
         };
 
         fetchData();
-    }, []);
+    }, [currentPageUsers, currentPageQuestions]);
+
+    const fetchUsers = async (page) => {
+        try {
+            const usersResponse = await getAllUsers(page - 1);
+            setUsers(usersResponse.content);
+        } catch (error) {
+            setError(error);
+        }
+    };
 
     const handleUserClick = async (userId) => {
         try {
-            const userResponse = await getUserHistory(userId);
+            const userResponse = await getUserHistory(userId, currentPageUserQuestions - 1);
             setSelectedUser(userResponse.user);
             setSelectedUserQuestions(userResponse.question);
         } catch (error) {
@@ -71,7 +75,7 @@ const AdminPage = () => {
         try {
             await deleteUser(userId);
             toast.success("사용자가 삭제되었습니다.");
-            await fetchUsers();
+            await fetchUsers(currentPageUsers);
         } catch (error) {
             toast.error("사용자 삭제에 실패하였습니다.");
         }
@@ -87,7 +91,7 @@ const AdminPage = () => {
     };
 
     const updateSelectedUserQuestions = async (userId) => {
-        const userResponse = await getUserHistory(userId);
+        const userResponse = await getUserHistory(userId, currentPageUserQuestions - 1);
         setSelectedUserQuestions(userResponse.question);
     };
 
@@ -101,8 +105,8 @@ const AdminPage = () => {
                 await updateSelectedUserQuestions(selectedUser.id);
             }
 
-            const unansweredQuestionsResponse = await getUnansweredQuestions();
-            setUnansweredQuestions(unansweredQuestionsResponse);
+            const unansweredQuestionsResponse = await getUnansweredQuestions(currentPageQuestions - 1);
+            setUnansweredQuestions(unansweredQuestionsResponse.content);
             toast.success("답변이 작성되었습니다.");
         } catch (error) {
             toast.error("답변 작성에 실패하였습니다.");
@@ -119,8 +123,6 @@ const AdminPage = () => {
     };
 
     const {
-        startIndex: startIndexUsers,
-        endIndex: endIndexUsers,
         displayedPageNumbers: displayedPageNumbersUsers,
         totalPages: totalPagesUsers,
         handlePageChange: handlePageChangeUsers,
@@ -128,11 +130,9 @@ const AdminPage = () => {
         handleNextPages: handleNextPagesUsers,
         handleFirstPage: handleFirstPageUsers,
         handleLastPage: handleLastPageUsers
-    } = Pagination(users.length, itemsPerPage, currentPageUsers, setCurrentPageUsers);
+    } = usePagination(totalElementsUsers, itemsPerPage, currentPageUsers, setCurrentPageUsers);
 
     const {
-        startIndex: startIndexQuestions,
-        endIndex: endIndexQuestions,
         displayedPageNumbers: displayedPageNumbersQuestions,
         totalPages: totalPagesQuestions,
         handlePageChange: handlePageChangeQuestions,
@@ -140,10 +140,10 @@ const AdminPage = () => {
         handleNextPages: handleNextPagesQuestions,
         handleFirstPage: handleFirstPageQuestions,
         handleLastPage: handleLastPageQuestions
-    } = Pagination(unansweredQuestions.length, itemsPerPage, currentPageQuestions, setCurrentPageQuestions);
+    } = usePagination(totalElementsQuestions, itemsPerPage, currentPageQuestions, setCurrentPageQuestions);
 
-    const currentUsers = users.slice(startIndexUsers, endIndexUsers);
-    const currentQuestions = unansweredQuestions.slice(startIndexQuestions, endIndexQuestions);
+    const currentUsers = users;
+    const currentQuestions = unansweredQuestions;
 
     if (loading) {
         return <LoadingIndicator />;

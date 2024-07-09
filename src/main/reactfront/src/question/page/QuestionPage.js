@@ -6,11 +6,11 @@ import { getCurrentUser } from '../../util/UserAPIUtils';
 import QuestionDetail from '../detail/QuestionDetail';
 import CreateQuestion from '../create/question/CreateQuestion';
 import LoadingIndicator from '../../common/LoadingIndicator';
-import usePagination from '../../common/Pagination';
+import Pagination from '../../common/Pagination';
 import 'react-toastify/dist/ReactToastify.css';
 import './QuestionPage.css';
 
-const QuestionPage = () => {
+const QuestionService = () => {
     const [questions, setQuestions] = useState([]);
     const [currentUser, setCurrentUser] = useState(null);
     const [loading, setLoading] = useState(true);
@@ -19,18 +19,16 @@ const QuestionPage = () => {
     const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
     const [currentPage, setCurrentPage] = useState(1);
     const itemsPerPage = 10;
-    const [totalPages, setTotalPages] = useState(0);
 
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const questionsResponse = await getAllQuestions(currentPage - 1);
-                if (questionsResponse && questionsResponse.content) {
-                    setQuestions(questionsResponse.content);
-                    setTotalPages(questionsResponse.totalPages);
+                const questionsResponse = await getAllQuestions();
+                if (Array.isArray(questionsResponse)) {
+                    setQuestions(questionsResponse);
                 } else {
+                    console.error("Unexpected response format:", questionsResponse);
                     setQuestions([]);
-                    setTotalPages(0);
                 }
 
                 const userResponse = await getCurrentUser();
@@ -44,16 +42,19 @@ const QuestionPage = () => {
         };
 
         fetchData();
-    }, [currentPage]);
+    }, []);
 
     const {
+        startIndex,
+        endIndex,
         displayedPageNumbers,
+        totalPages,
         handlePageChange,
         handlePreviousPages,
         handleNextPages,
         handleFirstPage,
         handleLastPage
-    } = usePagination(totalPages * itemsPerPage, itemsPerPage, currentPage, setCurrentPage);
+    } = Pagination(questions.length, itemsPerPage, currentPage, setCurrentPage);
 
     const handleQuestionClick = async (questionId) => {
         try {
@@ -67,14 +68,8 @@ const QuestionPage = () => {
     const handleCreateQuestion = async (questionData) => {
         try {
             await createQuestion(questionData);
-            const questionsResponse = await getAllQuestions(currentPage - 1);
-            if (questionsResponse && questionsResponse.content) {
-                setQuestions(questionsResponse.content);
-                setTotalPages(questionsResponse.totalPages);
-            } else {
-                setQuestions([]);
-                setTotalPages(0);
-            }
+            const questionsResponse = await getAllQuestions();
+            setQuestions(questionsResponse);
             setIsCreateModalOpen(false);
             toast.success("질문이 작성되었습니다.");
         } catch (error) {
@@ -88,14 +83,8 @@ const QuestionPage = () => {
             await createAnswer(questionId, answerData);
             const response = await getQuestionDetail(questionId);
             setSelectedQuestion(response);
-            const questionsResponse = await getAllQuestions(currentPage - 1);
-            if (questionsResponse && questionsResponse.content) {
-                setQuestions(questionsResponse.content);
-                setTotalPages(questionsResponse.totalPages);
-            } else {
-                setQuestions([]);
-                setTotalPages(0);
-            }
+            const questionsResponse = await getAllQuestions();
+            setQuestions(questionsResponse);
             setSelectedQuestion(null);
             toast.success("답변이 작성되었습니다.");
         } catch (error) {
@@ -126,6 +115,8 @@ const QuestionPage = () => {
         return false;
     };
 
+    const currentQuestions = questions.slice(startIndex, endIndex);
+
     if (loading) {
         return <LoadingIndicator />;
     }
@@ -148,7 +139,7 @@ const QuestionPage = () => {
                     <span className="question-answer">답변 여부</span>
                 </div>
                 <ul>
-                    {questions.map(question => (
+                    {currentQuestions.map(question => (
                         <li
                             key={question.id}
                             className={`question-item ${question.private ? 'private' : ''} ${isPrivateVisible(question) ? 'admin' : ''}`}
@@ -190,4 +181,4 @@ const QuestionPage = () => {
     );
 };
 
-export default QuestionPage;
+export default QuestionService;

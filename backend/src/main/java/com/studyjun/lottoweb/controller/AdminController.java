@@ -15,10 +15,9 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @Tag(name = "Admin", description = "Authorization Admin API")
 @RequiredArgsConstructor
@@ -33,10 +32,11 @@ public class AdminController {
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "400", description = "불러오기 실패", content = {@Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))}),
     })
     @GetMapping(value = "/user-list")
-    public List<User> getAllUsers(
-            @Parameter(description = "Accesstoken을 입력해주세요.", required = true) @CurrentUser UserPrincipal userPrincipal
+    public Page<User> getAllUsers(
+            @Parameter(description = "Accesstoken을 입력해주세요.", required = true) @CurrentUser UserPrincipal userPrincipal,
+            @Parameter(description = "원하시는 page(int)를 입력해주세요.", required = true) @RequestParam int page
     ) {
-        return adminService.getAllUsers(userPrincipal);
+        return adminService.getAllUsers(userPrincipal, page);
     }
 
     @Operation(summary = "특정 유저 활동 내역", description = "특정 유저의 상세 활동 내용을 확인합니다.")
@@ -47,9 +47,10 @@ public class AdminController {
     @GetMapping(value = "/user-detail")
     public ResponseEntity<?> getUserHistory(
             @Parameter(description = "User의 id(PK)를 입력해주세요.", required = true) @RequestParam Long id,
-            @Parameter(description = "Accesstoken을 입력해주세요.", required = true) @CurrentUser UserPrincipal userPrincipal
+            @Parameter(description = "Accesstoken을 입력해주세요.", required = true) @CurrentUser UserPrincipal userPrincipal,
+            @Parameter(description = "원하시는 page(int)를 입력해주세요.", required = true) @RequestParam int page
     ) {
-        return adminService.getUserHistory(id, userPrincipal);
+        return adminService.getUserHistory(id, userPrincipal, page);
     }
 
     @Operation(summary = "미응답 질문 리스트", description = "응답이 달리지 않은 질문 리스트를 불러옵니다.")
@@ -58,10 +59,11 @@ public class AdminController {
             @ApiResponse(responseCode = "400", description = "불러오기 실패", content = {@Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))}),
     })
     @GetMapping(value = "/unanswered-questions")
-    public List<Question> getUnansweredQuestions(
-            @Parameter(description = "Accesstoken을 입력해주세요.", required = true) @CurrentUser UserPrincipal userPrincipal
+    public Page<Question> getUnansweredQuestions(
+            @Parameter(description = "Accesstoken을 입력해주세요.", required = true) @CurrentUser UserPrincipal userPrincipal,
+            @Parameter(description = "원하시는 page(int)를 입력해주세요.", required = true) @RequestParam int page
     ) {
-        return adminService.getUnansweredQuestions(userPrincipal);
+        return adminService.getUnansweredQuestions(userPrincipal, page);
     }
 
     @Operation(summary = "유저 삭제", description = "특정 유저를 삭제합니다.")

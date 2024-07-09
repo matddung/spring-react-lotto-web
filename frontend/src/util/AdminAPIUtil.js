@@ -1,23 +1,23 @@
 import { API_BASE_URL } from '../constants';
 import { request } from './APIRequest';
 
-export function getAllUsers() {
+export function getAllUsers(page) {
     return request({
-        url: `${API_BASE_URL}/admin/user-list`,
+        url: `${API_BASE_URL}/admin/user-list?page=${page}`,
         method: 'GET'
     });
 }
 
-export function getUserHistory(id) {
+export function getUserHistory(id, page) {
     return request({
-        url: `${API_BASE_URL}/admin/user-detail?id=${id}`,
+        url: `${API_BASE_URL}/admin/user-detail?id=${id}&?page=${page}`,
         method: 'GET'
     });
 }
 
-export function getUnansweredQuestions() {
+export function getUnansweredQuestions(page) {
     return request({
-        url: `${API_BASE_URL}/admin/unanswered-questions`,
+        url: `${API_BASE_URL}/admin/unanswered-questions?page=${page}`,
         method: 'GET'
     });
 }

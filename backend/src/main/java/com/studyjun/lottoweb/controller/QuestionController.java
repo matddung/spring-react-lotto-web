@@ -17,10 +17,9 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @Tag(name = "Question", description = "Authorization User Question API")
 @RequiredArgsConstructor
@@ -48,8 +47,10 @@ public class QuestionController {
             @ApiResponse(responseCode = "400", description = "불러오기 실패", content = {@Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))}),
     })
     @GetMapping(value = "/list")
-    public List<Question> getAllQuestions() {
-        return questionService.getAllQuestions();
+    public Page<Question> getAllQuestions(
+            @Parameter(description = "원하시는 page(int)를 입력해주세요.", required = true) @RequestParam int page
+    ) {
+        return questionService.getAllQuestions(page);
     }
 
     @Operation(summary = "내 고객센터 질문 목록", description = "고객센터에 있는 내 질문 리스트를 불러옵니다.")
@@ -58,10 +59,11 @@ public class QuestionController {
             @ApiResponse(responseCode = "400", description = "불러오기 실패", content = {@Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))}),
     })
     @GetMapping(value = "/my-list")
-    public List<Question> getMyQuestions(
-            @Parameter(description = "Accesstoken을 입력해주세요.", required = true) @CurrentUser UserPrincipal userPrincipal
+    public Page<Question> getMyQuestions(
+            @Parameter(description = "Accesstoken을 입력해주세요.", required = true) @CurrentUser UserPrincipal userPrincipal,
+            @Parameter(description = "원하시는 page(int)를 입력해주세요.", required = true) @RequestParam int page
     ) {
-        return questionService.getMyQuestions(userPrincipal);
+        return questionService.getMyQuestions(userPrincipal, page);
     }
 
     @Operation(summary = "고객센터 질문 보기", description = "질문을 상세히 봅니다.")

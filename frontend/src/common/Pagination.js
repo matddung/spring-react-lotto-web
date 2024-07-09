@@ -1,30 +1,27 @@
 import { useMemo } from 'react';
 
-const usePagination = (totalItems, itemsPerPage, currentPage, setCurrentPage) => {
+const usePagination = (totalItems, itemsPerPage, currentPage, setCurrentPage, chunkSize = 10) => {
     const totalPages = Math.ceil(totalItems / itemsPerPage);
-    const startIndex = (currentPage - 1) * itemsPerPage;
-    const endIndex = startIndex + itemsPerPage;
 
     const displayedPageNumbers = useMemo(() => {
         const pages = [];
         for (let i = 1; i <= totalPages; i++) {
             pages.push(i);
         }
-        const chunkSize = 10;
         const chunkIndex = Math.floor((currentPage - 1) / chunkSize);
         return pages.slice(chunkIndex * chunkSize, chunkIndex * chunkSize + chunkSize);
-    }, [totalPages, currentPage]);
+    }, [totalPages, currentPage, chunkSize]);
 
     const handlePageChange = (pageNumber) => {
         setCurrentPage(pageNumber);
     };
 
     const handlePreviousPages = () => {
-        setCurrentPage(prevPage => Math.max(prevPage - 10, 1));
+        setCurrentPage(prevPage => Math.max(prevPage - chunkSize, 1));
     };
 
     const handleNextPages = () => {
-        setCurrentPage(prevPage => Math.min(prevPage + 10, totalPages));
+        setCurrentPage(prevPage => Math.min(prevPage + chunkSize, totalPages));
     };
 
     const handleFirstPage = () => {
@@ -36,8 +33,6 @@ const usePagination = (totalItems, itemsPerPage, currentPage, setCurrentPage) =>
     };
 
     return {
-        startIndex,
-        endIndex,
         displayedPageNumbers,
         totalPages,
         handlePageChange,

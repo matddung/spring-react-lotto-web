@@ -13,6 +13,9 @@ import com.studyjun.lottoweb.repository.UserRepository;
 import com.studyjun.lottoweb.security.UserPrincipal;
 import com.studyjun.lottoweb.util.DefaultAssert;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -21,7 +24,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -51,15 +53,17 @@ public class QuestionService {
         return ResponseEntity.ok(apiResponse);
     }
 
-    public List<Question> getAllQuestions() {
-        return questionRepository.findAll(Sort.by(Sort.Direction.DESC, "id")).stream().toList();
+    public Page<Question> getAllQuestions(int page) {
+        Pageable pageable = PageRequest.of(page, 10, Sort.by(Sort.Direction.DESC, "id"));
+        return questionRepository.findAll(pageable);
     }
 
-    public List<Question> getMyQuestions(UserPrincipal userPrincipal) {
+    public Page<Question> getMyQuestions(UserPrincipal userPrincipal, int page) {
         Optional<User> userOptional = userRepository.findById(userPrincipal.getId());
         DefaultAssert.isTrue(userOptional.isPresent(), "사용자를 찾을 수 없습니다.");
 
-        return questionRepository.findByAuthorId(userOptional.get().getId()).stream().toList();
+        Pageable pageable = PageRequest.of(page, 10, Sort.by(Sort.Direction.DESC, "id"));
+        return questionRepository.findByAuthorId(pageable, userPrincipal.getId());
     }
 
     public ResponseEntity<?> showQuestionDetail(long id, UserPrincipal userPrincipal) {

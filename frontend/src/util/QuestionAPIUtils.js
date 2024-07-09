@@ -1,9 +1,9 @@
 import { API_BASE_URL } from '../constants';
 import { request } from './APIRequest';
 
-export function getAllQuestions() {
+export function getAllQuestions(page) {
     return request({
-        url: `${API_BASE_URL}/question/list`,
+        url: `${API_BASE_URL}/question/list?page=${page}`,
         method: 'GET',
     });
 }
@@ -31,9 +31,9 @@ export function createQuestion(createQuestionRequest) {
     });
 }
 
-export function getMyQuestions() {
+export function getMyQuestions(page) {
     return request({
-        url: `${API_BASE_URL}/question/my-list`,
+        url: `${API_BASE_URL}/question/my-list?page=${page}`,
         method: 'GET',
     });
 }
