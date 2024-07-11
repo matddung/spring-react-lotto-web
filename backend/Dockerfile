@@ -1,11 +1,8 @@
 FROM openjdk:17-jdk-slim
-
 WORKDIR /app
-
-COPY build.gradle /app
-
+COPY build.gradle settings.gradle gradlew /app/
+COPY gradle /app/gradle
 COPY src /app/src
-
-RUN ./gradlew build
-
+RUN chmod +x /app/gradlew
+RUN ./gradlew build --no-daemon
 CMD ["java", "-jar", "/app/build/libs/lottoweb-0.0.1-SNAPSHOT.jar"]
