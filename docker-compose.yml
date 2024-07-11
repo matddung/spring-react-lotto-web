@@ -31,7 +31,7 @@ services:
   mariadb:
     image: mariadb:latest
     environment:
-      MYSQL_ROOT_PASSWORD: 0000
+      MYSQL_ROOT_PASSWORD:
       MYSQL_DATABASE: lotto
       MYSQL_USER: lotto
       MYSQL_PASSWORD: 1234
