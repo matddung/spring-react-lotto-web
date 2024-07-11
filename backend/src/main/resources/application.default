@@ -9,8 +9,8 @@ spring:
   mail:
     host: smtp.naver.com
     port: 465
-    username:
-    password:
+    username: ${SPRING_MAIL_USERNAME}
+    password: ${SPRING_MAIL_PASSWORD}
     properties:
       mail.smtp.auth: true
       mail.smtp.ssl.enable: true
@@ -33,20 +33,20 @@ spring:
       client:
         registration:
           google:
-            client-id:
-            client-secret:
+            client-id: ${GOOGLE_CLIENT_ID}
+            client-secret: ${GOOGLE_CLIENT_SECRET}
             scope: email
             redirect-uri: http://localhost:8080/login/oauth2/code/google
           naver:
-            client-id:
-            client-secret:
+            client-id: ${NAVER_CLIENT_ID}
+            client-secret: ${NAVER_CLIENT_SECRET}
             scope: name, email, profile_image
             client-name: Naver
             authorization-grant-type: authorization_code
             redirect-uri: http://localhost:8080/login/oauth2/code/naver
           kakao:
-            client-id:
-            client-secret:
+            client-id: ${KAKAO_CLIENT_ID}
+            client-secret: ${KAKAO_CLIENT_SECRET}
             scope: profile_nickname, profile_image, account_email
             client-name: kakao-login
             authorization-grant-type: authorization_code
@@ -80,7 +80,7 @@ springdoc:
       enabled: true
 
 jwt:
-  secret-key:
+  secret-key: ${JWT_SECRET_KEY}
   access:
     expiration: 86400000 # 24 hours in milliseconds
   refresh:
