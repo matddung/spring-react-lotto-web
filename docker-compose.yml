@@ -15,9 +15,9 @@ services:
     ports:
       - "8081:8080"
     environment:
-      SPRING_DATASOURCE_URL: jdbc:mariadb://mariadb:3306/${MYSQL_DATABASE}
-      SPRING_DATASOURCE_USERNAME: ${MYSQL_USER}
-      SPRING_DATASOURCE_PASSWORD: ${MYSQL_PASSWORD}
+      SPRING_DATASOURCE_URL: jdbc:mariadb://mariadb:3306/lotto
+      SPRING_DATASOURCE_USERNAME: lotto
+      SPRING_DATASOURCE_PASSWORD: 1234
     depends_on:
       - mariadb
 
@@ -31,10 +31,10 @@ services:
   mariadb:
     image: mariadb:latest
     environment:
-      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
-      MYSQL_DATABASE: ${MYSQL_DATABASE}
-      MYSQL_USER: ${MYSQL_USER}
-      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+      MYSQL_ROOT_PASSWORD: 0000
+      MYSQL_DATABASE: lotto
+      MYSQL_USER: lotto
+      MYSQL_PASSWORD: 1234
     ports:
       - "3306:3306"
 
