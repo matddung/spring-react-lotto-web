@@ -68,9 +68,9 @@ pipeline {
         stage('Deploy') {
             steps {
                 sshagent(['my-ssh-key']) {
-                    sh 'scp -r backend/build/libs/*.jar ubuntu@ec2-3-38-102-129.ap-northeast-2.compute.amazonaws.com:/home/ubuntu/backend'
-                    sh 'scp -r frontend/build/* ubuntu@ec2-3-38-102-129.ap-northeast-2.compute.amazonaws.com:/home/ubuntu/frontend'
-                    sh 'ssh ubuntu@ec2-3-38-102-129.ap-northeast-2.compute.amazonaws.com "java -jar /home/ubuntu/backend/lottoweb-0.0.1-SNAPSHOT.jar"'
+                    sh 'scp -o StrictHostKeyChecking=no -r backend/build/libs/*.jar ubuntu@ec2-13-209-11-116.ap-northeast-2.compute.amazonaws.com:/home/ubuntu/backend'
+                    sh 'scp -o StrictHostKeyChecking=no -r frontend/build/* ubuntu@ec2-13-209-11-116.ap-northeast-2.compute.amazonaws.com:/home/ubuntu/frontend'
+                    sh 'ssh -o StrictHostKeyChecking=no ubuntu@ec2-13-209-11-116.ap-northeast-2.compute.amazonaws.com "docker-compose up -d --build"'
                 }
             }
         }

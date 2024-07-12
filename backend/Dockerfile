@@ -1,8 +1,8 @@
 FROM openjdk:17-jdk-slim
 WORKDIR /app
-COPY build.gradle settings.gradle gradlew /app/
-COPY gradle /app/gradle
-COPY src /app/src
+COPY . /app
 RUN chmod +x /app/gradlew
 RUN ./gradlew --no-daemon clean build -x test
-CMD ["java", "-jar", "/app/build/libs/lottoweb-0.0.1-SNAPSHOT.jar"]
+COPY ./build/libs/*.jar /app/app.jar
+EXPOSE 8080
+ENTRYPOINT ["java", "-jar", "/app/app.jar"]
