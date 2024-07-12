@@ -11,6 +11,25 @@ pipeline {
                                 userRemoteConfigs: [[url: 'https://github.com/matddung/spring-react-lotto-web']])
             }
         }
+        stage('Build Backend') {
+            steps {
+                dir('backend') {
+                    script {
+                        sh './gradlew clean build -x test'
+                    }
+                }
+            }
+        }
+        stage('Build Frontend') {
+            steps {
+                dir('frontend') {
+                    script {
+                        sh 'npm install'
+                        sh 'npm run build'
+                    }
+                }
+            }
+        }
         stage('Build Backend Docker Image') {
             steps {
                 script {
