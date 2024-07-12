@@ -67,7 +67,7 @@ pipeline {
                 script {
                     bat '''
                     ssh -o StrictHostKeyChecking=no ubuntu@ec2-52-78-152-77.ap-northeast-2.compute.amazonaws.com "
-                    cd /path/to/your/deployment
+                    cd /home/ubuntu/lottoweb
                     docker-compose pull
                     docker-compose up -d
                     "
