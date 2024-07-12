@@ -85,7 +85,7 @@ pipeline {
         stage('Clean Gradle Cache') {
             steps {
                 dir('backend') {
-                    sh './gradlew cleanBuildCache'
+                    sh './gradlew clean'
                 }
             }
         }
