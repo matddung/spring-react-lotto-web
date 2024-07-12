@@ -1,4 +1,11 @@
 FROM openjdk:17-jdk-slim
+
+ADD https://services.gradle.org/distributions/gradle-8.8-bin.zip /gradle-8.8-bin.zip
+RUN mkdir /gradle && unzip /gradle-8.8-bin.zip -d /gradle
+
+ENV GRADLE_HOME /gradle/gradle-8.8
+ENV PATH ${GRADLE_HOME}/bin:${PATH}
+
 WORKDIR /app
 COPY . /app
 RUN chmod +x /app/gradlew
