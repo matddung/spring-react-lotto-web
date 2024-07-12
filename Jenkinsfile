@@ -7,7 +7,8 @@ pipeline {
     stages {
         stage('Checkout') {
             steps {
-                git 'https://github.com/matddung/spring-react-lotto-web.git'
+                checkout scmGit(branches: [[name: 'main']],
+                                userRemoteConfigs: [[url: 'https://github.com/matddung/spring-react-lotto-web']])
             }
         }
         stage('Build Backend Docker Image') {
