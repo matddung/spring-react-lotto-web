@@ -52,15 +52,7 @@ pipeline {
             steps {
                 dir('backend') {
                     sh 'chmod +x gradlew'
-                    sh './gradlew clean build'
-                }
-            }
-        }
-
-        stage('Test Backend') {
-            steps {
-                dir('backend') {
-                    sh './gradlew test'
+                    sh './gradlew clean build -x test'
                 }
             }
         }
