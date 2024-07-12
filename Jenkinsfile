@@ -61,9 +61,10 @@ pipeline {
             steps {
                 sshagent(['my-ssh-key']) {
                     sh 'scp -o StrictHostKeyChecking=no -r backend/build/libs/*.jar ubuntu@ec2-13-209-11-116.ap-northeast-2.compute.amazonaws.com:/home/ubuntu/backend'
-                                        sh 'scp -o StrictHostKeyChecking=no -r frontend/build/* ubuntu@ec2-13-209-11-116.ap-northeast-2.compute.amazonaws.com:/home/ubuntu/frontend'
-                                        sh 'scp -o StrictHostKeyChecking=no docker-compose.yml ubuntu@ec2-13-209-11-116.ap-northeast-2.compute.amazonaws.com:/home/ubuntu/'
-                                        sh 'ssh -o StrictHostKeyChecking=no ubuntu@ec2-13-209-11-116.ap-northeast-2.compute.amazonaws.com "cd /home/ubuntu && docker-compose up -d --build"'
+                    sh 'scp -o StrictHostKeyChecking=no -r frontend/build/* ubuntu@ec2-13-209-11-116.ap-northeast-2.compute.amazonaws.com:/home/ubuntu/frontend'
+                    sh 'scp -o StrictHostKeyChecking=no docker-compose.yml ubuntu@ec2-13-209-11-116.ap-northeast-2.compute.amazonaws.com:/home/ubuntu/'
+                    sh 'ssh -o StrictHostKeyChecking=no ubuntu@ec2-13-209-11-116.ap-northeast-2.compute.amazonaws.com "ls -al /home/ubuntu && ls -al /home/ubuntu/backend && ls -al /home/ubuntu/frontend"'
+                    sh 'ssh -o StrictHostKeyChecking=no ubuntu@ec2-13-209-11-116.ap-northeast-2.compute.amazonaws.com "cd /home/ubuntu && sudo docker-compose up -d --build"'
                 }
             }
         }
