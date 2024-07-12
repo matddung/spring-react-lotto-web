@@ -1,11 +1,22 @@
+# First stage: build the application
 FROM gradle:8.8-jdk17 AS builder
 
 WORKDIR /app
-COPY . /app
+
+# Copy the gradle wrapper and related files first
+COPY gradlew .
+COPY gradle gradle
+COPY build.gradle .
+COPY settings.gradle .
+
+# Copy the rest of the application source code
+COPY src src
+
+# Make gradlew executable and build the application
 RUN chmod +x gradlew
 RUN ./gradlew --no-daemon clean build -x test
 
-
+# Second stage: create the runtime image
 FROM openjdk:17-jdk-slim
 
 WORKDIR /app
