@@ -44,6 +44,31 @@ pipeline {
                 }
             }
         }
+        stage('Remove Unused Files') {
+            steps {
+                script {
+                    sh '''
+                    docker run --name temp-backend-container junhyuk1376/backend:latest /bin/sh -c "
+                    rm -rf /app/Dockerfile \
+                           /app/Jenkinsfile \
+                           /app/docker-compose.yml \
+                           /app/.dockerignore \
+                           /app/.gitignore"
+                    docker commit temp-backend-container junhyuk1376/backend:latest
+                    docker rm temp-backend-container
+
+                    docker run --name temp-frontend-container junhyuk1376/frontend:latest /bin/sh -c "
+                    rm -rf /app/Dockerfile \
+                           /app/Jenkinsfile \
+                           /app/docker-compose.yml \
+                           /app/.dockerignore \
+                           /app/.gitignore"
+                    docker commit temp-frontend-container junhyuk1376/frontend:latest
+                    docker rm temp-frontend-container
+                    '''
+                }
+            }
+        }
         stage('Push Backend Docker Image') {
             steps {
                 script {
@@ -65,7 +90,7 @@ pipeline {
         stage('Deploy to AWS') {
             steps {
                 script {
-                    bat '''
+                    sh '''
                     ssh -o StrictHostKeyChecking=no ubuntu@ec2-52-78-152-77.ap-northeast-2.compute.amazonaws.com "
                     cd /home/ubuntu/lottoweb
                     docker-compose pull
