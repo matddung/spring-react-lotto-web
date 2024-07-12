@@ -75,25 +75,5 @@ pipeline {
                 }
             }
         }
-
-        stage('Clean Docker Cache') {
-            steps {
-                sh 'sudo docker system prune -af'
-            }
-        }
-
-        stage('Clean Gradle Cache') {
-            steps {
-                dir('backend') {
-                    sh './gradlew clean'
-                }
-            }
-        }
-    }
-
-    post {
-        always {
-            cleanWs()
-        }
     }
 }
