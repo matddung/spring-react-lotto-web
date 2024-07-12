@@ -3,14 +3,14 @@ FROM gradle:8.8-jdk17 AS builder
 
 WORKDIR /app
 
-# Copy the gradle wrapper and related files first
-COPY gradlew /app/gradlew
-COPY gradle /app/gradle
-COPY build.gradle /app/build.gradle
-COPY settings.gradle /app/settings.gradle
+# Copy the gradle wrapper and related files first from the backend directory
+COPY backend/gradlew /app/gradlew
+COPY backend/gradle /app/gradle
+COPY backend/build.gradle /app/build.gradle
+COPY backend/settings.gradle /app/settings.gradle
 
-# Copy the rest of the application source code
-COPY src /app/src
+# Copy the rest of the application source code from the backend directory
+COPY backend/src /app/src
 
 # Make gradlew executable and build the application
 RUN chmod +x /app/gradlew
