@@ -78,7 +78,7 @@ pipeline {
 
         stage('Clean Docker Cache') {
             steps {
-                sh 'docker system prune -af'
+                sh 'sudo docker system prune -af'
             }
         }
 
