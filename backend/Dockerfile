@@ -13,6 +13,7 @@ COPY ./settings.gradle /app/settings.gradle
 COPY ./src /app/src
 
 # Make gradlew executable and build the application
+RUN ls -al /app/gradlew
 RUN chmod +x /app/gradlew
 RUN /app/gradlew --no-daemon clean build -x test
 
