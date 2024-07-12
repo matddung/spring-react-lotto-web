@@ -15,7 +15,7 @@ pipeline {
             steps {
                 dir('backend') {
                     script {
-                        sh './gradlew clean build -x test'
+                        bat './gradlew clean build -x test'
                     }
                 }
             }
@@ -24,8 +24,8 @@ pipeline {
             steps {
                 dir('frontend') {
                     script {
-                        sh 'npm install'
-                        sh 'npm run build'
+                        bat 'npm install'
+                        bat 'npm run build'
                     }
                 }
             }
@@ -65,12 +65,12 @@ pipeline {
         stage('Deploy to AWS') {
             steps {
                 script {
-                    sh '''
-                    ssh -o StrictHostKeyChecking=no ubuntu@ec2-52-78-152-77.ap-northeast-2.compute.amazonaws.com <<EOF
+                    bat '''
+                    ssh -o StrictHostKeyChecking=no ubuntu@ec2-52-78-152-77.ap-northeast-2.compute.amazonaws.com "
                     cd /path/to/your/deployment
                     docker-compose pull
                     docker-compose up -d
-                    EOF
+                    "
                     '''
                 }
             }
