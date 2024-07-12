@@ -42,8 +42,7 @@ pipeline {
         stage('Build Frontend') {
             steps {
                 dir('frontend') {
-                    sh 'rm -rf node_modules package-lock.json'
-                    sh 'npm install --loglevel verbose'
+                    sh 'npm install'
                     sh 'npm run build'
                 }
             }
@@ -75,6 +74,26 @@ pipeline {
                     '''
                 }
             }
+        }
+
+        stage('Clean Docker Cache') {
+            steps {
+                sh 'docker system prune -af'
+            }
+        }
+
+        stage('Clean Gradle Cache') {
+            steps {
+                dir('backend') {
+                    sh './gradlew cleanBuildCache'
+                }
+            }
+        }
+    }
+
+    post {
+        always {
+            cleanWs()
         }
     }
 }

@@ -1,6 +1,5 @@
 package com.studyjun.lottoweb.config;
 
-import com.studyjun.lottoweb.entity.Answer;
 import com.studyjun.lottoweb.entity.Question;
 import com.studyjun.lottoweb.entity.User;
 import com.studyjun.lottoweb.repository.AnswerRepository;
@@ -50,14 +49,14 @@ public class DataInitializer implements ApplicationRunner {
                 .role("USER")
                 .build());
 
-        tempQuestion();
-
-        answerRepository.save(Answer.builder()
-                .question(questionRepository.findById(500L).get())
-                .subject("test")
-                .content("test")
-                .createdDate(LocalDateTime.now())
-                .build());
+//        tempQuestion();
+//
+//        answerRepository.save(Answer.builder()
+//                .question(questionRepository.findById(500L).get())
+//                .subject("test")
+//                .content("test")
+//                .createdDate(LocalDateTime.now())
+//                .build());
     }
 
     public void tempQuestion() {
