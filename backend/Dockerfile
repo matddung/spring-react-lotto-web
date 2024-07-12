@@ -1,5 +1,7 @@
 FROM openjdk:17-jdk-slim
 
+RUN apt-get update && apt-get install -y unzip
+
 ADD https://services.gradle.org/distributions/gradle-8.8-bin.zip /gradle-8.8-bin.zip
 RUN mkdir /gradle && unzip /gradle-8.8-bin.zip -d /gradle
 
