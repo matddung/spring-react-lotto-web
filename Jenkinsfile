@@ -60,11 +60,11 @@ pipeline {
         stage('Deploy') {
             steps {
                 sshagent(['my-ssh-key']) {
-                    sh 'scp -o StrictHostKeyChecking=no -r backend ubuntu@ec2-13-209-11-116.ap-northeast-2.compute.amazonaws.com:/home/ubuntu/'
-                    sh 'scp -o StrictHostKeyChecking=no -r frontend ubuntu@ec2-13-209-11-116.ap-northeast-2.compute.amazonaws.com:/home/ubuntu/'
-                    sh 'scp -o StrictHostKeyChecking=no docker-compose.yml ubuntu@ec2-13-209-11-116.ap-northeast-2.compute.amazonaws.com:/home/ubuntu/'
+                    sh 'scp -o StrictHostKeyChecking=no -r backend ubuntu@ec2-43-202-59-0.ap-northeast-2.compute.amazonaws.com:/home/ubuntu/'
+                    sh 'scp -o StrictHostKeyChecking=no -r frontend ubuntu@ec2-43-202-59-0.ap-northeast-2.compute.amazonaws.com:/home/ubuntu/'
+                    sh 'scp -o StrictHostKeyChecking=no docker-compose.yml ubuntu@ec2-43-202-59-0.ap-northeast-2.compute.amazonaws.com:/home/ubuntu/'
                     sh '''
-                        ssh -o StrictHostKeyChecking=no ubuntu@ec2-13-209-11-116.ap-northeast-2.compute.amazonaws.com "
+                        ssh -o StrictHostKeyChecking=no ubuntu@ec2-43-202-59-0.ap-northeast-2.compute.amazonaws.com "
                             sudo chown -R ubuntu:ubuntu /home/ubuntu/backend /home/ubuntu/frontend /home/ubuntu/docker-compose.yml &&
                             cd /home/ubuntu &&
                             ls -al /home/ubuntu &&
