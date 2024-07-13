@@ -93,11 +93,11 @@ pipeline {
             steps {
                 script {
                     withCredentials([sshUserPrivateKey(credentialsId: 'my-ssh-key', keyFileVariable: 'SSH_KEY')]) {
-                        bat """
+                        bat '''
                         echo %SSH_KEY% > id_rsa
-                        chmod 600 id_rsa
+                        powershell -Command "Set-ItemProperty -Path '.\\id_rsa' -Name IsReadOnly -Value $true"
                         ssh -i id_rsa -o StrictHostKeyChecking=no ubuntu@ec2-52-78-152-77.ap-northeast-2.compute.amazonaws.com "cd /home/ubuntu/lottoweb && docker-compose pull && docker-compose up -d"
-                        """
+                        '''
                     }
                 }
             }
