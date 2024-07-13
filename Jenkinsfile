@@ -94,9 +94,9 @@ pipeline {
                 script {
                     withCredentials([sshUserPrivateKey(credentialsId: 'my-ssh-key', keyFileVariable: 'SSH_KEY')]) {
                         bat '''
-                        powershell -Command "$Env:SSH_KEY | Out-File -FilePath id_rsa -Encoding ascii"
-                        icacls id_rsa /inheritance:r /grant:r %username%:F
-                        powershell -Command "ssh -i id_rsa -o StrictHostKeyChecking=no ubuntu@ec2-52-78-152-77.ap-northeast-2.compute.amazonaws.com 'cd /home/ubuntu/lottoweb && docker-compose pull && docker-compose up -d'"
+                        powershell -Command "$Env:SSH_KEY | Out-File -FilePath .\\id_rsa -Encoding ascii"
+                        powershell -Command "Start-Process powershell -ArgumentList '-NoProfile -Command \\"Set-Acl -Path .\\id_rsa -AclObject (Get-Acl -Path .\\id_rsa)\\"' -NoNewWindow -Wait"
+                        powershell -Command "ssh -i .\\id_rsa -o StrictHostKeyChecking=no ubuntu@ec2-52-78-152-77.ap-northeast-2.compute.amazonaws.com 'cd /home/ubuntu/lottoweb && docker-compose pull && docker-compose up -d'"
                         '''
                     }
                 }
