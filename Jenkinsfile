@@ -92,10 +92,12 @@ pipeline {
         stage('Deploy to AWS') {
             steps {
                 script {
-                    sshagent(['my-ssh-key']) {
-                        bat '''
-                        ssh -o StrictHostKeyChecking=no ubuntu@ec2-52-78-152-77.ap-northeast-2.compute.amazonaws.com "cd /home/ubuntu/lottoweb && docker-compose pull && docker-compose up -d"
-                        '''
+                    withCredentials([sshUserPrivateKey(credentialsId: 'my-ssh-key', keyFileVariable: 'SSH_KEY')]) {
+                        bat """
+                        echo %SSH_KEY% > id_rsa
+                        chmod 600 id_rsa
+                        ssh -i id_rsa -o StrictHostKeyChecking=no ubuntu@ec2-52-78-152-77.ap-northeast-2.compute.amazonaws.com "cd /home/ubuntu/lottoweb && docker-compose pull && docker-compose up -d"
+                        """
                     }
                 }
             }
