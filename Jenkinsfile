@@ -74,8 +74,9 @@ pipeline {
         stage('Push Backend Docker Image') {
             steps {
                 script {
-                    docker.withRegistry('https://registry.hub.docker.com', DOCKERHUB_CREDENTIALS) {
-                        docker.image('junhyuk1376/backend:latest').push('latest')
+                    withCredentials([usernamePassword(credentialsId: 'dockerhub-credentials', usernameVariable: 'DOCKER_USERNAME', passwordVariable: 'DOCKER_PASSWORD')]) {
+                        bat "docker login -u %DOCKER_USERNAME% -p %DOCKER_PASSWORD%"
+                        bat "docker push junhyuk1376/backend:latest"
                     }
                 }
             }
@@ -83,8 +84,9 @@ pipeline {
         stage('Push Frontend Docker Image') {
             steps {
                 script {
-                    docker.withRegistry('https://registry.hub.docker.com', DOCKERHUB_CREDENTIALS) {
-                        docker.image('junhyuk1376/frontend:latest').push('latest')
+                    withCredentials([usernamePassword(credentialsId: 'dockerhub-credentials', usernameVariable: 'DOCKER_USERNAME', passwordVariable: 'DOCKER_PASSWORD')]) {
+                        bat "docker login -u %DOCKER_USERNAME% -p %DOCKER_PASSWORD%"
+                        bat "docker push junhyuk1376/frontend:latest"
                     }
                 }
             }
