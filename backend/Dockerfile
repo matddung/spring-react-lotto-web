@@ -26,10 +26,12 @@ RUN /app/gradlew --no-daemon clean build -x test
 FROM openjdk:17-jdk-slim
 
 WORKDIR /app
+
+# Copy JAR file from the first stage
 COPY --from=builder /app/build/libs /app/libs
 
-# Rename the JAR file
-RUN mv /app/libs/*.jar /app/app.jar
+# Ensure only one JAR file is present and move it
+RUN sh -c 'if [ $(ls /app/libs/*.jar | wc -l) = 1 ]; then mv /app/libs/*.jar /app/app.jar; else echo "Error: Multiple JAR files found" && exit 1; fi'
 
 EXPOSE 8080
 ENTRYPOINT ["java", "-jar", "/app/app.jar"]
