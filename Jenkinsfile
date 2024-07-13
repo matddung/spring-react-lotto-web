@@ -95,7 +95,7 @@ pipeline {
                     withCredentials([sshUserPrivateKey(credentialsId: 'my-ssh-key', keyFileVariable: 'SSH_KEY')]) {
                         bat '''
                         echo %SSH_KEY% > id_rsa
-                        powershell -Command "Set-ItemProperty -Path '.\\id_rsa' -Name IsReadOnly -Value $true"
+                        powershell -Command "Start-Process powershell -ArgumentList '-NoProfile -Command Set-ItemProperty -Path .\\id_rsa -Name IsReadOnly -Value $true' -NoNewWindow -Wait"
                         ssh -i id_rsa -o StrictHostKeyChecking=no ubuntu@ec2-52-78-152-77.ap-northeast-2.compute.amazonaws.com "cd /home/ubuntu/lottoweb && docker-compose pull && docker-compose up -d"
                         '''
                     }
