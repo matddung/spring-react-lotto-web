@@ -75,7 +75,7 @@ pipeline {
             steps {
                 script {
                     withCredentials([usernamePassword(credentialsId: 'dockerhub-credentials', usernameVariable: 'DOCKER_USERNAME', passwordVariable: 'DOCKER_PASSWORD')]) {
-                        sh "wsl echo $DOCKER_PASSWORD | docker login -u $DOCKER_USERNAME --password-stdin"
+                        sh "echo $DOCKER_PASSWORD | wsl docker login -u $DOCKER_USERNAME --password-stdin"
                         sh "wsl docker push junhyuk1376/backend:latest"
                     }
                 }
@@ -85,7 +85,7 @@ pipeline {
             steps {
                 script {
                     withCredentials([usernamePassword(credentialsId: 'dockerhub-credentials', usernameVariable: 'DOCKER_USERNAME', passwordVariable: 'DOCKER_PASSWORD')]) {
-                        sh "wsl echo $DOCKER_PASSWORD | docker login -u $DOCKER_USERNAME --password-stdin"
+                        sh "echo $DOCKER_PASSWORD | wsl docker login -u $DOCKER_USERNAME --password-stdin"
                         sh "wsl docker push junhyuk1376/frontend:latest"
                     }
                 }
@@ -95,6 +95,8 @@ pipeline {
             steps {
                 sshagent(['my-ssh-key']) {
                     sh '''
+                    wsl echo "$SSH_KEY" > ~/.ssh/id_rsa
+                    wsl chmod 600 ~/.ssh/id_rsa
                     wsl ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no ubuntu@ec2-52-78-152-77.ap-northeast-2.compute.amazonaws.com "cd /home/ubuntu/lottoweb && docker-compose pull && docker-compose up -d"
                     '''
                 }
