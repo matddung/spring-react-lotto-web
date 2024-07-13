@@ -11,6 +11,24 @@ pipeline {
                                 userRemoteConfigs: [[url: 'https://github.com/matddung/spring-react-lotto-web']])
             }
         }
+        stage('Prepare Backend Configuration') {
+            steps {
+                script {
+                    sh 'cp backend/src/main/resources/application.default backend/src/main/resources/application.yml'
+                    sh '''
+                        sed -i 's|${SPRING_MAIL_USERNAME}|'${SPRING_MAIL_USERNAME}'|' backend/src/main/resources/application.yml
+                        sed -i 's|${SPRING_MAIL_PASSWORD}|'${SPRING_MAIL_PASSWORD}'|' backend/src/main/resources/application.yml
+                        sed -i 's|${GOOGLE_CLIENT_ID}|'${GOOGLE_CLIENT_ID}'|' backend/src/main/resources/application.yml
+                        sed -i 's|${GOOGLE_CLIENT_SECRET}|'${GOOGLE_CLIENT_SECRET}'|' backend/src/main/resources/application.yml
+                        sed -i 's|${NAVER_CLIENT_ID}|'${NAVER_CLIENT_ID}'|' backend/src/main/resources/application.yml
+                        sed -i 's|${NAVER_CLIENT_SECRET}|'${NAVER_CLIENT_SECRET}'|' backend/src/main/resources/application.yml
+                        sed -i 's|${KAKAO_CLIENT_ID}|'${KAKAO_CLIENT_ID}'|' backend/src/main/resources/application.yml
+                        sed -i 's|${KAKAO_CLIENT_SECRET}|'${KAKAO_CLIENT_SECRET}'|' backend/src/main/resources/application.yml
+                        sed -i 's|${JWT_SECRET_KEY}|'${JWT_SECRET_KEY}'|' backend/src/main/resources/application.yml
+                    '''
+                }
+            }
+        }
         stage('Build Backend') {
             steps {
                 dir('backend') {
@@ -47,22 +65,24 @@ pipeline {
         stage('Remove Unused Files') {
             steps {
                 script {
-                    sh '''
-                    docker run --name temp-backend-container junhyuk1376/backend:latest /bin/sh -c "
-                    rm -rf /app/Dockerfile \
-                           /app/Jenkinsfile \
-                           /app/docker-compose.yml \
-                           /app/.dockerignore \
-                           /app/.gitignore"
+                    bat '''
+                    docker run --name temp-backend-container junhyuk1376/backend:latest powershell -Command "
+                    Remove-Item -Recurse -Force /app/Dockerfile;
+                    Remove-Item -Recurse -Force /app/Jenkinsfile;
+                    Remove-Item -Recurse -Force /app/docker-compose.yml;
+                    Remove-Item -Recurse -Force /app/.dockerignore;
+                    Remove-Item -Recurse -Force /app/.gitignore;
+                    "
                     docker commit temp-backend-container junhyuk1376/backend:latest
                     docker rm temp-backend-container
 
-                    docker run --name temp-frontend-container junhyuk1376/frontend:latest /bin/sh -c "
-                    rm -rf /app/Dockerfile \
-                           /app/Jenkinsfile \
-                           /app/docker-compose.yml \
-                           /app/.dockerignore \
-                           /app/.gitignore"
+                    docker run --name temp-frontend-container junhyuk1376/frontend:latest powershell -Command "
+                    Remove-Item -Recurse -Force /app/Dockerfile;
+                    Remove-Item -Recurse -Force /app/Jenkinsfile;
+                    Remove-Item -Recurse -Force /app/docker-compose.yml;
+                    Remove-Item -Recurse -Force /app/.dockerignore;
+                    Remove-Item -Recurse -Force /app/.gitignore;
+                    "
                     docker commit temp-frontend-container junhyuk1376/frontend:latest
                     docker rm temp-frontend-container
                     '''
@@ -90,7 +110,7 @@ pipeline {
         stage('Deploy to AWS') {
             steps {
                 script {
-                    sh '''
+                    bat '''
                     ssh -o StrictHostKeyChecking=no ubuntu@ec2-52-78-152-77.ap-northeast-2.compute.amazonaws.com "
                     cd /home/ubuntu/lottoweb
                     docker-compose pull
