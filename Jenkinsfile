@@ -3,6 +3,15 @@ pipeline {
 
     environment {
         DOCKERHUB_CREDENTIALS = credentials('dockerhub-credentials')
+        SPRING_MAIL_USERNAME = credentials('spring.mail.username')
+        SPRING_MAIL_PASSWORD = credentials('spring.mail.password')
+        GOOGLE_CLIENT_ID = credentials('google.client-id')
+        GOOGLE_CLIENT_SECRET = credentials('google.client-secret')
+        NAVER_CLIENT_ID = credentials('naver.client-id')
+        NAVER_CLIENT_SECRET = credentials('naver.client-secret')
+        KAKAO_CLIENT_ID = credentials('kakao.client-id')
+        KAKAO_CLIENT_SECRET = credentials('kakao.client-secret')
+        JWT_SECRET_KEY = credentials('jwt.secret-key')
     }
     stages {
         stage('Checkout') {
