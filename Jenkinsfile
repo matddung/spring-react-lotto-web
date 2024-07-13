@@ -24,17 +24,15 @@ pipeline {
             steps {
                 script {
                     bat 'copy backend\\src\\main\\resources\\application.default backend\\src\\main\\resources\\application.yml'
-                    bat '''
-                        powershell -Command "(Get-Content backend\\src\\main\\resources\\application.yml).replace('${SPRING_MAIL_USERNAME}', '${SPRING_MAIL_USERNAME}') | Set-Content backend\\src\\main\\resources\\application.yml"
-                        powershell -Command "(Get-Content backend\\src\\main\\resources\\application.yml).replace('${SPRING_MAIL_PASSWORD}', '${SPRING_MAIL_PASSWORD}') | Set-Content backend\\src\\main\\resources\\application.yml"
-                        powershell -Command "(Get-Content backend\\src\\main\\resources\\application.yml).replace('${GOOGLE_CLIENT_ID}', '${GOOGLE_CLIENT_ID}') | Set-Content backend\\src\\main\\resources\\application.yml"
-                        powershell -Command "(Get-Content backend\\src\\main\\resources\\application.yml).replace('${GOOGLE_CLIENT_SECRET}', '${GOOGLE_CLIENT_SECRET}') | Set-Content backend\\src\\main\\resources\\application.yml"
-                        powershell -Command "(Get-Content backend\\src\\main\\resources\\application.yml).replace('${NAVER_CLIENT_ID}', '${NAVER_CLIENT_ID}') | Set-Content backend\\src\\main\\resources\\application.yml"
-                        powershell -Command "(Get-Content backend\\src\\main\\resources\\application.yml).replace('${NAVER_CLIENT_SECRET}', '${NAVER_CLIENT_SECRET}') | Set-Content backend\\src\\main\\resources\\application.yml"
-                        powershell -Command "(Get-Content backend\\src\\main\\resources\\application.yml).replace('${KAKAO_CLIENT_ID}', '${KAKAO_CLIENT_ID}') | Set-Content backend\\src\\main\\resources\\application.yml"
-                        powershell -Command "(Get-Content backend\\src\\main\\resources\\application.yml).replace('${KAKAO_CLIENT_SECRET}', '${KAKAO_CLIENT_SECRET}') | Set-Content backend\\src\\main\\resources\\application.yml"
-                        powershell -Command "(Get-Content backend\\src\\main\\resources\\application.yml).replace('${JWT_SECRET_KEY}', '${JWT_SECRET_KEY}') | Set-Content backend\\src\\main\\resources\\application.yml"
-                    '''
+                    bat 'powershell -Command "(Get-Content backend\\src\\main\\resources\\application.yml).replace(\'${SPRING_MAIL_USERNAME}\', \'${SPRING_MAIL_USERNAME}\') | Set-Content backend\\src\\main\\resources\\application.yml"'
+                    bat 'powershell -Command "(Get-Content backend\\src\\main\\resources\\application.yml).replace(\'${SPRING_MAIL_PASSWORD}\', \'${SPRING_MAIL_PASSWORD}\') | Set-Content backend\\src\\main\\resources\\application.yml"'
+                    bat 'powershell -Command "(Get-Content backend\\src\\main\\resources\\application.yml).replace(\'${GOOGLE_CLIENT_ID}\', \'${GOOGLE_CLIENT_ID}\') | Set-Content backend\\src\\main\\resources\\application.yml"'
+                    bat 'powershell -Command "(Get-Content backend\\src\\main\\resources\\application.yml).replace(\'${GOOGLE_CLIENT_SECRET}\', \'${GOOGLE_CLIENT_SECRET}\') | Set-Content backend\\src\\main\\resources\\application.yml"'
+                    bat 'powershell -Command "(Get-Content backend\\src\\main\\resources\\application.yml).replace(\'${NAVER_CLIENT_ID}\', \'${NAVER_CLIENT_ID}\') | Set-Content backend\\src\\main\\resources\\application.yml"'
+                    bat 'powershell -Command "(Get-Content backend\\src\\main\\resources\\application.yml).replace(\'${NAVER_CLIENT_SECRET}\', \'${NAVER_CLIENT_SECRET}\') | Set-Content backend\\src\\main\\resources\\application.yml"'
+                    bat 'powershell -Command "(Get-Content backend\\src\\main\\resources\\application.yml).replace(\'${KAKAO_CLIENT_ID}\', \'${KAKAO_CLIENT_ID}\') | Set-Content backend\\src\\main\\resources\\application.yml"'
+                    bat 'powershell -Command "(Get-Content backend\\src\\main\\resources\\application.yml).replace(\'${KAKAO_CLIENT_SECRET}\', \'${KAKAO_CLIENT_SECRET}\') | Set-Content backend\\src\\main\\resources\\application.yml"'
+                    bat 'powershell -Command "(Get-Content backend\\src\\main\\resources\\application.yml).replace(\'${JWT_SECRET_KEY}\', \'${JWT_SECRET_KEY}\') | Set-Content backend\\src\\main\\resources\\application.yml"'
                 }
             }
         }
@@ -42,7 +40,7 @@ pipeline {
             steps {
                 dir('backend') {
                     script {
-                        bat './gradlew clean build -x test'
+                        bat 'gradlew.bat clean build -x test'
                     }
                 }
             }
@@ -60,14 +58,14 @@ pipeline {
         stage('Build Backend Docker Image') {
             steps {
                 script {
-                    docker.build('junhyuk1376/backend:latest', 'backend')
+                    bat 'docker build -t junhyuk1376/backend:latest backend'
                 }
             }
         }
         stage('Build Frontend Docker Image') {
             steps {
                 script {
-                    docker.build('junhyuk1376/frontend:latest', 'frontend')
+                    bat 'docker build -t junhyuk1376/frontend:latest frontend'
                 }
             }
         }
@@ -75,8 +73,8 @@ pipeline {
             steps {
                 script {
                     withCredentials([usernamePassword(credentialsId: 'dockerhub-credentials', usernameVariable: 'DOCKER_USERNAME', passwordVariable: 'DOCKER_PASSWORD')]) {
-                        bat "docker login -u %DOCKER_USERNAME% -p %DOCKER_PASSWORD%"
-                        bat "docker push junhyuk1376/backend:latest"
+                        bat 'docker login -u %DOCKER_USERNAME% -p %DOCKER_PASSWORD%'
+                        bat 'docker push junhyuk1376/backend:latest'
                     }
                 }
             }
@@ -85,8 +83,8 @@ pipeline {
             steps {
                 script {
                     withCredentials([usernamePassword(credentialsId: 'dockerhub-credentials', usernameVariable: 'DOCKER_USERNAME', passwordVariable: 'DOCKER_PASSWORD')]) {
-                        bat "docker login -u %DOCKER_USERNAME% -p %DOCKER_PASSWORD%"
-                        bat "docker push junhyuk1376/frontend:latest"
+                        bat 'docker login -u %DOCKER_USERNAME% -p %DOCKER_PASSWORD%'
+                        bat 'docker push junhyuk1376/frontend:latest'
                     }
                 }
             }
@@ -95,11 +93,7 @@ pipeline {
             steps {
                 script {
                     bat '''
-                    ssh -o StrictHostKeyChecking=no ubuntu@ec2-52-78-152-77.ap-northeast-2.compute.amazonaws.com "
-                    cd /home/ubuntu/lottoweb
-                    docker-compose pull
-                    docker-compose up -d
-                    "
+                    ssh -o StrictHostKeyChecking=no ubuntu@ec2-52-78-152-77.ap-northeast-2.compute.amazonaws.com "cd /home/ubuntu/lottoweb && docker-compose pull && docker-compose up -d"
                     '''
                 }
             }
