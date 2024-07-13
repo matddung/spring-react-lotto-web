@@ -42,6 +42,7 @@ pipeline {
             steps {
                 dir('backend') {
                     script {
+                        sh 'chmod +x gradlew'
                         sh './gradlew clean build -x test'
                     }
                 }
