@@ -26,7 +26,10 @@ RUN /app/gradlew --no-daemon clean build -x test
 FROM openjdk:17-jdk-slim
 
 WORKDIR /app
-COPY --from=builder /app/build/libs/*.jar /app/app.jar
+COPY --from=builder /app/build/libs /app/libs
+
+# Rename the JAR file
+RUN mv /app/libs/*.jar /app/app.jar
 
 EXPOSE 8080
 ENTRYPOINT ["java", "-jar", "/app/app.jar"]
