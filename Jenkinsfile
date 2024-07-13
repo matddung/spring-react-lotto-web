@@ -94,7 +94,7 @@ pipeline {
                 script {
                     withCredentials([sshUserPrivateKey(credentialsId: 'my-ssh-key', keyFileVariable: 'SSH_KEY')]) {
                         bat '''
-                        echo %SSH_KEY% > id_rsa
+                        powershell -Command "$Env:SSH_KEY | Out-File -FilePath id_rsa -Encoding ascii"
                         icacls id_rsa /inheritance:r /grant:r %username%:F
                         ssh -i id_rsa -o StrictHostKeyChecking=no ubuntu@ec2-52-78-152-77.ap-northeast-2.compute.amazonaws.com "cd /home/ubuntu/lottoweb && docker-compose pull && docker-compose up -d"
                         '''
