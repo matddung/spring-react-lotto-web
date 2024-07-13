@@ -95,10 +95,17 @@ pipeline {
         stage('Deploy to AWS') {
             steps {
                 sshagent(['my-ssh-key']) {
+                    sh 'scp -o StrictHostKeyChecking=no -r backend ubuntu@ec2-43-202-59-0.ap-northeast-2.compute.amazonaws.com:/home/ubuntu/'
+                    sh 'scp -o StrictHostKeyChecking=no -r frontend ubuntu@ec2-43-202-59-0.ap-northeast-2.compute.amazonaws.com:/home/ubuntu/'
+                    sh 'scp -o StrictHostKeyChecking=no docker-compose.yml ubuntu@ec2-43-202-59-0.ap-northeast-2.compute.amazonaws.com:/home/ubuntu/'
                     sh '''
-                    echo "$SSH_KEY" > ~/.ssh/id_rsa
-                    chmod 600 ~/.ssh/id_rsa
-                    ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no ubuntu@ec2-52-78-152-77.ap-northeast-2.compute.amazonaws.com "cd /home/ubuntu/lottoweb && docker-compose pull && docker-compose up -d"
+                        ssh -o StrictHostKeyChecking=no ubuntu@ec2-43-202-59-0.ap-northeast-2.compute.amazonaws.com "
+                            sudo chown -R ubuntu:ubuntu /home/ubuntu/backend /home/ubuntu/frontend /home/ubuntu/docker-compose.yml &&
+                            cd /home/ubuntu &&
+                            ls -al /home/ubuntu &&
+                            ls -al /home/ubuntu/backend &&
+                            sudo docker-compose up -d --build
+                        "
                     '''
                 }
             }
