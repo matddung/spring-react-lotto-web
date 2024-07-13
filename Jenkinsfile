@@ -20,6 +20,24 @@ pipeline {
                                 userRemoteConfigs: [[url: 'https://github.com/matddung/spring-react-lotto-web']])
             }
         }
+        stage('Prepare Backend Configuration') {
+            steps {
+                script {
+                    bat 'copy backend\\src\\main\\resources\\application.default backend\\src\\main\\resources\\application.yml'
+                    bat '''
+                        powershell -Command "(Get-Content backend\\src\\main\\resources\\application.yml).replace('${SPRING_MAIL_USERNAME}', '${SPRING_MAIL_USERNAME}') | Set-Content backend\\src\\main\\resources\\application.yml"
+                        powershell -Command "(Get-Content backend\\src\\main\\resources\\application.yml).replace('${SPRING_MAIL_PASSWORD}', '${SPRING_MAIL_PASSWORD}') | Set-Content backend\\src\\main\\resources\\application.yml"
+                        powershell -Command "(Get-Content backend\\src\\main\\resources\\application.yml).replace('${GOOGLE_CLIENT_ID}', '${GOOGLE_CLIENT_ID}') | Set-Content backend\\src\\main\\resources\\application.yml"
+                        powershell -Command "(Get-Content backend\\src\\main\\resources\\application.yml).replace('${GOOGLE_CLIENT_SECRET}', '${GOOGLE_CLIENT_SECRET}') | Set-Content backend\\src\\main\\resources\\application.yml"
+                        powershell -Command "(Get-Content backend\\src\\main\\resources\\application.yml).replace('${NAVER_CLIENT_ID}', '${NAVER_CLIENT_ID}') | Set-Content backend\\src\\main\\resources\\application.yml"
+                        powershell -Command "(Get-Content backend\\src\\main\\resources\\application.yml).replace('${NAVER_CLIENT_SECRET}', '${NAVER_CLIENT_SECRET}') | Set-Content backend\\src\\main\\resources\\application.yml"
+                        powershell -Command "(Get-Content backend\\src\\main\\resources\\application.yml).replace('${KAKAO_CLIENT_ID}', '${KAKAO_CLIENT_ID}') | Set-Content backend\\src\\main\\resources\\application.yml"
+                        powershell -Command "(Get-Content backend\\src\\main\\resources\\application.yml).replace('${KAKAO_CLIENT_SECRET}', '${KAKAO_CLIENT_SECRET}') | Set-Content backend\\src\\main\\resources\\application.yml"
+                        powershell -Command "(Get-Content backend\\src\\main\\resources\\application.yml).replace('${JWT_SECRET_KEY}', '${JWT_SECRET_KEY}') | Set-Content backend\\src\\main\\resources\\application.yml"
+                    '''
+                }
+            }
+        }
         stage('Build Backend') {
             steps {
                 dir('backend') {
@@ -50,32 +68,6 @@ pipeline {
             steps {
                 script {
                     docker.build('junhyuk1376/frontend:latest', 'frontend')
-                }
-            }
-        }
-        stage('Remove Unused Files') {
-            steps {
-                script {
-                    bat '''
-                    docker create --name temp-backend-container junhyuk1376/backend:latest
-                    docker cp temp-backend-container:/app /app_backup
-                    docker rm temp-backend-container
-
-                    docker create --name temp-frontend-container junhyuk1376/frontend:latest
-                    docker cp temp-frontend-container:/app /app_backup
-                    docker rm temp-frontend-container
-
-                    powershell -Command "
-                    Remove-Item -Recurse -Force /app_backup/Dockerfile;
-                    Remove-Item -Recurse -Force /app_backup/Jenkinsfile;
-                    Remove-Item -Recurse -Force /app_backup/docker-compose.yml;
-                    Remove-Item -Recurse -Force /app_backup/.dockerignore;
-                    Remove-Item -Recurse -Force /app_backup/.gitignore;
-                    "
-
-                    docker commit temp-backend-container junhyuk1376/backend:latest
-                    docker commit temp-frontend-container junhyuk1376/frontend:latest
-                    '''
                 }
             }
         }
