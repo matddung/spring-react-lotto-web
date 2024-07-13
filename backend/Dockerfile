@@ -28,10 +28,7 @@ FROM openjdk:17-jdk-slim
 WORKDIR /app
 
 # Copy JAR file from the first stage
-COPY --from=builder /app/build/libs /app/libs
-
-# Ensure only one JAR file is present and move it
-RUN sh -c 'if [ $(ls /app/libs/*.jar | wc -l) = 1 ]; then mv /app/libs/*.jar /app/app.jar; else echo "Error: Multiple JAR files found" && exit 1; fi'
+COPY --from=builder /app/build/libs/*.jar /app/app.jar
 
 EXPOSE 8080
 ENTRYPOINT ["java", "-jar", "/app/app.jar"]
