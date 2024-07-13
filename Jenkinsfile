@@ -23,8 +23,8 @@ pipeline {
         stage('Prepare Backend Configuration') {
             steps {
                 script {
-                    sh 'cp backend/src/main/resources/application.default backend/src/main/resources/application.yml'
-                    sh '''
+                    bat 'cp backend/src/main/resources/application.default backend/src/main/resources/application.yml'
+                    bat '''
                         sed -i 's|${SPRING_MAIL_USERNAME}|'${SPRING_MAIL_USERNAME}'|' backend/src/main/resources/application.yml
                         sed -i 's|${SPRING_MAIL_PASSWORD}|'${SPRING_MAIL_PASSWORD}'|' backend/src/main/resources/application.yml
                         sed -i 's|${GOOGLE_CLIENT_ID}|'${GOOGLE_CLIENT_ID}'|' backend/src/main/resources/application.yml
