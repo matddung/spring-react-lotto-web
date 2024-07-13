@@ -75,25 +75,24 @@ pipeline {
             steps {
                 script {
                     bat '''
-                    docker run --name temp-backend-container junhyuk1376/backend:latest powershell -Command "
-                    Remove-Item -Recurse -Force /app/Dockerfile;
-                    Remove-Item -Recurse -Force /app/Jenkinsfile;
-                    Remove-Item -Recurse -Force /app/docker-compose.yml;
-                    Remove-Item -Recurse -Force /app/.dockerignore;
-                    Remove-Item -Recurse -Force /app/.gitignore;
-                    "
-                    docker commit temp-backend-container junhyuk1376/backend:latest
+                    docker create --name temp-backend-container junhyuk1376/backend:latest
+                    docker cp temp-backend-container:/app /app_backup
                     docker rm temp-backend-container
 
-                    docker run --name temp-frontend-container junhyuk1376/frontend:latest powershell -Command "
-                    Remove-Item -Recurse -Force /app/Dockerfile;
-                    Remove-Item -Recurse -Force /app/Jenkinsfile;
-                    Remove-Item -Recurse -Force /app/docker-compose.yml;
-                    Remove-Item -Recurse -Force /app/.dockerignore;
-                    Remove-Item -Recurse -Force /app/.gitignore;
-                    "
-                    docker commit temp-frontend-container junhyuk1376/frontend:latest
+                    docker create --name temp-frontend-container junhyuk1376/frontend:latest
+                    docker cp temp-frontend-container:/app /app_backup
                     docker rm temp-frontend-container
+
+                    powershell -Command "
+                    Remove-Item -Recurse -Force /app_backup/Dockerfile;
+                    Remove-Item -Recurse -Force /app_backup/Jenkinsfile;
+                    Remove-Item -Recurse -Force /app_backup/docker-compose.yml;
+                    Remove-Item -Recurse -Force /app_backup/.dockerignore;
+                    Remove-Item -Recurse -Force /app_backup/.gitignore;
+                    "
+
+                    docker commit temp-backend-container junhyuk1376/backend:latest
+                    docker commit temp-frontend-container junhyuk1376/frontend:latest
                     '''
                 }
             }
