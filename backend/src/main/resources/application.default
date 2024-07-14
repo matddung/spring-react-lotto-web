@@ -37,21 +37,21 @@ spring:
             client-id: ${GOOGLE_CLIENT_ID}
             client-secret: ${GOOGLE_CLIENT_SECRET}
             scope: email
-            redirect-uri: http://localhost:8080/login/oauth2/code/google
+            redirect-uri: ec2-54-180-139-133.ap-northeast-2.compute.amazonaws.com:8080/login/oauth2/code/google
           naver:
             client-id: ${NAVER_CLIENT_ID}
             client-secret: ${NAVER_CLIENT_SECRET}
             scope: name, email, profile_image
             client-name: Naver
             authorization-grant-type: authorization_code
-            redirect-uri: http://localhost:8080/login/oauth2/code/naver
+            redirect-uri: ec2-54-180-139-133.ap-northeast-2.compute.amazonaws.com:8080/login/oauth2/code/naver
           kakao:
             client-id: ${KAKAO_CLIENT_ID}
             client-secret: ${KAKAO_CLIENT_SECRET}
             scope: profile_nickname, profile_image, account_email
             client-name: kakao-login
             authorization-grant-type: authorization_code
-            redirect-uri: http://localhost:8080/login/oauth2/code/kakao
+            redirect-uri: ec2-54-180-139-133.ap-northeast-2.compute.amazonaws.com:8080/login/oauth2/code/kakao
             client-authentication-method: client_secret_post
 
         provider:
@@ -89,6 +89,6 @@ jwt:
 
 app:
   cors:
-    allowedOrigins: http://localhost:3000, http://localhost:8080
+    allowedOrigins: ec2-54-180-139-133.ap-northeast-2.compute.amazonaws.com:3000, ec2-54-180-139-133.ap-northeast-2.compute.amazonaws.com:8080, http://ec2-54-180-139-133.ap-northeast-2.compute.amazonaws.com
   oauth2:
-    authorizedRedirectUris: http://localhost:3000/oauth2/redirect
+    authorizedRedirectUris: ec2-54-180-139-133.ap-northeast-2.compute.amazonaws.com:3000/oauth2/redirect
