@@ -51,7 +51,10 @@ pipeline {
         stage('Build Frontend') {
             steps {
                 dir('frontend') {
-                    script {
+                    withEnv([
+                        "REACT_APP_API_BASE_URL=http://ec2-54-180-139-133.ap-northeast-2.compute.amazonaws.com:8080",
+                        "REACT_APP_OAUTH2_REDIRECT_URI=http://ec2-54-180-139-133.ap-northeast-2.compute.amazonaws.com:3000/oauth2/redirect"
+                    ]) {
                         sh 'npm install'
                         sh 'npm run build'
                     }
