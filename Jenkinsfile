@@ -12,6 +12,8 @@ pipeline {
         KAKAO_CLIENT_ID = credentials('kakao.client-id')
         KAKAO_CLIENT_SECRET = credentials('kakao.client-secret')
         JWT_SECRET_KEY = credentials('jwt.secret-key')
+        REACT_APP_API_BASE_URL = "http://ec2-54-180-139-133.ap-northeast-2.compute.amazonaws.com:8080"
+        REACT_APP_OAUTH2_REDIRECT_URI = "http://ec2-54-180-139-133.ap-northeast-2.compute.amazonaws.com:3000/oauth2/redirect"
     }
     stages {
         stage('Checkout') {
@@ -52,8 +54,8 @@ pipeline {
             steps {
                 dir('frontend') {
                     withEnv([
-                        "REACT_APP_API_BASE_URL=http://ec2-54-180-139-133.ap-northeast-2.compute.amazonaws.com:8080",
-                        "REACT_APP_OAUTH2_REDIRECT_URI=http://ec2-54-180-139-133.ap-northeast-2.compute.amazonaws.com:3000/oauth2/redirect"
+                        "REACT_APP_API_BASE_URL=${env.REACT_APP_API_BASE_URL}",
+                        "REACT_APP_OAUTH2_REDIRECT_URI=${env.REACT_APP_OAUTH2_REDIRECT_URI}"
                     ]) {
                         sh 'npm install'
                         sh 'npm run build'
