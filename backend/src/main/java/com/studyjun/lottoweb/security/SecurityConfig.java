@@ -6,6 +6,7 @@ import com.studyjun.lottoweb.repository.CustomAuthorizationRequestRepository;
 import com.studyjun.lottoweb.service.CustomDefaultOAuth2UserService;
 import com.studyjun.lottoweb.service.CustomUserDetailsService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -16,6 +17,9 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 @RequiredArgsConstructor
 @Configuration
@@ -32,6 +36,11 @@ public class SecurityConfig {
             "/swagger", "/swagger-ui.html", "/swagger-ui/**", "/api-docs", "/api-docs/**", "/v3/api-docs/**",
             "/login/**", "/user/signUp", "/user/signIn", "/oauth2/**", "/user/find-password", "/user/refresh"
     };
+
+    private final long MAX_AGE_SECS = 3600;
+
+    @Value("${app.cors.allowedOrigins}")
+    private String[] allowedOrigins;
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -79,4 +88,18 @@ public class SecurityConfig {
     public CustomOncePerRequestFilter customOncePerRequestFilter() {
         return new CustomOncePerRequestFilter();
     }
+
+    @Bean
+    CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration configuration = new CorsConfiguration();
+        configuration.addAllowedOrigin("http://ec2-54-180-139-133.ap-northeast-2.compute.amazonaws.com:3000");
+        configuration.addAllowedMethod("*");
+        configuration.addAllowedHeader("*");
+        configuration.setAllowCredentials(true);
+
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", configuration);
+        return source;
+    }
+
 }
