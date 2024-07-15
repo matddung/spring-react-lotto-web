@@ -62,7 +62,7 @@ pipeline {
         }
         stage('Clean Up Docker Containers and Volumes') {
             steps {
-                script {
+                sshagent(['my-ssh-key']) {
                     sh '''
                         ssh -o StrictHostKeyChecking=no ubuntu@ec2-43-201-150-170.ap-northeast-2.compute.amazonaws.com "
                             sudo docker-compose down -v
