@@ -53,13 +53,19 @@ pipeline {
         stage('Build Frontend') {
             steps {
                 dir('frontend') {
-                    withEnv([
-                        "REACT_APP_API_BASE_URL=${env.REACT_APP_API_BASE_URL}",
-                        "REACT_APP_OAUTH2_REDIRECT_URI=${env.REACT_APP_OAUTH2_REDIRECT_URI}"
-                    ]) {
+                    {
                         sh 'npm install'
                         sh 'npm run build'
                     }
+                }
+            }
+        }
+        stage('Clean Up Docker Images') {
+            steps {
+                script {
+                    sh '''
+                    docker system prune -a -f
+                    '''
                 }
             }
         }
