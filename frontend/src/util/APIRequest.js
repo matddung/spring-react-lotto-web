@@ -37,13 +37,13 @@ async function fetchWithInterceptor(url, options = {}) {
     }
 
     try {
-        const response = await fetch(url, options);
+        let response = await fetch(`${API_BASE_URL}${url}`, options);
 
         if (response.status === 401) {
             console.warn('Access token expired, refreshing token...');
             accessToken = await refreshAccessToken();
             options.headers.set('Authorization', 'Bearer ' + accessToken);
-            return await fetch(url, options);
+            return await fetch(`${API_BASE_URL}${url}`, options);
         }
 
         if (!response.ok) {
