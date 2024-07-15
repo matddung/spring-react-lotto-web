@@ -3,14 +3,14 @@ import { request } from './APIRequest';
 
 export function getCurrentUser() {
     return request({
-        url: `${API_BASE_URL}/user`,
+        url: `http://ec2-54-180-139-133.ap-northeast-2.compute.amazonaws.com:8080/user`,
         method: 'GET'
     });
 }
 
 export function login(loginRequest) {
     return request({
-        url: `${API_BASE_URL}/user/signIn`,
+        url: `http://ec2-54-180-139-133.ap-northeast-2.compute.amazonaws.com:8080/user/signIn`,
         method: 'POST',
         body: JSON.stringify(loginRequest)
     });
