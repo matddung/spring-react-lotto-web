@@ -64,8 +64,8 @@ pipeline {
             steps {
                 script {
                     sh '''
-                    docker-compose down -v
-                    docker system prune -a -f
+                    sudo docker-compose down -v
+                    sudo docker system prune -a -f
                     '''
                 }
             }
