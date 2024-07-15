@@ -53,7 +53,7 @@ pipeline {
         stage('Build Frontend') {
             steps {
                 dir('frontend') {
-                    {
+                    script {
                         sh 'npm install'
                         sh 'npm run build'
                     }
