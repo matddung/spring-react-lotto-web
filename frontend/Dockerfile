@@ -7,7 +7,7 @@ COPY package.json /app/
 COPY package-lock.json /app/
 
 RUN npm cache clean --force
-RUN npm install
+RUN npm install --save 'react-scripts'
 
 COPY . /app/
 
