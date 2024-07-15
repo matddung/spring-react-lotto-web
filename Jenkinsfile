@@ -12,8 +12,8 @@ pipeline {
         KAKAO_CLIENT_ID = credentials('kakao.client-id')
         KAKAO_CLIENT_SECRET = credentials('kakao.client-secret')
         JWT_SECRET_KEY = credentials('jwt.secret-key')
-        REACT_APP_API_BASE_URL = "http://ec2-54-180-139-133.ap-northeast-2.compute.amazonaws.com:8080"
-        REACT_APP_OAUTH2_REDIRECT_URI = "http://ec2-54-180-139-133.ap-northeast-2.compute.amazonaws.com:3000/oauth2/redirect"
+        REACT_APP_API_BASE_URL = "http://ec2-43-201-150-170.ap-northeast-2.compute.amazonaws.com:8080"
+        REACT_APP_OAUTH2_REDIRECT_URI = "http://ec2-43-201-150-170.ap-northeast-2.compute.amazonaws.com:3000/oauth2/redirect"
     }
     stages {
         stage('Checkout') {
@@ -60,10 +60,11 @@ pipeline {
                 }
             }
         }
-        stage('Clean Up Docker Images') {
+        stage('Clean Up Docker Containers and Volumes') {
             steps {
                 script {
                     sh '''
+                    docker-compose down -v
                     docker system prune -a -f
                     '''
                 }
@@ -106,11 +107,11 @@ pipeline {
         stage('Deploy to AWS') {
             steps {
                 sshagent(['my-ssh-key']) {
-                    sh 'scp -o StrictHostKeyChecking=no -r backend ubuntu@ec2-54-180-139-133.ap-northeast-2.compute.amazonaws.com:/home/ubuntu/'
-                    sh 'scp -o StrictHostKeyChecking=no -r frontend ubuntu@ec2-54-180-139-133.ap-northeast-2.compute.amazonaws.com:/home/ubuntu/'
-                    sh 'scp -o StrictHostKeyChecking=no docker-compose.yml ubuntu@ec2-54-180-139-133.ap-northeast-2.compute.amazonaws.com:/home/ubuntu/'
+                    sh 'scp -o StrictHostKeyChecking=no -r backend ubuntu@ec2-43-201-150-170.ap-northeast-2.compute.amazonaws.com:/home/ubuntu/'
+                    sh 'scp -o StrictHostKeyChecking=no -r frontend ubuntu@ec2-43-201-150-170.ap-northeast-2.compute.amazonaws.com:/home/ubuntu/'
+                    sh 'scp -o StrictHostKeyChecking=no docker-compose.yml ubuntu@ec2-43-201-150-170.ap-northeast-2.compute.amazonaws.com:/home/ubuntu/'
                     sh '''
-                        ssh -o StrictHostKeyChecking=no ubuntu@ec2-54-180-139-133.ap-northeast-2.compute.amazonaws.com "
+                        ssh -o StrictHostKeyChecking=no ubuntu@ec2-43-201-150-170.ap-northeast-2.compute.amazonaws.com "
                             sudo chown -R ubuntu:ubuntu /home/ubuntu/backend /home/ubuntu/frontend /home/ubuntu/docker-compose.yml &&
                             cd /home/ubuntu &&
                             ls -al /home/ubuntu &&

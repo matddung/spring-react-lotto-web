@@ -8,8 +8,8 @@ RUN npm install
 COPY . /app/
 
 # 환경 변수 설정
-ENV REACT_APP_API_BASE_URL=http://ec2-54-180-139-133.ap-northeast-2.compute.amazonaws.com:8080
-ENV REACT_APP_OAUTH2_REDIRECT_URI=http://ec2-54-180-139-133.ap-northeast-2.compute.amazonaws.com:3000/oauth2/redirect
+ENV REACT_APP_API_BASE_URL=http://ec2-43-201-150-170.ap-northeast-2.compute.amazonaws.com:8080
+ENV REACT_APP_OAUTH2_REDIRECT_URI=http://ec2-43-201-150-170.ap-northeast-2.compute.amazonaws.com:3000/oauth2/redirect
 
 # 빌드
 RUN npm run build
