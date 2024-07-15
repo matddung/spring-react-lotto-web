@@ -4,7 +4,10 @@ WORKDIR /app
 
 # 필요한 파일들을 복사
 COPY package.json /app/
+COPY package-lock.json /app/
+
 RUN npm install
+
 COPY . /app/
 
 # 환경 변수 설정
