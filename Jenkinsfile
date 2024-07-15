@@ -64,8 +64,10 @@ pipeline {
             steps {
                 script {
                     sh '''
-                    sudo /usr/local/bin/docker-compose down -v
-                    sudo docker system prune -a -f
+                        ssh -o StrictHostKeyChecking=no ubuntu@ec2-43-201-150-170.ap-northeast-2.compute.amazonaws.com "
+                            sudo docker-compose down -v
+                            sudo docker system prune -a -f
+                        "
                     '''
                 }
             }
