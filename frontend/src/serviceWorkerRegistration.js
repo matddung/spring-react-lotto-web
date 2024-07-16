@@ -1,6 +1,6 @@
 export function register(config) {
   if (process.env.NODE_ENV === 'production' && 'serviceWorker' in navigator) {
-    const publicUrl = new URL('http://ec2-3-39-227-55.ap-northeast-2.compute.amazonaws.com:3000', window.location.href);
+    const publicUrl = new URL('http://ec2-3-39-227-55.ap-northeast-2.compute.amazonaws.com:8080', window.location.href);
     if (publicUrl.origin !== window.location.origin) {
       return;
     }
