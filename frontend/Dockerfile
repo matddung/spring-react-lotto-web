@@ -7,8 +7,8 @@ COPY package.json /app/
 COPY package-lock.json /app/
 
 # 환경 변수 설정
-ENV REACT_APP_API_BASE_URL=http://ec2-43-201-150-170.ap-northeast-2.compute.amazonaws.com:8080
-ENV REACT_APP_OAUTH2_REDIRECT_URI=http://ec2-43-201-150-170.ap-northeast-2.compute.amazonaws.com:3000/oauth2/redirect
+ENV REACT_APP_API_BASE_URL=ec2-3-39-227-55.ap-northeast-2.compute.amazonaws.com:8080
+ENV REACT_APP_OAUTH2_REDIRECT_URI=ec2-3-39-227-55.ap-northeast-2.compute.amazonaws.com:3000/oauth2/redirect
 
 RUN npm cache clean --force
 RUN npm install --save 'react-scripts'

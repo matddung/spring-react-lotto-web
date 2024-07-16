@@ -62,7 +62,7 @@ pipeline {
             steps {
                 sshagent(['my-ssh-key']) {
                     sh '''
-                        ssh -o StrictHostKeyChecking=no ubuntu@ec2-43-201-150-170.ap-northeast-2.compute.amazonaws.com "
+                        ssh -o StrictHostKeyChecking=no ubuntu@ec2-3-39-227-55.ap-northeast-2.compute.amazonaws.com "
                             sudo docker-compose down -v
                             sudo docker system prune -a -f
                         "
@@ -107,11 +107,11 @@ pipeline {
         stage('Deploy to AWS') {
             steps {
                 sshagent(['my-ssh-key']) {
-                    sh 'scp -o StrictHostKeyChecking=no -r backend ubuntu@ec2-43-201-150-170.ap-northeast-2.compute.amazonaws.com:/home/ubuntu/'
-                    sh 'scp -o StrictHostKeyChecking=no -r frontend ubuntu@ec2-43-201-150-170.ap-northeast-2.compute.amazonaws.com:/home/ubuntu/'
-                    sh 'scp -o StrictHostKeyChecking=no docker-compose.yml ubuntu@ec2-43-201-150-170.ap-northeast-2.compute.amazonaws.com:/home/ubuntu/'
+                    sh 'scp -o StrictHostKeyChecking=no -r backend ubuntu@ec2-3-39-227-55.ap-northeast-2.compute.amazonaws.com:/home/ubuntu/'
+                    sh 'scp -o StrictHostKeyChecking=no -r frontend ubuntu@ec2-3-39-227-55.ap-northeast-2.compute.amazonaws.com:/home/ubuntu/'
+                    sh 'scp -o StrictHostKeyChecking=no docker-compose.yml ubuntu@ec2-3-39-227-55.ap-northeast-2.compute.amazonaws.com:/home/ubuntu/'
                     sh '''
-                        ssh -o StrictHostKeyChecking=no ubuntu@ec2-43-201-150-170.ap-northeast-2.compute.amazonaws.com "
+                        ssh -o StrictHostKeyChecking=no ubuntu@ec2-3-39-227-55.ap-northeast-2.compute.amazonaws.com "
                             sudo chown -R ubuntu:ubuntu /home/ubuntu/backend /home/ubuntu/frontend /home/ubuntu/docker-compose.yml &&
                             cd /home/ubuntu &&
                             ls -al /home/ubuntu &&
