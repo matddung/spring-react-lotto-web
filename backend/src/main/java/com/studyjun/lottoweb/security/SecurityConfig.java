@@ -6,7 +6,6 @@ import com.studyjun.lottoweb.repository.CustomAuthorizationRequestRepository;
 import com.studyjun.lottoweb.service.CustomDefaultOAuth2UserService;
 import com.studyjun.lottoweb.service.CustomUserDetailsService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -33,11 +32,6 @@ public class SecurityConfig {
             "/swagger", "/swagger-ui.html", "/swagger-ui/**", "/api-docs", "/api-docs/**", "/v3/api-docs/**",
             "/login/**", "/user/signUp", "/user/signIn", "/oauth2/**", "/user/find-password", "/user/refresh"
     };
-
-    private final long MAX_AGE_SECS = 3600;
-
-    @Value("${app.cors.allowedOrigins}")
-    private String[] allowedOrigins;
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
