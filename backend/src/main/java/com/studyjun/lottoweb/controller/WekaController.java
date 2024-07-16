@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 @Tag(name = "Weka", description = "Authorization Recommended Winning Number API")
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("")
+@RequestMapping("/lotto")
 public class WekaController {
     private final WekaService wekaService;
 
