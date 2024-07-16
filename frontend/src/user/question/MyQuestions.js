@@ -27,7 +27,7 @@ const MyQuestions = ({ onClose, currentUser }) => {
                     setTotalElements(0);
                 }
             } catch (error) {
-                console.error('내 질문 목록을 불러오는데 실패했습니다.', error);
+
             }
         };
 
@@ -48,7 +48,7 @@ const MyQuestions = ({ onClose, currentUser }) => {
             const response = await getQuestionDetail(questionId);
             setSelectedQuestion(response);
         } catch (error) {
-            console.error("Failed to fetch question detail:", error);
+            
         }
     };
 

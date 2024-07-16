@@ -101,7 +101,6 @@ const Profile = ({ currentUser, updateCurrentUser, onLogout }) => {
             toast.success('회원 탈퇴가 성공적으로 완료되었습니다.');
             onLogout();
         } catch (error) {
-            console.error('Error deleting account:', error);
             toast.error((error && error.message) || '회원 탈퇴에 실패하였습니다.');
             setIsDeleting(false);
         }

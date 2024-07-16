@@ -91,7 +91,6 @@ const SignUpForm = () => {
                     navigate("/login");
                 });
             }).catch(error => {
-                console.error('Signup error:', error);
                 const errorMessage = error.information?.message || '예기치 않은 문제가 발생하였습니다.';
                 toast.error(errorMessage);
             });

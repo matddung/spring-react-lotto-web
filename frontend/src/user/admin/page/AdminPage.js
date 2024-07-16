@@ -66,7 +66,6 @@ const AdminPage = () => {
             setSelectedUser(userResponse.user);
             setSelectedUserQuestions(userResponse.question);
         } catch (error) {
-            console.error('Error fetching user details or questions:', error);
             setError(error);
         }
     };
