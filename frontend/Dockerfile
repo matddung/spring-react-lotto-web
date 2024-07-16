@@ -11,8 +11,6 @@ RUN npm install --save 'react-scripts'
 
 COPY . /app/
 
-RUN npm run build
-
 # 필요한 포트 노출
 EXPOSE 3000
 
