@@ -24,7 +24,7 @@ import org.springframework.web.bind.annotation.*;
 @Tag(name = "Question", description = "Authorization User Question API")
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/question")
+@RequestMapping("/api/question")
 public class QuestionController {
     private final QuestionService questionService;
 
