@@ -1,4 +1,4 @@
-export const API_BASE_URL = 'https://sbsmily.shop';
+export const API_BASE_URL = 'https://sbsmily.shop:8080';
 export const ACCESS_TOKEN = 'accessToken';
 export const REFRESH_TOKEN = 'refreshToken';
 
