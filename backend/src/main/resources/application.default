@@ -37,21 +37,21 @@ spring:
             client-id: ${GOOGLE_CLIENT_ID}
             client-secret: ${GOOGLE_CLIENT_SECRET}
             scope: email
-            redirect-uri: http://sbsmily.shop/login/oauth2/code/google
+            redirect-uri: https://sbsmily.shop/login/oauth2/code/google
           naver:
             client-id: ${NAVER_CLIENT_ID}
             client-secret: ${NAVER_CLIENT_SECRET}
             scope: name, email, profile_image
             client-name: Naver
             authorization-grant-type: authorization_code
-            redirect-uri: http://sbsmily.shop/login/oauth2/code/naver
+            redirect-uri: https://sbsmily.shop/login/oauth2/code/naver
           kakao:
             client-id: ${KAKAO_CLIENT_ID}
             client-secret: ${KAKAO_CLIENT_SECRET}
             scope: profile_nickname, profile_image, account_email
             client-name: kakao-login
             authorization-grant-type: authorization_code
-            redirect-uri: http://sbsmily.shop/login/oauth2/code/kakao
+            redirect-uri: https://sbsmily.shop/login/oauth2/code/kakao
             client-authentication-method: client_secret_post
 
         provider:
@@ -89,4 +89,4 @@ jwt:
 
 app:
   oauth2:
-    authorizedRedirectUris: http://sbsmily.shop/oauth2/redirect
+    authorizedRedirectUris: https://sbsmily.shop/oauth2/redirect
