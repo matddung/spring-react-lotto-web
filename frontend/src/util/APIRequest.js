@@ -3,7 +3,7 @@ import { ACCESS_TOKEN, REFRESH_TOKEN, API_BASE_URL } from '../constants';
 async function refreshAccessToken() {
     const refreshToken = localStorage.getItem(REFRESH_TOKEN);
 
-    const response = await fetch(`${API_BASE_URL}/user/refresh`, {
+    const response = await fetch(`${API_BASE_URL}/api/user/refresh`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
