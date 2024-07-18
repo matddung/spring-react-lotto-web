@@ -1,4 +1,4 @@
-export const API_BASE_URL = 'http://ec2-3-39-227-55.ap-northeast-2.compute.amazonaws.com:8080/api';
+export const API_BASE_URL = 'http://sbsmily.shop:8080/api';
 export const ACCESS_TOKEN = 'accessToken';
 export const REFRESH_TOKEN = 'refreshToken';
 
