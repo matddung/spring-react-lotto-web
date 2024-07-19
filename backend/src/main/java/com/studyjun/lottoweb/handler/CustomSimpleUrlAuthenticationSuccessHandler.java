@@ -27,7 +27,7 @@ import static com.studyjun.lottoweb.repository.CustomAuthorizationRequestReposit
 
 @RequiredArgsConstructor
 @Component
-public class CustomSimpleUrlAuthenticationSuccessHandler extends SimpleUrlAuthenticationSuccessHandler{
+public class CustomSimpleUrlAuthenticationSuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
 
     private final CustomTokenProviderService customTokenProviderService;
     private final OAuth2Config.OAuth2ConfigHolder oAuth2Config;
@@ -47,15 +47,15 @@ public class CustomSimpleUrlAuthenticationSuccessHandler extends SimpleUrlAuthen
     protected String determineTargetUrl(HttpServletRequest request, HttpServletResponse response, Authentication authentication) {
         Optional<String> redirectUri = CustomCookie.getCookie(request, REDIRECT_URI_PARAM_COOKIE_NAME).map(Cookie::getValue);
 
-        DefaultAssert.isAuthentication( !(redirectUri.isPresent() && !isAuthorizedRedirectUri(redirectUri.get())) );
+        DefaultAssert.isAuthentication(!(redirectUri.isPresent() && !isAuthorizedRedirectUri(redirectUri.get())));
 
         String targetUrl = redirectUri.orElse(getDefaultTargetUrl());
 
         TokenDto tokenDto = customTokenProviderService.createToken(authentication);
         Token token = Token.builder()
-                            .userEmail(tokenDto.getUserEmail())
-                            .refreshToken(tokenDto.getRefreshToken())
-                            .build();
+                .userEmail(tokenDto.getUserEmail())
+                .refreshToken(tokenDto.getRefreshToken())
+                .build();
         tokenRepository.save(token);
 
         return UriComponentsBuilder.fromUriString(targetUrl)
@@ -75,7 +75,7 @@ public class CustomSimpleUrlAuthenticationSuccessHandler extends SimpleUrlAuthen
                 .stream()
                 .anyMatch(authorizedRedirectUri -> {
                     URI authorizedURI = URI.create(authorizedRedirectUri);
-                    if(authorizedURI.getHost().equalsIgnoreCase(clientRedirectUri.getHost())
+                    if (authorizedURI.getHost().equalsIgnoreCase(clientRedirectUri.getHost())
                             && authorizedURI.getPort() == clientRedirectUri.getPort()) {
                         return true;
                     }

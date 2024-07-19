@@ -1,12 +1,12 @@
 package com.studyjun.lottoweb.service;
 
-import com.studyjun.lottoweb.util.DefaultAssert;
-import com.studyjun.lottoweb.security.OAuth2UserInfoFactory;
 import com.studyjun.lottoweb.config.Provider;
-import com.studyjun.lottoweb.security.UserPrincipal;
 import com.studyjun.lottoweb.entity.User;
 import com.studyjun.lottoweb.entity.oAuth2.OAuth2UserInfo;
 import com.studyjun.lottoweb.repository.UserRepository;
+import com.studyjun.lottoweb.security.OAuth2UserInfoFactory;
+import com.studyjun.lottoweb.security.UserPrincipal;
+import com.studyjun.lottoweb.util.DefaultAssert;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
@@ -14,14 +14,16 @@ import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
 
+import java.security.SecureRandom;
 import java.util.Optional;
 
 @RequiredArgsConstructor
 @Service
-public class CustomDefaultOAuth2UserService extends DefaultOAuth2UserService{
-    
+public class CustomDefaultOAuth2UserService extends DefaultOAuth2UserService {
+
     private final UserRepository userRepository;
-    
+    private static final String CHARACTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+
     @Override
     public OAuth2User loadUser(OAuth2UserRequest oAuth2UserRequest) throws OAuth2AuthenticationException {
         OAuth2User oAuth2User = super.loadUser(oAuth2UserRequest);
@@ -36,10 +38,10 @@ public class CustomDefaultOAuth2UserService extends DefaultOAuth2UserService{
     private OAuth2User processOAuth2User(OAuth2UserRequest oAuth2UserRequest, OAuth2User oAuth2User) {
         OAuth2UserInfo oAuth2UserInfo = OAuth2UserInfoFactory.getOAuth2UserInfo(oAuth2UserRequest.getClientRegistration().getRegistrationId(), oAuth2User.getAttributes());
         DefaultAssert.isAuthentication(!oAuth2UserInfo.getEmail().isEmpty());
-        
+
         Optional<User> userOptional = userRepository.findByEmail(oAuth2UserInfo.getEmail());
         User user;
-        if(userOptional.isPresent()) {
+        if (userOptional.isPresent()) {
             user = userOptional.get();
             DefaultAssert.isAuthentication(user.getProvider().equals(Provider.valueOf(oAuth2UserRequest.getClientRegistration().getRegistrationId())));
         } else {
@@ -51,13 +53,27 @@ public class CustomDefaultOAuth2UserService extends DefaultOAuth2UserService{
 
     private User registerNewUser(OAuth2UserRequest oAuth2UserRequest, OAuth2UserInfo oAuth2UserInfo) {
         User user = User.builder()
-                    .provider(Provider.valueOf(oAuth2UserRequest.getClientRegistration().getRegistrationId()))
-                    .providerId(oAuth2UserInfo.getId())
-                    .nickname(oAuth2UserInfo.getName())
-                    .email(oAuth2UserInfo.getEmail())
-                    .role("USER")
+                .provider(Provider.valueOf(oAuth2UserRequest.getClientRegistration().getRegistrationId()))
+                .providerId(oAuth2UserInfo.getId())
+                .nickname(oAuth2UserInfo.getName())
+                .email(oAuth2UserInfo.getEmail())
+                .role("USER")
+                .build();
+
+        if (user.getProvider().equals("google")) {
+            SecureRandom random = new SecureRandom();
+            StringBuilder sb = new StringBuilder(12);
+
+            for (int i = 0; i < 12; i++) {
+                int index = random.nextInt(CHARACTERS.length());
+                sb.append(CHARACTERS.charAt(index));
+            }
+
+            user = User.builder()
+                    .nickname(sb.toString())
                     .build();
-        
+        }
+
         return userRepository.save(user);
     }
 }
