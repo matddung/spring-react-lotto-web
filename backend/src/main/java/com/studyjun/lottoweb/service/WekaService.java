@@ -16,6 +16,8 @@ import weka.core.DenseInstance;
 import weka.core.Instance;
 import weka.core.Instances;
 import weka.core.converters.ConverterUtils.DataSource;
+import weka.filters.Filter;
+import weka.filters.unsupervised.attribute.Normalize;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -73,12 +75,6 @@ public class WekaService {
         return frequencyMap;
     }
 
-    // 통계적 접근 - Weka를 사용하여 특정 번호의 빈도를 분석
-    public ResponseEntity<?> statistics() {
-        HashMap<Integer, Integer> frequencyMap = calculateFrequencies();
-        return ResponseEntity.ok(frequencyMap);
-    }
-
     // 통계적 접근을 통해 나온 값으로 상위 6개 추출
     public ResponseEntity<?> top6Frequencies(UserPrincipal userPrincipal) {
         HashMap<Integer, Integer> frequencyMap = calculateFrequencies();
@@ -120,8 +116,13 @@ public class WekaService {
             instanceValue[i] = 0.0;
         }
 
+        // 데이터 정규화
+        Normalize normalize = new Normalize();
+        normalize.setInputFormat(data);
+        Instances normalizedData = Filter.useFilter(data, normalize);
+
         Instance newInstance = new DenseInstance(1.0, instanceValue);
-        newInstance.setDataset(data);
+        newInstance.setDataset(normalizedData);
 
         double[] predictedValues = mlp.distributionForInstance(newInstance);
 

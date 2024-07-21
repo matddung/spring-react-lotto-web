@@ -48,7 +48,7 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-mail'
 
     // weka
-    implementation group: 'nz.ac.waikato.cms.weka', name: 'weka-stable', version: '3.8.6'
+    implementation 'nz.ac.waikato.cms.weka:weka-stable:3.8.6'
 }
 
 tasks.named('test') {

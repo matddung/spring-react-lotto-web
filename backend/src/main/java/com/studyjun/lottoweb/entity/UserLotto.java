@@ -38,29 +38,4 @@ public class UserLotto {
         this.ensembleLottoPrediction = ensembleLottoPrediction;
         this.monteCarloSimulation = monteCarloSimulation;
     }
-
-    public UserLotto updateTop6Frequencies(String top6Frequencies) {
-        this.top6Frequencies = top6Frequencies;
-        return this;
-    }
-
-    public UserLotto updatePatternRecognition(String patternRecognition) {
-        this.patternRecognition = patternRecognition;
-        return this;
-    }
-
-    public UserLotto updateGenerateRandom(String generateRandom) {
-        this.generateRandom = generateRandom;
-        return this;
-    }
-
-    public UserLotto updateEnsembleLottoPrediction(String ensembleLottoPrediction) {
-        this.ensembleLottoPrediction = ensembleLottoPrediction;
-        return this;
-    }
-
-    public UserLotto updateMonteCarloSimulation(String monteCarloSimulation) {
-        this.monteCarloSimulation = monteCarloSimulation;
-        return this;
-    }
 }

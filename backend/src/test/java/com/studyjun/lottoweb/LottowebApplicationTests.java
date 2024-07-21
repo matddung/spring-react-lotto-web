@@ -7,7 +7,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 class LottowebApplicationTests {
 
 	@Test
-	void contextLoads() {
+	void contextLoads() throws Exception {
 	}
 
 }

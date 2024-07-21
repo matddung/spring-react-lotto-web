@@ -1,13 +1,6 @@
 import { API_BASE_URL } from '../constants';
 import { request } from './APIRequest';
 
-export function getStatistics() {
-    return request({
-        url: `${API_BASE_URL}/api/lotto/statistics`,
-        method: 'GET'
-    });
-}
-
 export function getStatisticsTop6(date) {
     return request({
         url: `${API_BASE_URL}/api/lotto/top6?date=${date}`,
