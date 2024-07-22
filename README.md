@@ -114,3 +114,5 @@ lottoweb
 - Google 소셜 로그인 진행 시 닉네임 설정 문제
 - Jenkins 느린 빌드 시간 문제
 - SSL 인증서 만료 시 자동 갱신 문제
+- Prometheus + grafana 모니터링
+- Jmeter를 통한 부하테스트
