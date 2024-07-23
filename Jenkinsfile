@@ -38,36 +38,22 @@ pipeline {
                 }
             }
         }
-        stage('Build and Push Images') {
-            parallel {
-                stage('Build Backend and Push') {
-                    steps {
-                        dir('backend') {
-                            script {
-                                sh 'chmod +x gradlew'
-                                sh './gradlew clean build -x test'
-                                sh 'docker build -t junhyuk1376/backend:latest .'
-                                withCredentials([usernamePassword(credentialsId: 'dockerhub-credentials', usernameVariable: 'DOCKER_USERNAME', passwordVariable: 'DOCKER_PASSWORD')]) {
-                                    sh "echo $DOCKER_PASSWORD | docker login -u $DOCKER_USERNAME --password-stdin"
-                                    sh "docker push junhyuk1376/backend:latest"
-                                }
-                            }
-                        }
+        stage('Build Backend') {
+            steps {
+                dir('backend') {
+                    script {
+                        sh 'chmod +x gradlew'
+                        sh './gradlew clean build -x test'
                     }
                 }
-                stage('Build Frontend and Push') {
-                    steps {
-                        dir('frontend') {
-                            script {
-                                sh 'npm install'
-                                sh 'npm run build'
-                                sh 'docker build -t junhyuk1376/frontend:latest .'
-                                withCredentials([usernamePassword(credentialsId: 'dockerhub-credentials', usernameVariable: 'DOCKER_USERNAME', passwordVariable: 'DOCKER_PASSWORD')]) {
-                                    sh "echo $DOCKER_PASSWORD | docker login -u $DOCKER_USERNAME --password-stdin"
-                                    sh "docker push junhyuk1376/frontend:latest"
-                                }
-                            }
-                        }
+            }
+        }
+        stage('Build Frontend') {
+            steps {
+                dir('frontend') {
+                    script {
+                        sh 'npm install'
+                        sh 'npm run build'
                     }
                 }
             }
@@ -81,6 +67,40 @@ pipeline {
                             sudo docker system prune -a -f
                         "
                     '''
+                }
+            }
+        }
+        stage('Build Backend Docker Image') {
+            steps {
+                script {
+                    sh 'docker build -t junhyuk1376/backend:latest backend'
+                }
+            }
+        }
+        stage('Build Frontend Docker Image') {
+            steps {
+                script {
+                    sh 'docker build -t junhyuk1376/frontend:latest frontend'
+                }
+            }
+        }
+        stage('Push Backend Docker Image') {
+            steps {
+                script {
+                    withCredentials([usernamePassword(credentialsId: 'dockerhub-credentials', usernameVariable: 'DOCKER_USERNAME', passwordVariable: 'DOCKER_PASSWORD')]) {
+                        sh "echo $DOCKER_PASSWORD | docker login -u $DOCKER_USERNAME --password-stdin"
+                        sh "docker push junhyuk1376/backend:latest"
+                    }
+                }
+            }
+        }
+        stage('Push Frontend Docker Image') {
+            steps {
+                script {
+                    withCredentials([usernamePassword(credentialsId: 'dockerhub-credentials', usernameVariable: 'DOCKER_USERNAME', passwordVariable: 'DOCKER_PASSWORD')]) {
+                        sh "echo $DOCKER_PASSWORD | docker login -u $DOCKER_USERNAME --password-stdin"
+                        sh "docker push junhyuk1376/frontend:latest"
+                    }
                 }
             }
         }
