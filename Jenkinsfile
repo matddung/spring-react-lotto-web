@@ -85,36 +85,34 @@ pipeline {
             }
         }
         stage('Deploy to AWS') {
-            parallel {
-                stage('Transfer Backend') {
-                    steps {
-                        sh 'rsync -avz -e "ssh -o StrictHostKeyChecking=no" backend ubuntu@ec2-3-39-227-55.ap-northeast-2.compute.amazonaws.com:/home/ubuntu/'
-                    }
-                }
-                stage('Transfer Frontend') {
-                    steps {
-                        sh 'rsync -avz -e "ssh -o StrictHostKeyChecking=no" frontend ubuntu@ec2-3-39-227-55.ap-northeast-2.compute.amazonaws.com:/home/ubuntu/'
-                    }
-                }
-                stage('Transfer Docker Compose') {
-                    steps {
-                        sh 'rsync -avz -e "ssh -o StrictHostKeyChecking=no" docker-compose.yml ubuntu@ec2-3-39-227-55.ap-northeast-2.compute.amazonaws.com:/home/ubuntu/'
-                    }
+            steps {
+                script {
+                    parallel(
+                        'Transfer Backend': {
+                            sh 'rsync -avz -e "ssh -o StrictHostKeyChecking=no" backend ubuntu@ec2-3-39-227-55.ap-northeast-2.compute.amazonaws.com:/home/ubuntu/'
+                        },
+                        'Transfer Frontend': {
+                            sh 'rsync -avz -e "ssh -o StrictHostKeyChecking=no" frontend ubuntu@ec2-3-39-227-55.ap-northeast-2.compute.amazonaws.com:/home/ubuntu/'
+                        },
+                        'Transfer Docker Compose': {
+                            sh 'rsync -avz -e "ssh -o StrictHostKeyChecking=no" docker-compose.yml ubuntu@ec2-3-39-227-55.ap-northeast-2.compute.amazonaws.com:/home/ubuntu/'
+                        }
+                    )
                 }
             }
-            stage('Run Docker Compose') {
-                steps {
-                    sshagent(['my-ssh-key']) {
-                        sh '''
-                            ssh -o StrictHostKeyChecking=no ubuntu@ec2-3-39-227-55.ap-northeast-2.compute.amazonaws.com "
-                                sudo chown -R ubuntu:ubuntu /home/ubuntu/backend /home/ubuntu/frontend /home/ubuntu/docker-compose.yml &&
-                                cd /home/ubuntu &&
-                                ls -al /home/ubuntu &&
-                                ls -al /home/ubuntu/backend &&
-                                sudo docker-compose up -d --build
-                            "
-                        '''
-                    }
+        }
+        stage('Run Docker Compose') {
+            steps {
+                sshagent(['my-ssh-key']) {
+                    sh '''
+                        ssh -o StrictHostKeyChecking=no ubuntu@ec2-3-39-227-55.ap-northeast-2.compute.amazonaws.com "
+                            sudo chown -R ubuntu:ubuntu /home/ubuntu/backend /home/ubuntu/frontend /home/ubuntu/docker-compose.yml &&
+                            cd /home/ubuntu &&
+                            ls -al /home/ubuntu &&
+                            ls -al /home/ubuntu/backend &&
+                            sudo docker-compose up -d --build
+                        "
+                    '''
                 }
             }
         }
