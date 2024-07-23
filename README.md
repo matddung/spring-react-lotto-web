@@ -111,8 +111,8 @@ lottoweb
 ---
 
 - Jenkinsfile 빌드 과정 중 'docker-compose down', 'docker system prune -a -f'에 따른 DB 메모리 초기화 문제
-- Google 소셜 로그인 진행 시 닉네임 설정 문제
+- [~~Google 소셜 로그인 진행 시 닉네임 설정 문제~~](https://velog.io/@studyjun/Google-%EC%86%8C%EC%85%9C-%EB%A1%9C%EA%B7%B8%EC%9D%B8-%EC%A7%84%ED%96%89-%EC%8B%9C-%EB%8B%89%EB%84%A4%EC%9E%84-%EC%84%A4%EC%A0%95-%EB%AC%B8%EC%A0%9C)
 - Jenkins 느린 빌드 시간 문제
 - SSL 인증서 만료 시 자동 갱신 문제
-- Prometheus + grafana 모니터링
+- Prometheus + grafana 모니터링 및 시각화
 - Jmeter를 통한 부하테스트

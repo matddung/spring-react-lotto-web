@@ -8,6 +8,7 @@ import com.studyjun.lottoweb.security.OAuth2UserInfoFactory;
 import com.studyjun.lottoweb.security.UserPrincipal;
 import com.studyjun.lottoweb.util.DefaultAssert;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
 import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
@@ -17,6 +18,7 @@ import org.springframework.stereotype.Service;
 import java.security.SecureRandom;
 import java.util.Optional;
 
+@Slf4j
 @RequiredArgsConstructor
 @Service
 public class CustomDefaultOAuth2UserService extends DefaultOAuth2UserService {
@@ -52,6 +54,20 @@ public class CustomDefaultOAuth2UserService extends DefaultOAuth2UserService {
     }
 
     private User registerNewUser(OAuth2UserRequest oAuth2UserRequest, OAuth2UserInfo oAuth2UserInfo) {
+        SecureRandom random = new SecureRandom();
+        StringBuilder sb = new StringBuilder(8);
+
+        String nickname;
+
+        do {
+            sb.setLength(0);
+            for (int i = 0; i < 8; i++) {
+                int index = random.nextInt(CHARACTERS.length());
+                sb.append(CHARACTERS.charAt(index));
+            }
+            nickname = sb.toString();
+        } while (userRepository.existsByNickname(nickname));
+
         User user = User.builder()
                 .provider(Provider.valueOf(oAuth2UserRequest.getClientRegistration().getRegistrationId()))
                 .providerId(oAuth2UserInfo.getId())
@@ -59,20 +75,6 @@ public class CustomDefaultOAuth2UserService extends DefaultOAuth2UserService {
                 .email(oAuth2UserInfo.getEmail())
                 .role("USER")
                 .build();
-
-        if (user.getProvider().equals("google")) {
-            SecureRandom random = new SecureRandom();
-            StringBuilder sb = new StringBuilder(12);
-
-            for (int i = 0; i < 12; i++) {
-                int index = random.nextInt(CHARACTERS.length());
-                sb.append(CHARACTERS.charAt(index));
-            }
-
-            user = User.builder()
-                    .nickname(sb.toString())
-                    .build();
-        }
 
         return userRepository.save(user);
     }
