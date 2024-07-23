@@ -87,17 +87,19 @@ pipeline {
         stage('Deploy to AWS') {
             steps {
                 script {
-                    parallel(
-                        'Transfer Backend': {
-                            sh 'rsync -avz -e "ssh -o StrictHostKeyChecking=no" backend ubuntu@ec2-3-39-227-55.ap-northeast-2.compute.amazonaws.com:/home/ubuntu/'
-                        },
-                        'Transfer Frontend': {
-                            sh 'rsync -avz -e "ssh -o StrictHostKeyChecking=no" frontend ubuntu@ec2-3-39-227-55.ap-northeast-2.compute.amazonaws.com:/home/ubuntu/'
-                        },
-                        'Transfer Docker Compose': {
-                            sh 'rsync -avz -e "ssh -o StrictHostKeyChecking=no" docker-compose.yml ubuntu@ec2-3-39-227-55.ap-northeast-2.compute.amazonaws.com:/home/ubuntu/'
-                        }
-                    )
+                    sshagent(['my-ssh-key']) {
+                        parallel(
+                            'Transfer Backend': {
+                                sh 'rsync -avz -e "ssh -o StrictHostKeyChecking=no" backend ubuntu@ec2-3-39-227-55.ap-northeast-2.compute.amazonaws.com:/home/ubuntu/'
+                            },
+                            'Transfer Frontend': {
+                                sh 'rsync -avz -e "ssh -o StrictHostKeyChecking=no" frontend ubuntu@ec2-3-39-227-55.ap-northeast-2.compute.amazonaws.com:/home/ubuntu/'
+                            },
+                            'Transfer Docker Compose': {
+                                sh 'rsync -avz -e "ssh -o StrictHostKeyChecking=no" docker-compose.yml ubuntu@ec2-3-39-227-55.ap-northeast-2.compute.amazonaws.com:/home/ubuntu/'
+                            }
+                        )
+                    }
                 }
             }
         }
