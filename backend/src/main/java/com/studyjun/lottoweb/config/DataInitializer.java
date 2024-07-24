@@ -23,31 +23,33 @@ public class DataInitializer implements ApplicationRunner {
 
     @Override
     public void run(ApplicationArguments args) {
-        userRepository.save(User.builder()
-                .email("admin@admin.a")
-                .password(encoder.encode("admin"))
-                .nickname("관리자")
-                .role("ADMIN")
-                .provider(Provider.local)
-                .providerId("local.admin")
-                .build());
+        if (!userRepository.existsById(1L)) {
+            userRepository.save(User.builder()
+                    .email("admin@admin.a")
+                    .password(encoder.encode("admin"))
+                    .nickname("관리자")
+                    .role("ADMIN")
+                    .provider(Provider.local)
+                    .providerId("local.admin")
+                    .build());
 
 
-        userRepository.save(User.builder()
-                .email("string@aa.bb")
-                .nickname("string")
-                .password(encoder.encode("string"))
-                .provider(Provider.local)
-                .role("USER")
-                .build());
+            userRepository.save(User.builder()
+                    .email("string@aa.bb")
+                    .nickname("string")
+                    .password(encoder.encode("string"))
+                    .provider(Provider.local)
+                    .role("USER")
+                    .build());
 
-        userRepository.save(User.builder()
-                .email("string1@aa.bb")
-                .nickname("string1")
-                .password(encoder.encode("string"))
-                .provider(Provider.local)
-                .role("USER")
-                .build());
+            userRepository.save(User.builder()
+                    .email("string1@aa.bb")
+                    .nickname("string1")
+                    .password(encoder.encode("string"))
+                    .provider(Provider.local)
+                    .role("USER")
+                    .build());
+        }
 
 //        tempQuestion();
 //
