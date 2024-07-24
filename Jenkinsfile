@@ -63,8 +63,8 @@ pipeline {
                 sshagent(['my-ssh-key']) {
                     sh '''
                         ssh -o StrictHostKeyChecking=no ubuntu@ec2-3-39-227-55.ap-northeast-2.compute.amazonaws.com "
-                            sudo docker-compose down -v
-                            sudo docker system prune -a -f
+                            sudo docker-compose down &&
+                            sudo docker system prune -f
                         "
                     '''
                 }
@@ -108,17 +108,7 @@ pipeline {
             steps {
                 script {
                     sshagent(['my-ssh-key']) {
-                        parallel(
-                            'Transfer Backend': {
-                                sh 'rsync -avz -e "ssh -o StrictHostKeyChecking=no" backend ubuntu@ec2-3-39-227-55.ap-northeast-2.compute.amazonaws.com:/home/ubuntu/'
-                            },
-                            'Transfer Frontend': {
-                                sh 'rsync -avz -e "ssh -o StrictHostKeyChecking=no" frontend ubuntu@ec2-3-39-227-55.ap-northeast-2.compute.amazonaws.com:/home/ubuntu/'
-                            },
-                            'Transfer Docker Compose': {
-                                sh 'rsync -avz -e "ssh -o StrictHostKeyChecking=no" docker-compose.yml ubuntu@ec2-3-39-227-55.ap-northeast-2.compute.amazonaws.com:/home/ubuntu/'
-                            }
-                        )
+                        sh 'rsync -avz -e "ssh -o StrictHostKeyChecking=no" docker-compose.yml ubuntu@ec2-3-39-227-55.ap-northeast-2.compute.amazonaws.com:/home/ubuntu/'
                     }
                 }
             }
@@ -128,10 +118,7 @@ pipeline {
                 sshagent(['my-ssh-key']) {
                     sh '''
                         ssh -o StrictHostKeyChecking=no ubuntu@ec2-3-39-227-55.ap-northeast-2.compute.amazonaws.com "
-                            sudo chown -R ubuntu:ubuntu /home/ubuntu/backend /home/ubuntu/frontend /home/ubuntu/docker-compose.yml &&
                             cd /home/ubuntu &&
-                            ls -al /home/ubuntu &&
-                            ls -al /home/ubuntu/backend &&
                             sudo docker-compose up -d --build
                         "
                     '''
