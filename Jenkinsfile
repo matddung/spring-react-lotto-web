@@ -20,6 +20,44 @@ pipeline {
                                 userRemoteConfigs: [[url: 'https://github.com/matddung/spring-react-lotto-web']])
             }
         }
+        stage('Prepare Backend Configuration') {
+            steps {
+                script {
+                    sh 'cp backend/src/main/resources/application.default backend/src/main/resources/application.yml'
+                    sh '''
+                        sed -i 's|SPRING_MAIL_USERNAME_PLACEHOLDER|'${SPRING_MAIL_USERNAME}'|' backend/src/main/resources/application.yml
+                        sed -i 's|SPRING_MAIL_PASSWORD_PLACEHOLDER|'${SPRING_MAIL_PASSWORD}'|' backend/src/main/resources/application.yml
+                        sed -i 's|GOOGLE_CLIENT_ID_PLACEHOLDER|'${GOOGLE_CLIENT_ID}'|' backend/src/main/resources/application.yml
+                        sed -i 's|GOOGLE_CLIENT_SECRET_PLACEHOLDER|'${GOOGLE_CLIENT_SECRET}'|' backend/src/main/resources/application.yml
+                        sed -i 's|NAVER_CLIENT_ID_PLACEHOLDER|'${NAVER_CLIENT_ID}'|' backend/src/main/resources/application.yml
+                        sed -i 's|NAVER_CLIENT_SECRET_PLACEHOLDER|'${NAVER_CLIENT_SECRET}'|' backend/src/main/resources/application.yml
+                        sed -i 's|KAKAO_CLIENT_ID_PLACEHOLDER|'${KAKAO_CLIENT_ID}'|' backend/src/main/resources/application.yml
+                        sed -i 's|KAKAO_CLIENT_SECRET_PLACEHOLDER|'${KAKAO_CLIENT_SECRET}'|' backend/src/main/resources/application.yml
+                        sed -i 's|JWT_SECRET_KEY_PLACEHOLDER|'${JWT_SECRET_KEY}'|' backend/src/main/resources/application.yml
+                    '''
+                }
+            }
+        }
+        stage('Build Backend') {
+            steps {
+                dir('backend') {
+                    script {
+                        sh 'chmod +x gradlew'
+                        sh './gradlew clean build -x test'
+                    }
+                }
+            }
+        }
+        stage('Build Frontend') {
+            steps {
+                dir('frontend') {
+                    script {
+                        sh 'npm install'
+                        sh 'npm run build'
+                    }
+                }
+            }
+        }
         stage('Build Backend Docker Image') {
             steps {
                 dir('backend') {
@@ -40,12 +78,31 @@ pipeline {
                 }
             }
         }
+        stage('Build Frontend Docker Image') {
+            steps {
+                dir('frontend') {
+                    script {
+                        sh 'docker build -t junhyuk1376/frontend:latest .'
+                    }
+                }
+            }
+        }
         stage('Push Backend Docker Image') {
             steps {
                 script {
                     withCredentials([usernamePassword(credentialsId: 'dockerhub-credentials', usernameVariable: 'DOCKER_USERNAME', passwordVariable: 'DOCKER_PASSWORD')]) {
                         sh "echo $DOCKER_PASSWORD | docker login -u $DOCKER_USERNAME --password-stdin"
                         sh "docker push junhyuk1376/backend:latest"
+                    }
+                }
+            }
+        }
+        stage('Push Frontend Docker Image') {
+            steps {
+                script {
+                    withCredentials([usernamePassword(credentialsId: 'dockerhub-credentials', usernameVariable: 'DOCKER_USERNAME', passwordVariable: 'DOCKER_PASSWORD')]) {
+                        sh "echo $DOCKER_PASSWORD | docker login -u $DOCKER_USERNAME --password-stdin"
+                        sh "docker push junhyuk1376/frontend:latest"
                     }
                 }
             }
