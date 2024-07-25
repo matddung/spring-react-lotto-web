@@ -58,6 +58,18 @@ pipeline {
                 }
             }
         }
+        stage('Clean Up Docker Containers and Volumes') {
+            steps {
+                sshagent(['my-ssh-key']) {
+                    sh '''
+                        ssh -o StrictHostKeyChecking=no ubuntu@ec2-3-39-253-54.ap-northeast-2.compute.amazonaws.com "
+                            sudo docker-compose down &&
+                            sudo docker system prune -a
+                        "
+                    '''
+                }
+            }
+        }
         stage('Build Backend Docker Image') {
             steps {
                 dir('backend') {
@@ -84,18 +96,6 @@ pipeline {
                     script {
                         sh 'docker build -t junhyuk1376/frontend:latest .'
                     }
-                }
-            }
-        }
-        stage('Clean Up Docker Containers and Volumes') {
-            steps {
-                sshagent(['my-ssh-key']) {
-                    sh '''
-                        ssh -o StrictHostKeyChecking=no ubuntu@ec2-3-39-253-54.ap-northeast-2.compute.amazonaws.com "
-                            sudo docker-compose down &&
-                            sudo docker system prune -a
-                        "
-                    '''
                 }
             }
         }
