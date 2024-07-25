@@ -62,7 +62,7 @@ pipeline {
             steps {
                 sshagent(['my-ssh-key']) {
                     sh '''
-                        ssh -o StrictHostKeyChecking=no ubuntu@ec2-3-39-227-55.ap-northeast-2.compute.amazonaws.com "
+                        ssh -o StrictHostKeyChecking=no ubuntu@ec2-3-39-253-54.ap-northeast-2.compute.amazonaws.com "
                             sudo docker-compose down &&
                             sudo docker system prune -f
                         "
@@ -108,7 +108,7 @@ pipeline {
             steps {
                 script {
                     sshagent(['my-ssh-key']) {
-                        sh 'rsync -avz -e "ssh -o StrictHostKeyChecking=no" docker-compose.yml ubuntu@ec2-3-39-227-55.ap-northeast-2.compute.amazonaws.com:/home/ubuntu/'
+                        sh 'rsync -avz -e "ssh -o StrictHostKeyChecking=no" docker-compose.yml ubuntu@ec2-3-39-253-54.ap-northeast-2.compute.amazonaws.com:/home/ubuntu/'
                     }
                 }
             }
@@ -117,7 +117,7 @@ pipeline {
             steps {
                 sshagent(['my-ssh-key']) {
                     sh '''
-                        ssh -o StrictHostKeyChecking=no ubuntu@ec2-3-39-227-55.ap-northeast-2.compute.amazonaws.com "
+                        ssh -o StrictHostKeyChecking=no ubuntu@ec2-3-39-253-54.ap-northeast-2.compute.amazonaws.com "
                             cd /home/ubuntu &&
                             sudo docker-compose up -d --build
                         "
