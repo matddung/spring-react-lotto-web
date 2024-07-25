@@ -134,17 +134,25 @@ pipeline {
                     sh '''
                         ssh -o StrictHostKeyChecking=no ubuntu@ec2-3-39-253-54.ap-northeast-2.compute.amazonaws.com "
                             cd /home/ubuntu &&
-                            echo SPRING_MAIL_USERNAME=${SPRING_MAIL_USERNAME} &&
-                            echo SPRING_MAIL_PASSWORD=${SPRING_MAIL_PASSWORD} &&
-                            echo GOOGLE_CLIENT_ID=${GOOGLE_CLIENT_ID} &&
-                            echo GOOGLE_CLIENT_SECRET=${GOOGLE_CLIENT_SECRET} &&
-                            echo NAVER_CLIENT_ID=${NAVER_CLIENT_ID} &&
-                            echo NAVER_CLIENT_SECRET=${NAVER_CLIENT_SECRET} &&
-                            echo KAKAO_CLIENT_ID=${KAKAO_CLIENT_ID} &&
-                            echo KAKAO_CLIENT_SECRET=${KAKAO_CLIENT_SECRET} &&
-                            echo JWT_SECRET_KEY=${JWT_SECRET_KEY} &&
-                            sudo docker-compose pull &&
-                            sudo docker-compose up -d --build
+                            export SPRING_MAIL_USERNAME=${SPRING_MAIL_USERNAME} &&
+                            export SPRING_MAIL_PASSWORD=${SPRING_MAIL_PASSWORD} &&
+                            export GOOGLE_CLIENT_ID=${GOOGLE_CLIENT_ID} &&
+                            export GOOGLE_CLIENT_SECRET=${GOOGLE_CLIENT_SECRET} &&
+                            export NAVER_CLIENT_ID=${NAVER_CLIENT_ID} &&
+                            export NAVER_CLIENT_SECRET=${NAVER_CLIENT_SECRET} &&
+                            export KAKAO_CLIENT_ID=${KAKAO_CLIENT_ID} &&
+                            export KAKAO_CLIENT_SECRET=${KAKAO_CLIENT_SECRET} &&
+                            export JWT_SECRET_KEY=${JWT_SECRET_KEY} &&
+                            sudo SPRING_MAIL_USERNAME=${SPRING_MAIL_USERNAME} \
+                                SPRING_MAIL_PASSWORD=${SPRING_MAIL_PASSWORD} \
+                                GOOGLE_CLIENT_ID=${GOOGLE_CLIENT_ID} \
+                                GOOGLE_CLIENT_SECRET=${GOOGLE_CLIENT_SECRET} \
+                                NAVER_CLIENT_ID=${NAVER_CLIENT_ID} \
+                                NAVER_CLIENT_SECRET=${NAVER_CLIENT_SECRET} \
+                                KAKAO_CLIENT_ID=${KAKAO_CLIENT_ID} \
+                                KAKAO_CLIENT_SECRET=${KAKAO_CLIENT_SECRET} \
+                                JWT_SECRET_KEY=${JWT_SECRET_KEY} \
+                                docker-compose up -d --build
                         "
                     '''
                 }
