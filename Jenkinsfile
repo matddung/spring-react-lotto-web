@@ -63,7 +63,7 @@ pipeline {
                 sshagent(['my-ssh-key']) {
                     sh '''
                         ssh -o StrictHostKeyChecking=no ubuntu@ec2-3-39-253-54.ap-northeast-2.compute.amazonaws.com "
-                            sudo docker-compose down -v
+                            sudo docker-compose down &&
                             sudo docker system prune -a -f
                         "
                     '''

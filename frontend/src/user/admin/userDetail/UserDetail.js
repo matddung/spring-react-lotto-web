@@ -21,7 +21,9 @@ const UserDetail = ({ selectedUser, selectedUserQuestions, currentPageUserQuesti
         handleLastPage: handleLastPageUserQuestions
     } = Pagination(selectedUserQuestions.length, itemsPerPage, currentPageUserQuestions, setCurrentPageUserQuestions);
 
-    const currentUserQuestions = selectedUserQuestions.slice(startIndexUserQuestions, endIndexUserQuestions);
+    const currentUserQuestions = Array.isArray(selectedUserQuestions) 
+        ? selectedUserQuestions.slice(startIndexUserQuestions, endIndexUserQuestions) 
+        : [];
 
     return (
         <div className="modal-overlay">

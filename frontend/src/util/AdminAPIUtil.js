@@ -10,7 +10,7 @@ export function getAllUsers(page) {
 
 export function getUserHistory(id, page) {
     return request({
-        url: `${API_BASE_URL}/api/admin/user-detail?id=${id}&?page=${page}`,
+        url: `${API_BASE_URL}/api/admin/user-detail?id=${id}&page=${page}`,
         method: 'GET'
     });
 }
