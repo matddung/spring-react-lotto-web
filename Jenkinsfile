@@ -122,6 +122,7 @@ pipeline {
                     sh '''
                         ssh -o StrictHostKeyChecking=no ubuntu@ec2-3-39-253-54.ap-northeast-2.compute.amazonaws.com "
                             cd /home/ubuntu &&
+                            sudo docker-compose pull &&
                             sudo docker-compose up -d --build
                         "
                     '''
