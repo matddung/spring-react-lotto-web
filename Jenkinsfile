@@ -58,6 +58,18 @@ pipeline {
                 }
             }
         }
+        stage('Clean Up Docker Containers and Volumes') {
+            steps {
+                sshagent(['my-ssh-key']) {
+                    sh '''
+                        ssh -o StrictHostKeyChecking=no ubuntu@ec2-3-39-253-54.ap-northeast-2.compute.amazonaws.com "
+                            sudo docker-compose down -v
+                            sudo docker system prune -a -f
+                        "
+                    '''
+                }
+            }
+        }
         stage('Build Backend Docker Image') {
             steps {
                 dir('backend') {
@@ -122,6 +134,15 @@ pipeline {
                     sh '''
                         ssh -o StrictHostKeyChecking=no ubuntu@ec2-3-39-253-54.ap-northeast-2.compute.amazonaws.com "
                             cd /home/ubuntu &&
+                            export SPRING_MAIL_USERNAME=${SPRING_MAIL_USERNAME} &&
+                            export SPRING_MAIL_PASSWORD=${SPRING_MAIL_PASSWORD} &&
+                            export GOOGLE_CLIENT_ID=${GOOGLE_CLIENT_ID} &&
+                            export GOOGLE_CLIENT_SECRET=${GOOGLE_CLIENT_SECRET} &&
+                            export NAVER_CLIENT_ID=${NAVER_CLIENT_ID} &&
+                            export NAVER_CLIENT_SECRET=${NAVER_CLIENT_SECRET} &&
+                            export KAKAO_CLIENT_ID=${KAKAO_CLIENT_ID} &&
+                            export KAKAO_CLIENT_SECRET=${KAKAO_CLIENT_SECRET} &&
+                            export JWT_SECRET_KEY=${JWT_SECRET_KEY} &&
                             sudo docker-compose pull &&
                             sudo docker-compose up -d --build
                         "
