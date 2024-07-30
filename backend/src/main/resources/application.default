@@ -4,6 +4,20 @@ logging:
       springframework:
         security: DEBUG
 
+management:
+  endpoints:
+    web:
+      base-path: /actuator
+      exposure:
+        include: '*'
+    metrics:
+      enabled: true
+    prometheus:
+      enabled: true
+      web:
+        exposure:
+          include: '*'
+
 spring:
   port: 8080
   mail:
@@ -34,6 +48,9 @@ spring:
       mode: always
       schema-locations: classpath:schema.sql
   security:
+    user:
+      name: prometheus_user
+      password: prometheus_password
     oauth2:
       client:
         registration:

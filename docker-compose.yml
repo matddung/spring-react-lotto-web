@@ -66,6 +66,13 @@ services:
     ports:
       - "9100:9100"
 
+  mariadb-exporter:
+    image: prom/mysqld-exporter:latest
+    environment:
+      DATA_SOURCE_NAME: 'lotto:1234@(mariadb:3306)/lotto'
+    ports:
+      - "9104:9104"
+
 volumes:
   db_data:
   grafana-storage:
