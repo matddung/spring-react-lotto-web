@@ -68,10 +68,9 @@ services:
 
   mariadb-exporter:
     image: prom/mysqld-exporter:latest
+    container_name: mariadb-exporter
     environment:
       DATA_SOURCE_NAME: 'lotto:1234@(mariadb:3306)/lotto'
-    volumes:
-      - ./my.cnf:/root/.my.cnf
     ports:
       - "9104:9104"
 
