@@ -11,8 +11,8 @@ scrape_configs:
     static_configs:
       - targets: ['backend:8080']
     basic_auth:
-      username: 'prometheus_user'
-      password: 'prometheus_password'
+      username: 'admin@admin.a'
+      password: 'admin'
 
   - job_name: 'frontend'
     static_configs:

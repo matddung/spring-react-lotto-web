@@ -49,8 +49,8 @@ spring:
       schema-locations: classpath:schema.sql
   security:
     user:
-      name: prometheus_user
-      password: prometheus_password
+      name: admin@admin.a
+      password: admin
     oauth2:
       client:
         registration:
