@@ -159,5 +159,17 @@ pipeline {
                 }
             }
         }
+        stage('Restore Grafana Configuration') {
+            steps {
+                sshagent(['my-ssh-key']) {
+                    sh '''
+                        scp -o StrictHostKeyChecking=no /path/to/backup/grafana-dashboard.json ubuntu@ec2-3-39-253-54.ap-northeast-2.compute.amazonaws.com:/home/ubuntu/
+                        ssh -o StrictHostKeyChecking=no ubuntu@ec2-3-39-253-54.ap-northeast-2.compute.amazonaws.com "
+                            curl -X POST -H 'Content-Type: application/json' -d @/home/ubuntu/grafana-dashboard.json http://admin:admin@localhost:3001/api/dashboards/db
+                        "
+                    '''
+                }
+            }
+        }
     }
 }
