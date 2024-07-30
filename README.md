@@ -11,6 +11,11 @@
 ### 서비스 링크
 [LottoWeb으로 이동](https://sbsmily.shop/)
 
+- Test User ID : string@aa.bb
+- Test User PW : string
+- Test Admin ID : admin@admin.a
+- Test Admin PW : admin
+
 ### 주요 기능
 
 - Weka Library를 사용하여 과거 당첨 번호를 분석하고, 다양한 머신러닝 알고리즘을 통해 5개의 예측 번호를 도출합니다.
@@ -116,3 +121,4 @@ lottoweb
 - [~~SSL 인증서 만료 시 자동 갱신 문제~~](https://velog.io/@studyjun/SSL-%EC%9D%B8%EC%A6%9D%EC%84%9C-%EB%A7%8C%EB%A3%8C-%EC%8B%9C-%EC%9E%90%EB%8F%99-%EA%B0%B1%EC%8B%A0-%EB%AC%B8%EC%A0%9C)
 - Prometheus + grafana 모니터링 및 시각화
 - Jmeter를 통한 부하테스트
+- 결제를 통한 포인트 획득 및 로또 번호 확인 시 사용
