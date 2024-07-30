@@ -74,6 +74,8 @@ services:
       MYSQL_USER: "lotto"
       MYSQL_PASSWORD: "1234"
       MYSQL_ROOT_PASSWORD: "0000"
+    volumes:
+      - ./my.cnf:/root/.my.cnf
     ports:
       - "9104:9104"
 
