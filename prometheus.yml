@@ -26,6 +26,6 @@ scrape_configs:
     static_configs:
       - targets: [ 'node-exporter:9100' ]
 
-  - job_name: 'mariadb'
+  - job_name: 'mariadb-exporter'
     static_configs:
       - targets: [ 'mariadb-exporter:9104' ]
