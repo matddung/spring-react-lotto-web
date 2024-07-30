@@ -38,6 +38,16 @@ pipeline {
                 }
             }
         }
+        stage('Deploy to AWS') {
+            steps {
+                script {
+                    sshagent(['my-ssh-key']) {
+                        sh 'rsync -avz -e "ssh -o StrictHostKeyChecking=no" docker-compose.yml ubuntu@ec2-3-39-253-54.ap-northeast-2.compute.amazonaws.com:/home/ubuntu/'
+                        sh 'rsync -avz -e "ssh -o StrictHostKeyChecking=no" prometheus.yml ubuntu@ec2-3-39-253-54.ap-northeast-2.compute.amazonaws.com:/home/ubuntu/'
+                    }
+                }
+            }
+        }
         stage('Build Backend') {
             steps {
                 dir('backend') {
@@ -115,16 +125,6 @@ pipeline {
                     withCredentials([usernamePassword(credentialsId: 'dockerhub-credentials', usernameVariable: 'DOCKER_USERNAME', passwordVariable: 'DOCKER_PASSWORD')]) {
                         sh "echo $DOCKER_PASSWORD | docker login -u $DOCKER_USERNAME --password-stdin"
                         sh "docker push junhyuk1376/frontend:latest"
-                    }
-                }
-            }
-        }
-        stage('Deploy to AWS') {
-            steps {
-                script {
-                    sshagent(['my-ssh-key']) {
-                        sh 'rsync -avz -e "ssh -o StrictHostKeyChecking=no" docker-compose.yml ubuntu@ec2-3-39-253-54.ap-northeast-2.compute.amazonaws.com:/home/ubuntu/'
-                        sh 'rsync -avz -e "ssh -o StrictHostKeyChecking=no" prometheus.yml ubuntu@ec2-3-39-253-54.ap-northeast-2.compute.amazonaws.com:/home/ubuntu/'
                     }
                 }
             }
