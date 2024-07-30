@@ -70,6 +70,7 @@ services:
     image: prom/mysqld-exporter:latest
     environment:
       DATA_SOURCE_NAME: 'lotto:1234@(mariadb:3306)/lotto'
+      MYSQL_ROOT_PASSWORD: "0000"
     ports:
       - "9104:9104"
 
