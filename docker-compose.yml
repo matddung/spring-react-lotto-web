@@ -32,8 +32,6 @@ services:
       KAKAO_CLIENT_ID: ${KAKAO_CLIENT_ID}
       KAKAO_CLIENT_SECRET: ${KAKAO_CLIENT_SECRET}
       JWT_SECRET_KEY: ${JWT_SECRET_KEY}
-      SPRING_SECURITY_USER_NAME: admin@admin.a
-      SPRING_SECURITY_USER_PASSWORD: admin
 
   frontend:
     image: junhyuk1376/frontend:latest
