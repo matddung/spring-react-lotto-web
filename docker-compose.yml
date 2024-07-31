@@ -72,12 +72,17 @@ services:
     command:
       - "--mysqld.username=lotto:1234"
       - "--mysqld.address=mariadb:3306"
-    environment:
-      DATA_SOURCE_NAME: 'lotto:1234@(mariadb:3306)/lotto'
     volumes:
       - ./my.cnf:/home/ubuntu/my.cnf
     ports:
       - "9104:9104"
+
+  alertmanager:
+    image: prom/alertmanager:latest
+    volumes:
+      - ./alertmanager.yml:/etc/alertmanager/alertmanager.yml
+    ports:
+      - "9093:9093"
 
 volumes:
   db_data:
