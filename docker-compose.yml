@@ -72,7 +72,7 @@ services:
     environment:
       DATA_SOURCE_NAME: 'lotto:1234@(mariadb:3306)/lotto'
     volumes:
-      - ./my.cnf:/root/my.cnf
+      - ./my.cnf:/home/ubuntu/my.cnf
     ports:
       - "9104:9104"
 
