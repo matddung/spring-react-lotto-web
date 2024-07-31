@@ -69,6 +69,9 @@ services:
   mariadb-exporter:
     image: prom/mysqld-exporter:latest
     container_name: mariadb-exporter
+    command:
+      - "--mysqld.username=lotto:1234"
+      - "--mysqld.address=mariadb:3306"
     environment:
       DATA_SOURCE_NAME: 'lotto:1234@(mariadb:3306)/lotto'
     volumes:
