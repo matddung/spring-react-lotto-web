@@ -3,6 +3,7 @@ version: '3'
 services:
   mariadb:
     image: mariadb:latest
+    container_name: mariadb
     environment:
       MYSQL_ROOT_PASSWORD: 0000
       MYSQL_DATABASE: lotto
@@ -15,6 +16,7 @@ services:
 
   backend:
     image: junhyuk1376/backend:latest
+    container_name: backend
     ports:
       - "8080:8080"
     depends_on:
@@ -35,6 +37,7 @@ services:
 
   frontend:
     image: junhyuk1376/frontend:latest
+    container_name: frontend
     ports:
       - "3000:3000"
     depends_on:
@@ -79,6 +82,7 @@ services:
 
   alertmanager:
     image: prom/alertmanager:latest
+    container_name: alertmanager
     volumes:
       - ./alertmanager.yml:/etc/alertmanager/alertmanager.yml
     ports:
