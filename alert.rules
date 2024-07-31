@@ -1,0 +1,56 @@
+groups:
+  - name: 시스템_경고
+    rules:
+    - alert: CPU_사용률_높음
+      expr: 100 - (avg by(instance) (rate(node_cpu_seconds_total{mode="idle"}[5m])) * 100) > 80
+      for: 5m
+      labels:
+        severity: 경고
+      annotations:
+        summary: "{{ $labels.instance }}의 CPU 사용률 높음"
+        description: "{{ $labels.instance }}의 CPU 사용률이 5분 동안 80%를 초과했습니다."
+
+    - alert: 메모리_사용률_높음
+      expr: (node_memory_MemAvailable_bytes / node_memory_MemTotal_bytes * 100) < 20
+      for: 5m
+      labels:
+        severity: 경고
+      annotations:
+        summary: "{{ $labels.instance }}의 메모리 사용률 높음"
+        description: "{{ $labels.instance }}의 메모리 사용률이 5분 동안 80%를 초과했습니다."
+
+    - alert: 애플리케이션_다운
+      expr: up{job="your_application"} == 0
+      for: 1m
+      labels:
+        severity: 심각
+      annotations:
+        summary: "애플리케이션 다운"
+        description: "애플리케이션이 1분 이상 다운되었습니다."
+
+    - alert: 데이터베이스_연결_실패
+      expr: up{job="mariadb-exporter"} == 0
+      for: 1m
+      labels:
+        severity: 심각
+      annotations:
+        summary: "데이터베이스 연결 실패"
+        description: "데이터베이스 연결이 1분 이상 실패했습니다."
+
+    - alert: 데이터베이스_쿼리_응답_시간_높음
+      expr: rate(mysql_global_status_seconds_total[5m]) > 1
+      for: 5m
+      labels:
+        severity: 경고
+      annotations:
+        summary: "데이터베이스 쿼리 응답 시간 높음"
+        description: "데이터베이스 쿼리 응답 시간이 5분 이상 높습니다."
+
+    - alert: 네트워크_트래픽_높음
+      expr: rate(node_network_receive_bytes_total[5m]) > 1e9
+      for: 5m
+      labels:
+        severity: 경고
+      annotations:
+        summary: "네트워크 트래픽 높음"
+        description: "네트워크 트래픽이 5분 동안 1GB/s를 초과했습니다."

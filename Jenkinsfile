@@ -44,6 +44,8 @@ pipeline {
                     sshagent(['my-ssh-key']) {
                         sh 'rsync -avz -e "ssh -o StrictHostKeyChecking=no" docker-compose.yml ubuntu@ec2-3-39-253-54.ap-northeast-2.compute.amazonaws.com:/home/ubuntu/'
                         sh 'rsync -avz -e "ssh -o StrictHostKeyChecking=no" prometheus.yml ubuntu@ec2-3-39-253-54.ap-northeast-2.compute.amazonaws.com:/home/ubuntu/'
+                        sh 'rsync -avz -e "ssh -o StrictHostKeyChecking=no" alertmanager.yml ubuntu@ec2-3-39-253-54.ap-northeast-2.compute.amazonaws.com:/home/ubuntu/'
+                        sh 'rsync -avz -e "ssh -o StrictHostKeyChecking=no" alert.rules ubuntu@ec2-3-39-253-54.ap-northeast-2.compute.amazonaws.com:/home/ubuntu/'
                     }
                 }
             }
