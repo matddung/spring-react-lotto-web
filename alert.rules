@@ -1,4 +1,15 @@
 groups:
+  - name: 테스트_경고
+    rules:
+    - alert: 테스트_알림
+      expr: vector(1)
+      for: 1m
+      labels:
+        severity: 테스트
+      annotations:
+        summary: "테스트 알림"
+        description: "이것은 테스트 알림입니다."
+
   - name: 시스템_경고
     rules:
     - alert: CPU_사용률_높음
