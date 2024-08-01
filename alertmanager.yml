@@ -13,7 +13,8 @@ receivers:
         auth_username: ${SPRING_MAIL_USERNAME}
         auth_password: ${SPRING_MAIL_PASSWORD}
         auth_identity: ${SPRING_MAIL_USERNAME}
-        require_tls: true
+        tls_config:
+          insecure_skip_verify: true
 
 inhibit_rules:
   - source_match:
