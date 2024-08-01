@@ -121,5 +121,6 @@ lottoweb
 - [~~SSL 인증서 만료 시 자동 갱신 문제~~](https://velog.io/@studyjun/SSL-%EC%9D%B8%EC%A6%9D%EC%84%9C-%EB%A7%8C%EB%A3%8C-%EC%8B%9C-%EC%9E%90%EB%8F%99-%EA%B0%B1%EC%8B%A0-%EB%AC%B8%EC%A0%9C)
 - Prometheus + grafana + Alertmanager 모니터링, 시각화 및 알림
 - Jmeter를 통한 부하테스트
+- 무중단 배포
 - ngrok 고정 도메인
 - 결제를 통한 포인트 획득 및 로또 번호 확인 시 사용
