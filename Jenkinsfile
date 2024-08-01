@@ -52,10 +52,10 @@ pipeline {
             steps {
                 script {
                     sshagent(['my-ssh-key']) {
-                        sh 'rsync -avz -e "ssh -o StrictHostKeyChecking=no" docker-compose.yml ubuntu@ec2-3-39-253-54.ap-northeast-2.compute.amazonaws.com:/home/ubuntu/'
-                        sh 'rsync -avz -e "ssh -o StrictHostKeyChecking=no" prometheus.yml ubuntu@ec2-3-39-253-54.ap-northeast-2.compute.amazonaws.com:/home/ubuntu/'
-                        sh 'rsync -avz -e "ssh -o StrictHostKeyChecking=no" alertmanager.yml ubuntu@ec2-3-39-253-54.ap-northeast-2.compute.amazonaws.com:/home/ubuntu/'
-                        sh 'rsync -avz -e "ssh -o StrictHostKeyChecking=no" alert.rules ubuntu@ec2-3-39-253-54.ap-northeast-2.compute.amazonaws.com:/home/ubuntu/'
+                        sh 'rsync -avz -e "ssh -o StrictHostKeyChecking=no" docker-compose.yml ubuntu@ec2-43-203-173-180.ap-northeast-2.compute.amazonaws.com:/home/ubuntu/'
+                        sh 'rsync -avz -e "ssh -o StrictHostKeyChecking=no" prometheus.yml ubuntu@ec2-43-203-173-180.ap-northeast-2.compute.amazonaws.com:/home/ubuntu/'
+                        sh 'rsync -avz -e "ssh -o StrictHostKeyChecking=no" alertmanager.yml ubuntu@ec2-43-203-173-180.ap-northeast-2.compute.amazonaws.com:/home/ubuntu/'
+                        sh 'rsync -avz -e "ssh -o StrictHostKeyChecking=no" alert.rules ubuntu@ec2-43-203-173-180.ap-northeast-2.compute.amazonaws.com:/home/ubuntu/'
                     }
                 }
             }
@@ -84,7 +84,7 @@ pipeline {
             steps {
                 sshagent(['my-ssh-key']) {
                     sh '''
-                        ssh -o StrictHostKeyChecking=no ubuntu@ec2-3-39-253-54.ap-northeast-2.compute.amazonaws.com "
+                        ssh -o StrictHostKeyChecking=no ubuntu@ec2-43-203-173-180.ap-northeast-2.compute.amazonaws.com "
                             sudo docker-compose down &&
                             sudo docker system prune -a -f
                         "
@@ -145,7 +145,7 @@ pipeline {
             steps {
                 sshagent(['my-ssh-key']) {
                     sh '''
-                        ssh -o StrictHostKeyChecking=no ubuntu@ec2-3-39-253-54.ap-northeast-2.compute.amazonaws.com "
+                        ssh -o StrictHostKeyChecking=no ubuntu@ec2-43-203-173-180.ap-northeast-2.compute.amazonaws.com "
                             cd /home/ubuntu &&
                             export SPRING_MAIL_USERNAME=${SPRING_MAIL_USERNAME} &&
                             export SPRING_MAIL_PASSWORD=${SPRING_MAIL_PASSWORD} &&
