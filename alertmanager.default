@@ -1,9 +1,9 @@
 global:
   resolve_timeout: 5m
   smtp_smarthost: 'smtp.naver.com:465'
-  smtp_from: ${SPRING_MAIL_USERNAME}
-  smtp_auth_username: ${SPRING_MAIL_USERNAME}
-  smtp_auth_password: ${SPRING_MAIL_PASSWORD}
+  smtp_from: 'SPRING_MAIL_USERNAME_PLACEHOLDER'
+  smtp_auth_username: 'SPRING_MAIL_USERNAME_PLACEHOLDER'
+  smtp_auth_password: 'SPRING_MAIL_PASSWORD_PLACEHOLDER'
 
 route:
   receiver: 'default-receiver'
