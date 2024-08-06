@@ -55,7 +55,7 @@ pipeline {
                         sh 'rsync -avz -e "ssh -o StrictHostKeyChecking=no" docker-compose.yml ubuntu@ec2-43-203-173-180.ap-northeast-2.compute.amazonaws.com:/home/ubuntu/'
                         sh 'rsync -avz -e "ssh -o StrictHostKeyChecking=no" prometheus.yml ubuntu@ec2-43-203-173-180.ap-northeast-2.compute.amazonaws.com:/home/ubuntu/'
                         sh 'rsync -avz -e "ssh -o StrictHostKeyChecking=no" alertmanager.yml ubuntu@ec2-43-203-173-180.ap-northeast-2.compute.amazonaws.com:/home/ubuntu/'
-                        sh 'rsync -avz -e "ssh -o StrictHostKeyChecking=no" alert.rules ubuntu@ec2-43-203-173-180.ap-northeast-2.compute.amazonaws.com:/home/ubuntu/'
+                        sh 'rsync -avz -e "ssh -o StrictHostKeyChecking=no" alert.rules.yml ubuntu@ec2-43-203-173-180.ap-northeast-2.compute.amazonaws.com:/home/ubuntu/'
                     }
                 }
             }
