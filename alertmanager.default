@@ -12,6 +12,7 @@ receivers:
   - name: 'default-receiver'
     email_configs:
       - to: 'matddung76@gmail.com'
+      - from : '${SPRING_MAIL_USERNAME}'
         require_tls: false
         tls_config:
           insecure_skip_verify: true
