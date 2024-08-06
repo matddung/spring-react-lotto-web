@@ -3,7 +3,7 @@ global:
   smtp_smarthost: 'smtp.naver.com:465'
   smtp_from: 'matddung76@naver.com'
   smtp_auth_username: 'matddung76@naver.com'
-  smtp_auth_password: 'gozldss18'
+  smtp_auth_password: ${SPRING_MAIL_PASSWORD}
 
 route:
   receiver: 'default-receiver'
