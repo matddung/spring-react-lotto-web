@@ -41,6 +41,7 @@ pipeline {
         stage('Prepare Alertmanager Configuration') {
             steps {
                 script {
+                    sh 'cp /alertmanager.default /alertmanager.yml'
                     sh '''
                         sed -i 's|SPRING_MAIL_USERNAME_PLACEHOLDER|'${SPRING_MAIL_USERNAME}'|' alertmanager.yml
                         sed -i 's|SPRING_MAIL_PASSWORD_PLACEHOLDER|'${SPRING_MAIL_PASSWORD}'|' alertmanager.yml
