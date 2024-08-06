@@ -1,9 +1,9 @@
 global:
   resolve_timeout: 5m
   smtp_smarthost: 'smtp.naver.com:465'
-  smtp_from: ${SPRING_MAIL_USERNAME}
-  smtp_auth_username: ${SPRING_MAIL_USERNAME}
-  smtp_auth_password: ${SPRING_MAIL_PASSWORD}
+  smtp_from: '${SPRING_MAIL_USERNAME}'
+  smtp_auth_username: '${SPRING_MAIL_USERNAME}'
+  smtp_auth_password: '${SPRING_MAIL_PASSWORD}'
 
 route:
   receiver: 'default-receiver'
@@ -12,6 +12,10 @@ receivers:
   - name: 'default-receiver'
     email_configs:
       - to: 'matddung76@gmail.com'
+        smarthost: 'smtp.naver.com:465'
+        auth_username: '${SPRING_MAIL_USERNAME}'
+        auth_password: '${SPRING_MAIL_PASSWORD}'
+        auth_identity: '${SPRING_MAIL_USERNAME}'
         require_tls: false
         tls_config:
           insecure_skip_verify: true
