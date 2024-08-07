@@ -27,7 +27,7 @@
 ### 🚀 Backend Skills
 
 ---
-![diagram drawio (1)](https://github.com/user-attachments/assets/8c261687-f6b6-4742-9af1-01ccd9df7014)
+![시스템 아키텍처 drawio](https://github.com/user-attachments/assets/fbb27a26-79ff-4812-a760-082a806fd9cb)
 - Spring Boot 3.0.6
 - Java 17
 - MariaDB
@@ -119,7 +119,7 @@ lottoweb
 - [~~Google 소셜 로그인 진행 시 닉네임 설정 문제~~](https://velog.io/@studyjun/Google-%EC%86%8C%EC%85%9C-%EB%A1%9C%EA%B7%B8%EC%9D%B8-%EC%A7%84%ED%96%89-%EC%8B%9C-%EB%8B%89%EB%84%A4%EC%9E%84-%EC%84%A4%EC%A0%95-%EB%AC%B8%EC%A0%9C)
 - [~~Jenkins 느린 빌드 시간 문제~~](https://velog.io/@studyjun/Jenkins-%EB%8A%90%EB%A6%B0-%EB%B9%8C%EB%93%9C-%EC%8B%9C%EA%B0%84-%EB%AC%B8%EC%A0%9C)
 - [~~SSL 인증서 만료 시 자동 갱신 문제~~](https://velog.io/@studyjun/SSL-%EC%9D%B8%EC%A6%9D%EC%84%9C-%EB%A7%8C%EB%A3%8C-%EC%8B%9C-%EC%9E%90%EB%8F%99-%EA%B0%B1%EC%8B%A0-%EB%AC%B8%EC%A0%9C)
-- Prometheus + grafana + Alertmanager 모니터링, 시각화 및 알림
+- [~~Prometheus + grafana + Alertmanager 모니터링, 시각화 및 알림~~](https://velog.io/@studyjun/Prometheus-Grafana-Alertmanager-%EB%AA%A8%EB%8B%88%ED%84%B0%EB%A7%81-%EC%8B%9C%EA%B0%81%ED%99%94-%EB%B0%8F-%EC%95%8C%EB%A6%BC)
 - Jmeter를 통한 부하테스트
 - 무중단 배포
 - ngrok 고정 도메인
