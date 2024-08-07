@@ -48,7 +48,6 @@ pipeline {
                 }
             }
         }
-        }
         stage('Deploy to AWS') {
             steps {
                 script {
