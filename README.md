@@ -41,6 +41,7 @@
 - Nginx, CertBot
 - Docker, docker-compose
 - Jenkins
+- Prometheus & Grafana & Alertmanager
 
 #### 기술적 의사 결정
 
