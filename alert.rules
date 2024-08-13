@@ -2,7 +2,7 @@ groups:
   - name: 테스트_경고
     rules:
     - alert: 테스트_알림
-      expr: vector(1)
+      expr: up{job="alertmanager"} == 0
       for: 1m
       labels:
         severity: 테스트

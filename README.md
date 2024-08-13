@@ -70,12 +70,12 @@
 - [Windows 환경에서 발생하는 Jenkins 에러를 Linux 환경으로 전환하여 해결](https://velog.io/@studyjun/Windows-%ED%99%98%EA%B2%BD%EC%97%90%EC%84%9C-%EB%B0%9C%EC%83%9D%ED%95%98%EB%8A%94-Jenkins-%EC%97%90%EB%9F%AC%EB%A5%BC-Linux-%ED%99%98%EA%B2%BD%EC%9C%BC%EB%A1%9C-%EC%A0%84%ED%99%98%ED%95%98%EC%97%AC-%ED%95%B4%EA%B2%B0)
 - [Weka 데이터 분석 모델의 패턴 인식 모델 오류 해결](https://velog.io/@studyjun/Weka-%EB%8D%B0%EC%9D%B4%ED%84%B0-%EB%B6%84%EC%84%9D-%EB%AA%A8%EB%8D%B8%EC%9D%98-%ED%8C%A8%ED%84%B4-%EC%9D%B8%EC%8B%9D-%EB%AA%A8%EB%8D%B8-%EC%98%A4%EB%A5%98-%ED%95%B4%EA%B2%B0)
 - [EC2 인스턴스 용량 문제 해결](https://velog.io/@studyjun/EC2-%EC%9D%B8%EC%8A%A4%ED%84%B4%EC%8A%A4-%EC%9A%A9%EB%9F%89-%EB%AC%B8%EC%A0%9C-%ED%95%B4%EA%B2%B0)
+- [Jenkins 빌드 시 DB 메모리 초기화 문제](https://velog.io/@studyjun/Jenkins-%EB%B9%8C%EB%93%9C-%EC%8B%9C-DB-%EB%A9%94%EB%AA%A8%EB%A6%AC-%EC%B4%88%EA%B8%B0%ED%99%94-%EB%AC%B8%EC%A0%9C)
+- [Google 소셜 로그인 진행 시 닉네임 설정 문제](https://velog.io/@studyjun/Google-%EC%86%8C%EC%85%9C-%EB%A1%9C%EA%B7%B8%EC%9D%B8-%EC%A7%84%ED%96%89-%EC%8B%9C-%EB%8B%89%EB%84%A4%EC%9E%84-%EC%84%A4%EC%A0%95-%EB%AC%B8%EC%A0%9C)
 
 ------
 #### Improvement Backlog
 
-- [~~Jenkins 빌드 시 DB 메모리 초기화 문제~~](https://velog.io/@studyjun/Jenkins-%EB%B9%8C%EB%93%9C-%EC%8B%9C-DB-%EB%A9%94%EB%AA%A8%EB%A6%AC-%EC%B4%88%EA%B8%B0%ED%99%94-%EB%AC%B8%EC%A0%9C)
-- [~~Google 소셜 로그인 진행 시 닉네임 설정 문제~~](https://velog.io/@studyjun/Google-%EC%86%8C%EC%85%9C-%EB%A1%9C%EA%B7%B8%EC%9D%B8-%EC%A7%84%ED%96%89-%EC%8B%9C-%EB%8B%89%EB%84%A4%EC%9E%84-%EC%84%A4%EC%A0%95-%EB%AC%B8%EC%A0%9C)
 - [~~Jenkins 느린 빌드 시간 문제~~](https://velog.io/@studyjun/Jenkins-%EB%8A%90%EB%A6%B0-%EB%B9%8C%EB%93%9C-%EC%8B%9C%EA%B0%84-%EB%AC%B8%EC%A0%9C)
 - [~~SSL 인증서 만료 시 자동 갱신 문제~~](https://velog.io/@studyjun/SSL-%EC%9D%B8%EC%A6%9D%EC%84%9C-%EB%A7%8C%EB%A3%8C-%EC%8B%9C-%EC%9E%90%EB%8F%99-%EA%B0%B1%EC%8B%A0-%EB%AC%B8%EC%A0%9C)
 - [~~Prometheus + grafana + Alertmanager 모니터링, 시각화 및 알림~~](https://velog.io/@studyjun/Prometheus-Grafana-Alertmanager-%EB%AA%A8%EB%8B%88%ED%84%B0%EB%A7%81-%EC%8B%9C%EA%B0%81%ED%99%94-%EB%B0%8F-%EC%95%8C%EB%A6%BC)
