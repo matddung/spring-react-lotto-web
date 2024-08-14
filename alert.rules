@@ -2,8 +2,8 @@ groups:
   - name: 테스트_경고
     rules:
     - alert: 테스트_알림
-      expr: up{job="backend"} == 1
-      for: 0m
+      expr: up{job="backend"} == 0
+      for: 5m
       labels:
         severity: 테스트
       annotations:
