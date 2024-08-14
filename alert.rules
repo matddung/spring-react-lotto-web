@@ -2,13 +2,13 @@ groups:
   - name: 테스트_경고
     rules:
     - alert: 테스트_알림
-      expr: up{job="backend"} == 0
-      for: 5m
+      expr: changes(up{job="backend"}[1h]) == 1
+      for: 1m
       labels:
         severity: 테스트
       annotations:
         summary: "테스트 알림"
-        description: "이것은 테스트 알림입니다. 백엔드가 실행되었습니다."
+        description: "시작 테스트 알림입니다. 백엔드가 실행되었습니다."
 
   - name: 시스템_경고
     rules:
