@@ -1,15 +1,25 @@
 @relation lottoInfo-weka.filters.unsupervised.attribute.Remove-R1
 
-@attribute num1 numeric
-@attribute num2 numeric
-@attribute num3 numeric
-@attribute num4 numeric
-@attribute num5 numeric
-@attribute num6 numeric
-@attribute bonusNum numeric
-@attribute winningDate numeric
+@attribute drwtNo1 numeric
+@attribute drwtNo2 numeric
+@attribute drwtNo3 numeric
+@attribute drwtNo4 numeric
+@attribute drwtNo5 numeric
+@attribute drwtNo6 numeric
+@attribute bnusNo numeric
+@attribute drwNoDate numeric
 
 @data
+1,2,6,14,27,38,33,20240803
+15,19,21,25,27,28,40,20240727
+5,10,11,17,28,34,22,20240720
+1,5,8,16,28,33,45,20240713
+10,15,24,30,31,37,32,20240706
+4,5,9,11,37,40,7,20240629
+6,14,25,33,40,44,30,20240622
+3,8,17,30,33,34,28,20240615
+13,19,21,24,34,35,26,20240608
+3,6,21,30,34,35,22,20240601
 6,24,31,32,38,44,8,20240525
 2,19,26,31,38,41,34,20240518
 1,9,12,13,20,45,3,20240511
@@ -1131,3 +1141,4 @@
 11,16,19,21,27,31,30,20021221
 9,13,21,25,32,42,2,20021214
 10,23,29,33,37,40,16,20021207
+6,7,19,28,34,41,5,20240810

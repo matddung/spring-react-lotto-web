@@ -1,6 +1,7 @@
 package com.studyjun.lottoweb.service;
 
 import com.studyjun.lottoweb.dto.response.ApiResponse;
+import com.studyjun.lottoweb.dto.response.LottoResponse;
 import com.studyjun.lottoweb.dto.response.Message;
 import com.studyjun.lottoweb.entity.UserLotto;
 import com.studyjun.lottoweb.repository.UserLottoRepository;
@@ -12,13 +13,16 @@ import org.springframework.stereotype.Service;
 import weka.classifiers.functions.MultilayerPerceptron;
 import weka.classifiers.meta.Bagging;
 import weka.classifiers.trees.RandomForest;
+import weka.core.Attribute;
 import weka.core.DenseInstance;
 import weka.core.Instance;
 import weka.core.Instances;
+import weka.core.converters.ArffSaver;
 import weka.core.converters.ConverterUtils.DataSource;
 import weka.filters.Filter;
 import weka.filters.unsupervised.attribute.Normalize;
 
+import java.io.File;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -30,6 +34,7 @@ public class WekaService {
     private final Bagging bagging = new Bagging();
     private final Random random;
 
+    private static final String ARFF_FILE_PATH = "lotto.arff";
     private static final int NUMBER_OF_LOTTO_NUMBERS = 6;
     private static final int MAX_LOTTO_NUMBER = 45;
 
@@ -41,7 +46,7 @@ public class WekaService {
 
     public WekaService() throws Exception {
         try {
-            DataSource source = new DataSource(getClass().getClassLoader().getResourceAsStream("lotto.arff"));
+            DataSource source = new DataSource(getClass().getClassLoader().getResourceAsStream(ARFF_FILE_PATH));
             data = source.getDataSet();
             if (data.classIndex() == -1)
                 data.setClassIndex(data.numAttributes() - 1);
@@ -331,6 +336,79 @@ public class WekaService {
             userLotto.setUserEmail(userPrincipal.getUsername());
             userLottoRepository.save(userLotto);
             return ResponseEntity.ok(userLotto);
+        }
+    }
+
+    public void updateArffFileFromStartDraw(LottoUpdateService lottoUpdateService) throws Exception {
+        int latestDrawNo = lottoUpdateService.getLatestDrawNo();
+
+        while (true) {
+            LottoResponse lottoResponse = lottoUpdateService.getLottoInfoByDrawNumber(latestDrawNo);
+
+            if (lottoResponse == null || !"success".equals(lottoResponse.getReturnValue())) {
+                System.out.println("No more data to fetch. Stopping at draw number: " + latestDrawNo);
+                break;
+            }
+
+            boolean updated = updateArffFile(lottoResponse);
+            lottoUpdateService.saveLatestDrawNo(latestDrawNo);
+
+            if (updated) {
+                System.out.println("Updated draw number: " + latestDrawNo);
+            }
+
+            latestDrawNo++;
+        }
+    }
+
+    public boolean updateArffFile(LottoResponse lottoResponse) throws Exception {
+        if (!"success".equals(lottoResponse.getReturnValue())) {
+            System.out.println("Lotto API request was not successful.");
+            return false;
+        }
+
+        DataSource source = new DataSource(ARFF_FILE_PATH);
+        Instances data = source.getDataSet();
+
+        Attribute drawDateAttribute = data.attribute("drwNoDate");
+
+        if (drawDateAttribute == null) {
+            throw new IllegalArgumentException("Attribute 'drwNoDate' not found in ARFF file.");
+        }
+
+        boolean isDuplicate = false;
+        int formattedDrawDate = lottoResponse.getFormattedDrawDate();
+        for (Instance instance : data) {
+            if ((int) instance.value(drawDateAttribute) == formattedDrawDate) {
+                isDuplicate = true;
+                break;
+            }
+        }
+
+        if (!isDuplicate) {
+            double[] instanceValues = new double[data.numAttributes()];
+            instanceValues[0] = lottoResponse.getDrwtNo1();
+            instanceValues[1] = lottoResponse.getDrwtNo2();
+            instanceValues[2] = lottoResponse.getDrwtNo3();
+            instanceValues[3] = lottoResponse.getDrwtNo4();
+            instanceValues[4] = lottoResponse.getDrwtNo5();
+            instanceValues[5] = lottoResponse.getDrwtNo6();
+            instanceValues[6] = lottoResponse.getBnusNo();
+            instanceValues[7] = formattedDrawDate;
+
+            Instance newInstance = new DenseInstance(1.0, instanceValues);
+            data.add(newInstance);
+
+            ArffSaver saver = new ArffSaver();
+            saver.setInstances(data);
+            saver.setFile(new File("src/main/resources/" + ARFF_FILE_PATH));
+            saver.writeBatch();
+            System.out.println("ARFF file updated with draw date: " + lottoResponse.getDrwNoDate());
+
+            return true;
+        } else {
+            System.out.println("Duplicate draw date detected: " + lottoResponse.getDrwNoDate());
+            return false;
         }
     }
 }
