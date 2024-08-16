@@ -12,7 +12,6 @@ import java.nio.file.Paths;
 
 @Service
 public class LottoUpdateService {
-
     private static final String LOTTO_API_URL = "https://www.dhlottery.co.kr/common.do?method=getLottoNumber&drwNo=";
     private static final String LATEST_DRAW_NO_FILE = "latestDrawNo.txt";
 
