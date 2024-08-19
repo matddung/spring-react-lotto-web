@@ -12,6 +12,7 @@ import java.nio.file.Paths;
 
 @Service
 public class LottoUpdateService {
+
     private static final String LOTTO_API_URL = "https://www.dhlottery.co.kr/common.do?method=getLottoNumber&drwNo=";
     private static final String LATEST_DRAW_NO_FILE = "latestDrawNo.txt";
 
@@ -19,9 +20,7 @@ public class LottoUpdateService {
         Path path = Paths.get("src/main/resources/" + LATEST_DRAW_NO_FILE);
         File file = new File(path.toString());
         if (!file.exists()) {
-            if (file.createNewFile()) {
-                System.out.println("Created new file: " + file.getAbsolutePath());
-            } else {
+            if (!file.createNewFile()) {
                 throw new IOException("Failed to create file: " + file.getAbsolutePath());
             }
         }
@@ -54,8 +53,7 @@ public class LottoUpdateService {
         String filePath = getResourceFilePath();
         try (FileWriter writer = new FileWriter(filePath)) {
             writer.write(Integer.toString(drawNo));
-            writer.flush();  // 즉시 데이터를 파일에 씁니다.
-            System.out.println("Saved latest draw number: " + drawNo);
+            writer.flush();
         }
     }
 
@@ -71,7 +69,6 @@ public class LottoUpdateService {
                 ObjectMapper objectMapper = new ObjectMapper();
                 return objectMapper.readValue(responseBody, LottoResponse.class);
             } else {
-                System.out.println("Unexpected response format: " + responseBody);
                 return null;
             }
         } catch (Exception e) {

@@ -61,7 +61,7 @@ public class UserService {
         userRepository.delete(user.get());
         tokenRepository.delete(token.get());
 
-        ApiResponse apiResponse = ApiResponse.builder().check(true).information(Message.builder().message("회원 탈퇴하셨습니다.").build()).build();
+        ApiResponse apiResponse = ApiResponse.builder().check(true).information(Message.builder().message("회원 탈퇴가 성공하셨습니다.").build()).build();
 
         return ResponseEntity.ok(apiResponse);
     }

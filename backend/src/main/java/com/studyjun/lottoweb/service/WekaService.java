@@ -346,16 +346,11 @@ public class WekaService {
             LottoResponse lottoResponse = lottoUpdateService.getLottoInfoByDrawNumber(latestDrawNo);
 
             if (lottoResponse == null || !"success".equals(lottoResponse.getReturnValue())) {
-                System.out.println("No more data to fetch. Stopping at draw number: " + latestDrawNo);
                 break;
             }
 
             boolean updated = updateArffFile(lottoResponse);
             lottoUpdateService.saveLatestDrawNo(latestDrawNo);
-
-            if (updated) {
-                System.out.println("Updated draw number: " + latestDrawNo);
-            }
 
             latestDrawNo++;
         }
@@ -363,7 +358,6 @@ public class WekaService {
 
     public boolean updateArffFile(LottoResponse lottoResponse) throws Exception {
         if (!"success".equals(lottoResponse.getReturnValue())) {
-            System.out.println("Lotto API request was not successful.");
             return false;
         }
 
@@ -403,11 +397,9 @@ public class WekaService {
             saver.setInstances(data);
             saver.setFile(new File("src/main/resources/" + ARFF_FILE_PATH));
             saver.writeBatch();
-            System.out.println("ARFF file updated with draw date: " + lottoResponse.getDrwNoDate());
 
             return true;
         } else {
-            System.out.println("Duplicate draw date detected: " + lottoResponse.getDrwNoDate());
             return false;
         }
     }

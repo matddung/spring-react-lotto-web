@@ -23,7 +23,7 @@ public class SwaggerConfig {
                                 .bearerFormat("JWT")))
                 .addSecurityItem(new SecurityRequirement().addList(SECURITY_SCHEME_NAME))
                 .info(new Info()
-                        .title("Spring + Jwt + OAuth2 + JPA")
+                        .title("lottoweb")
                         .version("1.0.0"));
     }
 }
