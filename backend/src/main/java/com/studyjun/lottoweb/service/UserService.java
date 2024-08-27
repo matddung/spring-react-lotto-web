@@ -81,6 +81,8 @@ public class UserService {
 
         userRepository.save(user);
 
+        ApiResponse apiResponse = ApiResponse.builder().check(true).information(Message.builder().message("비밀번호 변경에 성공하였습니다.").build()).build();
+
         return ResponseEntity.ok(true);
     }
 
@@ -96,6 +98,8 @@ public class UserService {
 
         userRepository.save(user);
 
+        ApiResponse apiResponse = ApiResponse.builder().check(true).information(Message.builder().message("닉네임 변경에 성공하였습니다.").build()).build();
+
         return ResponseEntity.ok(true);
     }
 
@@ -109,11 +113,13 @@ public class UserService {
         SecurityContextHolder.getContext().setAuthentication(authentication);
 
         TokenDto tokenDto = customTokenProviderService.createToken(authentication);
+
         Token token = Token.builder()
                 .refreshToken(tokenDto.getRefreshToken())
                 .userEmail(tokenDto.getUserEmail())
                 .build();
         tokenRepository.save(token);
+
         AuthResponse authResponse = AuthResponse.builder().accessToken(tokenDto.getAccessToken()).refreshToken(token.getRefreshToken()).build();
 
         return ResponseEntity.ok(authResponse);
@@ -138,6 +144,7 @@ public class UserService {
         URI location = ServletUriComponentsBuilder
                 .fromCurrentContextPath().path("/auth/")
                 .buildAndExpand(user.getId()).toUri();
+
         ApiResponse apiResponse = ApiResponse.builder().check(true).information(Message.builder().message("회원가입에 성공하였습니다.").build()).build();
 
         return ResponseEntity.created(location).body(apiResponse);
