@@ -8,9 +8,6 @@
 -----
 로또 번호를 추천해주는 서비스를 제공하는 플랫폼입니다.
 
-### 서비스 링크
-[LottoWeb으로 이동](https://sbsmily.shop/)
-
 - Test User ID : string@aa.bb
 - Test User PW : string
 - Test Admin ID : admin@admin.a
