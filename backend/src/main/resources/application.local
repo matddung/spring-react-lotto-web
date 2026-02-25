@@ -108,4 +108,4 @@ jwt:
 
 app:
   oauth2:
-    authorizedRedirectUris: https://localhost:8080/oauth2/redirect
+    authorizedRedirectUris: http://localhost:8080/oauth2/redirect
