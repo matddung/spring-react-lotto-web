@@ -1,6 +1,8 @@
 package com.studyjun.lottoweb.service;
 
+import com.studyjun.lottoweb.dto.response.ApiResponse;
 import com.studyjun.lottoweb.dto.response.HistoryResponse;
+import com.studyjun.lottoweb.dto.response.Message;
 import com.studyjun.lottoweb.entity.Question;
 import com.studyjun.lottoweb.entity.User;
 import com.studyjun.lottoweb.repository.QuestionRepository;
@@ -26,10 +28,11 @@ public class AdminService {
     private final UserRepository userRepository;
     private final QuestionRepository questionRepository;
 
-    public Page<User> getAllUsers(UserPrincipal userPrincipal, int page) {
+    public ResponseEntity<?> getAllUsers(UserPrincipal userPrincipal, int page) {
         isAdmin(userPrincipal);
         Pageable pageable = PageRequest.of(page, 10, Sort.by(Sort.Direction.DESC, "id"));
-        return userRepository.findAll(pageable);
+        Page<User> users = userRepository.findAll(pageable);
+        return ResponseEntity.ok(ApiResponse.builder().check(true).data(users).build());
     }
 
     public ResponseEntity<?> getUserHistory(Long id, UserPrincipal userPrincipal, int page) {
@@ -47,13 +50,14 @@ public class AdminService {
                 .question(questions)
                 .build();
 
-        return ResponseEntity.ok(historyResponse);
+        return ResponseEntity.ok(ApiResponse.builder().check(true).data(historyResponse).build());
     }
 
-    public Page<Question> getUnansweredQuestions(UserPrincipal userPrincipal, int page) {
+    public ResponseEntity<?> getUnansweredQuestions(UserPrincipal userPrincipal, int page) {
         isAdmin(userPrincipal);
         Pageable pageable = PageRequest.of(page, 10, Sort.by(Sort.Direction.DESC, "id"));
-        return questionRepository.findByAnswerIsNull(pageable);
+        Page<Question> questions = questionRepository.findByAnswerIsNull(pageable);
+        return ResponseEntity.ok(ApiResponse.builder().check(true).data(questions).build());
     }
 
     public ResponseEntity<?> deleteUser(Long id, UserPrincipal userPrincipal) {
@@ -69,7 +73,7 @@ public class AdminService {
 
         userRepository.delete(user);
 
-        return ResponseEntity.ok(true);
+        return ResponseEntity.ok(ApiResponse.builder().check(true).data(Message.builder().message("유저 삭제가 완료되었습니다.").build()).build());
     }
 
     public void isAdmin(UserPrincipal userPrincipal) {
@@ -79,6 +83,6 @@ public class AdminService {
         User user = userOptional.get();
 
         boolean isAdmin = user.getRole().equals("ADMIN");
-        DefaultAssert.isTrue(isAdmin, "ADMIN계정이 아닙니다.");
+        DefaultAssert.isTrue(isAdmin, "ADMIN 계정이 아닙니다.");
     }
 }

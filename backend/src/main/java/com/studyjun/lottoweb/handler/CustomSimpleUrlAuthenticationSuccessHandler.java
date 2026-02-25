@@ -14,6 +14,7 @@ import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
@@ -25,6 +26,7 @@ import java.util.Optional;
 
 import static com.studyjun.lottoweb.repository.CustomAuthorizationRequestRepository.REDIRECT_URI_PARAM_COOKIE_NAME;
 
+@Slf4j
 @RequiredArgsConstructor
 @Component
 public class CustomSimpleUrlAuthenticationSuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
@@ -38,18 +40,21 @@ public class CustomSimpleUrlAuthenticationSuccessHandler extends SimpleUrlAuthen
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
         DefaultAssert.isAuthentication(!response.isCommitted());
 
-        String targetUrl = determineTargetUrl(request, response, authentication);
+        try {
+            String targetUrl = determineTargetUrl(request, response, authentication);
 
-        clearAuthenticationAttributes(request, response);
-        getRedirectStrategy().sendRedirect(request, response, targetUrl);
+            clearAuthenticationAttributes(request, response);
+            getRedirectStrategy().sendRedirect(request, response, targetUrl);
+        } catch (Exception ex) {
+            log.error("OAuth2 로그인 성공 후처리 중 예외가 발생했습니다.", ex);
+            throw ex;
+        }
     }
 
     protected String determineTargetUrl(HttpServletRequest request, HttpServletResponse response, Authentication authentication) {
         Optional<String> redirectUri = CustomCookie.getCookie(request, REDIRECT_URI_PARAM_COOKIE_NAME).map(Cookie::getValue);
 
-        DefaultAssert.isAuthentication(!(redirectUri.isPresent() && !isAuthorizedRedirectUri(redirectUri.get())));
-
-        String targetUrl = redirectUri.orElse(getDefaultTargetUrl());
+        String targetUrl = resolveTargetUrl(redirectUri);
 
         TokenDto tokenDto = customTokenProviderService.createToken(authentication);
         Token token = Token.builder()
@@ -61,6 +66,31 @@ public class CustomSimpleUrlAuthenticationSuccessHandler extends SimpleUrlAuthen
         return UriComponentsBuilder.fromUriString(targetUrl)
                 .queryParam("token", tokenDto.getAccessToken())
                 .build().toUriString();
+    }
+
+    private String resolveTargetUrl(Optional<String> redirectUri) {
+        if (redirectUri.isPresent()) {
+            String uri = redirectUri.get();
+            if (isAuthorizedRedirectUri(uri) || isTrustedLocalRedirectUri(uri)) {
+                return uri;
+            }
+        }
+
+        String fallbackTargetUrl = oAuth2Config.getOauth2().getAuthorizedRedirectUris().stream()
+                .findFirst()
+                .orElse("http://localhost:3000/oauth2/redirect");
+
+        if (redirectUri.isPresent()) {
+            log.warn("허용되지 않은 redirect_uri 입니다. fallbackUri={}, redirectUri={}", fallbackTargetUrl, redirectUri.get());
+        }
+
+        return fallbackTargetUrl;
+    }
+
+    private boolean isTrustedLocalRedirectUri(String uri) {
+        URI clientRedirectUri = URI.create(uri);
+        return "localhost".equalsIgnoreCase(clientRedirectUri.getHost())
+                && "/oauth2/redirect".equals(clientRedirectUri.getPath());
     }
 
     protected void clearAuthenticationAttributes(HttpServletRequest request, HttpServletResponse response) {

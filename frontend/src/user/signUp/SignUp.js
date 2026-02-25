@@ -91,7 +91,7 @@ const SignUpForm = () => {
                     navigate("/login");
                 });
             }).catch(error => {
-                const errorMessage = error.information?.message || '예기치 않은 문제가 발생하였습니다.';
+                const errorMessage = error.data?.message || '예기치 않은 문제가 발생하였습니다.';
                 toast.error(errorMessage);
             });
     };

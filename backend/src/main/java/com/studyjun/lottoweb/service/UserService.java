@@ -43,7 +43,7 @@ public class UserService {
     public ResponseEntity<?> getCurrentUser(UserPrincipal userPrincipal) {
         Optional<User> user = userRepository.findById(userPrincipal.getId());
         DefaultAssert.isOptionalPresent(user);
-        ApiResponse apiResponse = ApiResponse.builder().check(true).information(user.get()).build();
+        ApiResponse apiResponse = ApiResponse.builder().check(true).data(user.get()).build();
 
         return ResponseEntity.ok(apiResponse);
     }
@@ -61,7 +61,7 @@ public class UserService {
         userRepository.delete(user.get());
         tokenRepository.delete(token.get());
 
-        ApiResponse apiResponse = ApiResponse.builder().check(true).information(Message.builder().message("회원 탈퇴가 성공하셨습니다.").build()).build();
+        ApiResponse apiResponse = ApiResponse.builder().check(true).data(Message.builder().message("회원 탈퇴가 성공하셨습니다.").build()).build();
 
         return ResponseEntity.ok(apiResponse);
     }
@@ -81,9 +81,9 @@ public class UserService {
 
         userRepository.save(user);
 
-        ApiResponse apiResponse = ApiResponse.builder().check(true).information(Message.builder().message("비밀번호 변경에 성공하였습니다.").build()).build();
+        ApiResponse apiResponse = ApiResponse.builder().check(true).data(Message.builder().message("비밀번호 변경에 성공하였습니다.").build()).build();
 
-        return ResponseEntity.ok(true);
+        return ResponseEntity.ok(apiResponse);
     }
 
     public ResponseEntity<?> nicknameModify(UserPrincipal userPrincipal, ChangeNicknameRequest nicknameRequest) {
@@ -98,9 +98,9 @@ public class UserService {
 
         userRepository.save(user);
 
-        ApiResponse apiResponse = ApiResponse.builder().check(true).information(Message.builder().message("닉네임 변경에 성공하였습니다.").build()).build();
+        ApiResponse apiResponse = ApiResponse.builder().check(true).data(Message.builder().message("닉네임 변경에 성공하였습니다.").build()).build();
 
-        return ResponseEntity.ok(true);
+        return ResponseEntity.ok(apiResponse);
     }
 
     public ResponseEntity<?> signIn(SignInRequest signInRequest) {
@@ -121,8 +121,9 @@ public class UserService {
         tokenRepository.save(token);
 
         AuthResponse authResponse = AuthResponse.builder().accessToken(tokenDto.getAccessToken()).refreshToken(token.getRefreshToken()).build();
+        ApiResponse apiResponse = ApiResponse.builder().check(true).data(authResponse).build();
 
-        return ResponseEntity.ok(authResponse);
+        return ResponseEntity.ok(apiResponse);
     }
 
     public ResponseEntity<?> signUp(SignUpRequest signUpRequest) {
@@ -145,7 +146,7 @@ public class UserService {
                 .fromCurrentContextPath().path("/auth/")
                 .buildAndExpand(user.getId()).toUri();
 
-        ApiResponse apiResponse = ApiResponse.builder().check(true).information(Message.builder().message("회원가입에 성공하였습니다.").build()).build();
+        ApiResponse apiResponse = ApiResponse.builder().check(true).data(Message.builder().message("회원가입에 성공하였습니다.").build()).build();
 
         return ResponseEntity.created(location).body(apiResponse);
     }
@@ -170,10 +171,11 @@ public class UserService {
         tokenRepository.save(updateToken);
 
         AuthResponse authResponse = AuthResponse.builder().accessToken(tokenDto.getAccessToken()).refreshToken(updateToken.getRefreshToken()).build();
+        ApiResponse apiResponse = ApiResponse.builder().check(true).data(authResponse).build();
 
         log.info("authResponse : {}", authResponse);
 
-        return ResponseEntity.ok(authResponse);
+        return ResponseEntity.ok(apiResponse);
     }
 
     public ResponseEntity<?> logout(RefreshTokenRequest tokenRefreshRequest) {
@@ -182,7 +184,7 @@ public class UserService {
 
         Optional<Token> token = tokenRepository.findByRefreshToken(tokenRefreshRequest.getRefreshToken());
         tokenRepository.delete(token.get());
-        ApiResponse apiResponse = ApiResponse.builder().check(true).information(Message.builder().message("로그아웃 하였습니다.").build()).build();
+        ApiResponse apiResponse = ApiResponse.builder().check(true).data(Message.builder().message("로그아웃 하였습니다.").build()).build();
 
         return ResponseEntity.ok(apiResponse);
     }

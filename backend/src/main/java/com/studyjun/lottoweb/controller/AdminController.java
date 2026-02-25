@@ -2,7 +2,6 @@ package com.studyjun.lottoweb.controller;
 
 import com.studyjun.lottoweb.dto.response.ErrorResponse;
 import com.studyjun.lottoweb.dto.response.Message;
-import com.studyjun.lottoweb.entity.Question;
 import com.studyjun.lottoweb.entity.User;
 import com.studyjun.lottoweb.security.CurrentUser;
 import com.studyjun.lottoweb.security.UserPrincipal;
@@ -15,7 +14,6 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -32,7 +30,7 @@ public class AdminController {
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "400", description = "불러오기 실패", content = {@Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))}),
     })
     @GetMapping(value = "/user-list")
-    public Page<User> getAllUsers(
+    public ResponseEntity<?> getAllUsers(
             @Parameter(description = "Accesstoken을 입력해주세요.", required = true) @CurrentUser UserPrincipal userPrincipal,
             @Parameter(description = "원하시는 page(int)를 입력해주세요.", required = true) @RequestParam int page
     ) {
@@ -59,7 +57,7 @@ public class AdminController {
             @ApiResponse(responseCode = "400", description = "불러오기 실패", content = {@Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))}),
     })
     @GetMapping(value = "/unanswered-questions")
-    public Page<Question> getUnansweredQuestions(
+    public ResponseEntity<?> getUnansweredQuestions(
             @Parameter(description = "Accesstoken을 입력해주세요.", required = true) @CurrentUser UserPrincipal userPrincipal,
             @Parameter(description = "원하시는 page(int)를 입력해주세요.", required = true) @RequestParam int page
     ) {

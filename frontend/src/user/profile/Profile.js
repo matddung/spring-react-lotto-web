@@ -80,8 +80,8 @@ const Profile = ({ currentUser, updateCurrentUser, onLogout }) => {
     const handleNicknameChangeSuccess = (newNickname) => {
         const updatedUser = {
             ...currentUser,
-            information: {
-                ...currentUser.information,
+            data: {
+                ...currentUser.data,
                 nickname: newNickname
             }
         };
@@ -119,11 +119,11 @@ const Profile = ({ currentUser, updateCurrentUser, onLogout }) => {
             <div className="container">
                 <div className="profile-info">
                     <div className="profile-details">
-                        <p><strong>닉네임:</strong> {currentUser.information.nickname}</p>
-                        <p><strong>이메일:</strong> {currentUser.information.email}</p>
+                        <p><strong>닉네임:</strong> {currentUser.data.nickname}</p>
+                        <p><strong>이메일:</strong> {currentUser.data.email}</p>
                     </div>
                     <div className="profile-actions">
-                        {currentUser.information.provider === 'local' && (
+                        {currentUser.data.provider === 'local' && (
                             <button className="btn btn-primary" onClick={togglePasswordChangeForm}>비밀번호 수정</button>
                         )}
                         <button className="btn btn-primary" onClick={toggleNicknameChangeForm}>닉네임 수정</button>

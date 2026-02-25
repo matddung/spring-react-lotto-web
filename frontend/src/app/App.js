@@ -25,12 +25,21 @@ const App = () => {
   const navigate = useNavigate();
 
   const loadCurrentlyLoggedInUser = () => {
+    const token = localStorage.getItem(ACCESS_TOKEN);
+
+    if (!token || token === 'null') {
+      setLoading(false);
+      return;
+    }
+
     getCurrentUser()
       .then(response => {
         setCurrentUser(response);
         setAuthenticated(true);
         setLoading(false);
       }).catch(() => {
+        localStorage.removeItem(ACCESS_TOKEN);
+        localStorage.removeItem(REFRESH_TOKEN);
         setLoading(false);
       });
   };
@@ -94,7 +103,7 @@ const App = () => {
           <Route path="/oauth2/redirect" element={
             <OAuth2RedirectHandler onLoginSuccess={handleLoginSuccess} onLoginFailure={handleLoginFailure} />
           } />
-          {currentUser && currentUser.information.role === 'ADMIN' && (
+          {currentUser && currentUser.data.role === 'ADMIN' && (
             <Route path="/admin" element={
               <PrivateRoute authenticated={authenticated}>
                 <AdminPage />

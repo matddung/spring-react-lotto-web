@@ -3,6 +3,7 @@ package com.studyjun.lottoweb.service;
 import com.studyjun.lottoweb.dto.request.CreateAnswerRequest;
 import com.studyjun.lottoweb.dto.request.CreateQuestionRequest;
 import com.studyjun.lottoweb.dto.response.ApiResponse;
+import com.studyjun.lottoweb.dto.response.ErrorResponse;
 import com.studyjun.lottoweb.dto.response.Message;
 import com.studyjun.lottoweb.entity.Answer;
 import com.studyjun.lottoweb.entity.Question;
@@ -49,21 +50,23 @@ public class QuestionService {
 
         questionRepository.save(question);
 
-        ApiResponse apiResponse = ApiResponse.builder().check(true).information(Message.builder().message("고객센터에 질문이 등록되었습니다.").build()).build();
+        ApiResponse apiResponse = ApiResponse.builder().check(true).data(Message.builder().message("고객센터에 질문이 등록되었습니다.").build()).build();
         return ResponseEntity.ok(apiResponse);
     }
 
-    public Page<Question> getAllQuestions(int page) {
+    public ResponseEntity<?> getAllQuestions(int page) {
         Pageable pageable = PageRequest.of(page, 10, Sort.by(Sort.Direction.DESC, "id"));
-        return questionRepository.findAll(pageable);
+        Page<Question> questions = questionRepository.findAll(pageable);
+        return ResponseEntity.ok(ApiResponse.builder().check(true).data(questions).build());
     }
 
-    public Page<Question> getMyQuestions(UserPrincipal userPrincipal, int page) {
+    public ResponseEntity<?> getMyQuestions(UserPrincipal userPrincipal, int page) {
         Optional<User> userOptional = userRepository.findById(userPrincipal.getId());
         DefaultAssert.isTrue(userOptional.isPresent(), "사용자를 찾을 수 없습니다.");
 
         Pageable pageable = PageRequest.of(page, 10, Sort.by(Sort.Direction.DESC, "id"));
-        return questionRepository.findByAuthorId(pageable, userPrincipal.getId());
+        Page<Question> questions = questionRepository.findByAuthorId(pageable, userPrincipal.getId());
+        return ResponseEntity.ok(ApiResponse.builder().check(true).data(questions).build());
     }
 
     public ResponseEntity<?> showQuestionDetail(long id, UserPrincipal userPrincipal) {
@@ -77,11 +80,13 @@ public class QuestionService {
         User user = userOptional.get();
 
         if (!question.isPrivate() || user.getRole().equals("ADMIN") || question.getAuthor().equals(user)) {
-            return ResponseEntity.ok(question);
+            return ResponseEntity.ok(ApiResponse.builder().check(true).data(question).build());
         } else {
-            Map<String, String> response = new HashMap<>();
-            response.put("message", "비밀글입니다.");
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(response);
+            ErrorResponse errorResponse = ErrorResponse.builder()
+                    .status(HttpStatus.FORBIDDEN.value())
+                    .message("비밀글입니다.")
+                    .build();
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(errorResponse);
         }
     }
 
@@ -103,7 +108,7 @@ public class QuestionService {
 
         answerRepository.save(answer);
 
-        ApiResponse apiResponse = ApiResponse.builder().check(true).information(Message.builder().message("답변이 등록되었습니다.").build()).build();
+        ApiResponse apiResponse = ApiResponse.builder().check(true).data(Message.builder().message("답변이 등록되었습니다.").build()).build();
 
         return ResponseEntity.ok(apiResponse);
     }

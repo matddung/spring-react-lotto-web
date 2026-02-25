@@ -47,7 +47,7 @@ public class QuestionController {
             @ApiResponse(responseCode = "400", description = "불러오기 실패", content = {@Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))}),
     })
     @GetMapping(value = "/list")
-    public Page<Question> getAllQuestions(
+    public ResponseEntity<?> getAllQuestions(
             @Parameter(description = "원하시는 page(int)를 입력해주세요.", required = true) @RequestParam int page
     ) {
         return questionService.getAllQuestions(page);
@@ -59,7 +59,7 @@ public class QuestionController {
             @ApiResponse(responseCode = "400", description = "불러오기 실패", content = {@Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))}),
     })
     @GetMapping(value = "/my-list")
-    public Page<Question> getMyQuestions(
+    public ResponseEntity<?> getMyQuestions(
             @Parameter(description = "Accesstoken을 입력해주세요.", required = true) @CurrentUser UserPrincipal userPrincipal,
             @Parameter(description = "원하시는 page(int)를 입력해주세요.", required = true) @RequestParam int page
     ) {

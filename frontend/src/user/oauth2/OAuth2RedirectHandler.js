@@ -16,15 +16,22 @@ const OAuth2RedirectHandler = ({ onLoginSuccess, onLoginFailure }) => {
         const token = getUrlParameter('token');
         const error = getUrlParameter('error');
 
+        if (error) {
+            onLoginFailure(error);
+            navigate('/login', { state: { error } });
+            return;
+        }
+
         if (token) {
             localStorage.setItem(ACCESS_TOKEN, token);
             localStorage.setItem(REFRESH_TOKEN, null);
             onLoginSuccess();
             navigate('/');
-        } else {
-            onLoginFailure(error);
-            navigate('/login', { state: { error: error } });
+            return;
         }
+
+        onLoginFailure('로그인 정보가 존재하지 않습니다.');
+        navigate('/login', { state: { error: '로그인 정보가 존재하지 않습니다.' } });
     }, [navigate, onLoginSuccess, onLoginFailure]);
 
     return null;

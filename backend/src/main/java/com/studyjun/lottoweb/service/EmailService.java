@@ -1,10 +1,11 @@
 package com.studyjun.lottoweb.service;
 
 import com.studyjun.lottoweb.dto.request.FindPasswordRequest;
+import com.studyjun.lottoweb.dto.response.ApiResponse;
+import com.studyjun.lottoweb.dto.response.Message;
 import com.studyjun.lottoweb.entity.User;
 import com.studyjun.lottoweb.repository.UserRepository;
 import com.studyjun.lottoweb.util.DefaultAssert;
-import jakarta.mail.Message;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.InternetAddress;
 import jakarta.mail.internet.MimeMessage;
@@ -33,14 +34,14 @@ public class EmailService {
         DefaultAssert.isTrue(userRepository.existsByEmail(findPasswordRequest.getEmail()), "해당 이메일이 존재하지 않습니다.");
         String tempPassword = getTempString();
         MimeMessage message = mailSender.createMimeMessage();
-        message.addRecipients(Message.RecipientType.TO, findPasswordRequest.getEmail());
+        message.addRecipients(jakarta.mail.Message.RecipientType.TO, findPasswordRequest.getEmail());
         message.setSubject("[로또 번호 추천] 임시 비밀번호 안내");
         String text = "임시 비밀번호 : " + tempPassword + " 입니다.";
         message.setText(text, "utf-8");
         message.setFrom(new InternetAddress(ADMIN_ADDRESS, findPasswordRequest.getEmail()));
         updatePassword(tempPassword, findPasswordRequest.getEmail());
         mailSender.send(message);
-        return ResponseEntity.ok(true);
+        return ResponseEntity.ok(ApiResponse.builder().check(true).data(Message.builder().message("임시 비밀번호를 이메일로 발송했습니다.").build()).build());
     }
 
     public String getTempString() {
