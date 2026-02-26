@@ -44,6 +44,6 @@ public class CustomOncePerRequestFilter extends OncePerRequestFilter{
 
     @Override
     protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
-        return request.getRequestURI().equals("/user/refresh");
+        return request.getRequestURI().equals("/api/user/refresh");
     }
 }
