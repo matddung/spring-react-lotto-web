@@ -22,4 +22,11 @@ public class ApiResponse {
         this.check = check;
         this.data = data;
     }
+
+    public static ApiResponse success(Object data) {
+        return ApiResponse.builder()
+                .check(true)
+                .data(data)
+                .build();
+    }
 }

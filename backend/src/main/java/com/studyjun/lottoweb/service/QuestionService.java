@@ -52,14 +52,14 @@ public class QuestionService {
 
         questionRepository.save(question);
 
-        ApiResponse apiResponse = ApiResponse.builder().check(true).data(Message.builder().message("고객센터에 질문이 등록되었습니다.").build()).build();
+        ApiResponse apiResponse = ApiResponse.success(Message.builder().message("고객센터에 질문이 등록되었습니다.").build());
         return ResponseEntity.ok(apiResponse);
     }
 
     public ResponseEntity<?> getAllQuestions(int page) {
         Pageable pageable = PageRequest.of(page, 10, Sort.by(Sort.Direction.DESC, "id"));
         Page<Question> questions = questionRepository.findAll(pageable);
-        return ResponseEntity.ok(ApiResponse.builder().check(true).data(questions).build());
+        return ResponseEntity.ok(ApiResponse.success(questions));
     }
 
     public ResponseEntity<?> getMyQuestions(UserPrincipal userPrincipal, int page) {
@@ -68,7 +68,7 @@ public class QuestionService {
 
         Pageable pageable = PageRequest.of(page, 10, Sort.by(Sort.Direction.DESC, "id"));
         Page<Question> questions = questionRepository.findByAuthorId(pageable, userPrincipal.getId());
-        return ResponseEntity.ok(ApiResponse.builder().check(true).data(questions).build());
+        return ResponseEntity.ok(ApiResponse.success(questions));
     }
 
     public ResponseEntity<?> showQuestionDetail(long id, UserPrincipal userPrincipal) {
@@ -82,7 +82,7 @@ public class QuestionService {
         User user = userOptional.get();
 
         if (!question.isPrivate() || user.getRole().equals("ADMIN") || question.getAuthor().equals(user)) {
-            return ResponseEntity.ok(ApiResponse.builder().check(true).data(question).build());
+            return ResponseEntity.ok(ApiResponse.success(question));
         }
 
         throw new BusinessException(ErrorCode.FORBIDDEN, "비밀글입니다.");
@@ -106,7 +106,7 @@ public class QuestionService {
 
         answerRepository.save(answer);
 
-        ApiResponse apiResponse = ApiResponse.builder().check(true).data(Message.builder().message("답변이 등록되었습니다.").build()).build();
+        ApiResponse apiResponse = ApiResponse.success(Message.builder().message("답변이 등록되었습니다.").build());
 
         return ResponseEntity.ok(apiResponse);
     }

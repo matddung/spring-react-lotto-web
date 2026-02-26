@@ -32,7 +32,7 @@ public class AdminService {
         isAdmin(userPrincipal);
         Pageable pageable = PageRequest.of(page, 10, Sort.by(Sort.Direction.DESC, "id"));
         Page<User> users = userRepository.findAll(pageable);
-        return ResponseEntity.ok(ApiResponse.builder().check(true).data(users).build());
+        return ResponseEntity.ok(ApiResponse.success(users));
     }
 
     public ResponseEntity<?> getUserHistory(Long id, UserPrincipal userPrincipal, int page) {
@@ -50,14 +50,14 @@ public class AdminService {
                 .question(questions)
                 .build();
 
-        return ResponseEntity.ok(ApiResponse.builder().check(true).data(historyResponse).build());
+        return ResponseEntity.ok(ApiResponse.success(historyResponse));
     }
 
     public ResponseEntity<?> getUnansweredQuestions(UserPrincipal userPrincipal, int page) {
         isAdmin(userPrincipal);
         Pageable pageable = PageRequest.of(page, 10, Sort.by(Sort.Direction.DESC, "id"));
         Page<Question> questions = questionRepository.findByAnswerIsNull(pageable);
-        return ResponseEntity.ok(ApiResponse.builder().check(true).data(questions).build());
+        return ResponseEntity.ok(ApiResponse.success(questions));
     }
 
     public ResponseEntity<?> deleteUser(Long id, UserPrincipal userPrincipal) {
@@ -73,7 +73,7 @@ public class AdminService {
 
         userRepository.delete(user);
 
-        return ResponseEntity.ok(ApiResponse.builder().check(true).data(Message.builder().message("유저 삭제가 완료되었습니다.").build()).build());
+        return ResponseEntity.ok(ApiResponse.success(Message.builder().message("유저 삭제가 완료되었습니다.").build()));
     }
 
     public void isAdmin(UserPrincipal userPrincipal) {

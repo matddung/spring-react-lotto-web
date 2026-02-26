@@ -71,8 +71,8 @@ const LoginForm = ({ onLoginSuccess, onLoginFailure }) => {
 
         try {
             const response = await login(loginRequest);
-            localStorage.setItem(ACCESS_TOKEN, response.accessToken);
-            localStorage.setItem(REFRESH_TOKEN, response.refreshToken);
+            localStorage.setItem(ACCESS_TOKEN, response.data.accessToken);
+            localStorage.setItem(REFRESH_TOKEN, response.data.refreshToken);
             onLoginSuccess();
             navigate("/");
         } catch (error) {

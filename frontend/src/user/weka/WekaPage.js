@@ -20,17 +20,48 @@ const WekaPage = () => {
     });
     const [alreadyReceived, setAlreadyReceived] = useState(false);
 
+    const extractResponseData = (response) => {
+        if (response && typeof response === 'object' && 'data' in response) {
+            return response.data;
+        }
+
+        return response;
+    };
+
+    const normalizeNumberList = (value) => {
+        const normalize = (items) => items
+            .map((item) => Number(item))
+            .filter((number) => Number.isFinite(number) && number >= 1 && number <= 45);
+
+        if (Array.isArray(value)) {
+            return normalize(value);
+        }
+
+        if (typeof value === 'string') {
+            const trimmedValue = value.trim();
+
+            if (!trimmedValue) {
+                return [];
+            }
+
+            return normalize(trimmedValue.split(/\s+/));
+        }
+
+        return [];
+    };
+
     useEffect(() => {
         const fetchData = async () => {
-            const userInfo = await getCurrentUserLottoInfo();
+            const userInfoResponse = await getCurrentUserLottoInfo();
+            const userInfo = extractResponseData(userInfoResponse) || {};
 
             // 미리 userInfo에 있는 값을 numbers 상태로 설정
             setNumbers({
-                random: userInfo.generateRandom ? userInfo.generateRandom.split(' ').map(Number) : [],
-                pattern: userInfo.patternRecognition ? userInfo.patternRecognition.split(' ').map(Number) : [],
-                ensemble: userInfo.ensembleLottoPrediction ? userInfo.ensembleLottoPrediction.split(' ').map(Number) : [],
-                monteCarlo: userInfo.monteCarloSimulation ? userInfo.monteCarloSimulation.split(' ').map(Number) : [],
-                top6: userInfo.top6Frequencies ? userInfo.top6Frequencies.split(' ').map(Number) : []
+                random: normalizeNumberList(userInfo.generateRandom),
+                pattern: normalizeNumberList(userInfo.patternRecognition),
+                ensemble: normalizeNumberList(userInfo.ensembleLottoPrediction),
+                monteCarlo: normalizeNumberList(userInfo.monteCarloSimulation),
+                top6: normalizeNumberList(userInfo.top6Frequencies)
             });
 
             if (userInfo.alreadyReceived) {
@@ -97,9 +128,7 @@ const WekaPage = () => {
                     return;
             }
 
-            if (!Array.isArray(data)) {
-                data = [];
-            }
+            data = normalizeNumberList(extractResponseData(data));
 
             // Save the fetched data to numbers state
             setNumbers((prevNumbers) => ({

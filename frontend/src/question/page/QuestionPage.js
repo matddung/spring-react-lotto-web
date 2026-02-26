@@ -21,20 +21,22 @@ const QuestionPage = () => {
     const itemsPerPage = 10;
     const [totalPages, setTotalPages] = useState(0);
 
+    const extractPayload = (response) => response?.data ?? response;
+    const currentUserInfo = currentUser?.information ?? currentUser?.data ?? currentUser;
+
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const questionsResponse = await getAllQuestions(currentPage - 1);
-                if (questionsResponse && questionsResponse.content) {
-                    setQuestions(questionsResponse.content);
-                    setTotalPages(questionsResponse.totalPages);
+                const questionsPayload = extractPayload(await getAllQuestions(currentPage - 1));
+                if (questionsPayload && questionsPayload.content) {
+                    setQuestions(questionsPayload.content);
+                    setTotalPages(questionsPayload.totalPages);
                 } else {
                     setQuestions([]);
                     setTotalPages(0);
                 }
 
-                const userResponse = await getCurrentUser();
-                setCurrentUser(userResponse);
+                setCurrentUser(await getCurrentUser());
 
                 setLoading(false);
             } catch (error) {
@@ -57,7 +59,7 @@ const QuestionPage = () => {
 
     const handleQuestionClick = async (questionId) => {
         try {
-            const response = await getQuestionDetail(questionId);
+            const response = extractPayload(await getQuestionDetail(questionId));
             setSelectedQuestion(response);
         } catch (error) {
             setError(error);
@@ -67,14 +69,15 @@ const QuestionPage = () => {
     const handleCreateQuestion = async (questionData) => {
         try {
             await createQuestion(questionData);
-            const questionsResponse = await getAllQuestions(currentPage - 1);
-            if (questionsResponse && questionsResponse.content) {
-                setQuestions(questionsResponse.content);
-                setTotalPages(questionsResponse.totalPages);
+            const questionsPayload = extractPayload(await getAllQuestions(0));
+            if (questionsPayload && questionsPayload.content) {
+                setQuestions(questionsPayload.content);
+                setTotalPages(questionsPayload.totalPages);
             } else {
                 setQuestions([]);
                 setTotalPages(0);
             }
+            setCurrentPage(1);
             setIsCreateModalOpen(false);
             toast.success("질문이 작성되었습니다.");
         } catch (error) {
@@ -86,12 +89,12 @@ const QuestionPage = () => {
     const handleAnswerSubmit = async (questionId, answerData) => {
         try {
             await createAnswer(questionId, answerData);
-            const response = await getQuestionDetail(questionId);
+            const response = extractPayload(await getQuestionDetail(questionId));
             setSelectedQuestion(response);
-            const questionsResponse = await getAllQuestions(currentPage - 1);
-            if (questionsResponse && questionsResponse.content) {
-                setQuestions(questionsResponse.content);
-                setTotalPages(questionsResponse.totalPages);
+            const questionsPayload = extractPayload(await getAllQuestions(currentPage - 1));
+            if (questionsPayload && questionsPayload.content) {
+                setQuestions(questionsPayload.content);
+                setTotalPages(questionsPayload.totalPages);
             } else {
                 setQuestions([]);
                 setTotalPages(0);
@@ -120,7 +123,7 @@ const QuestionPage = () => {
         if (!question.private) {
             return true;
         }
-        if (currentUser && (currentUser.information.role === 'ADMIN' || currentUser.information.id === question.author.id)) {
+        if (currentUserInfo && (currentUserInfo.role === 'ADMIN' || Number(currentUserInfo.id) === Number(question.author.id))) {
             return true;
         }
         return false;

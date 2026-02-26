@@ -106,9 +106,9 @@ public class WekaService {
         if (userLotto.getTop6Frequencies().isEmpty()) {
             userLotto.setTop6Frequencies(top6NumbersString);
             userLottoRepository.save(userLotto);
-            return ResponseEntity.ok(ApiResponse.builder().check(true).data(top6Numbers).build());
+            return ResponseEntity.ok(ApiResponse.success(top6Numbers));
         } else {
-            ApiResponse apiResponse = ApiResponse.builder().check(true).data(Message.builder().message("금주의 번호를 이미 받아보셨습니다.").build()).build();
+            ApiResponse apiResponse = ApiResponse.success(Message.builder().message("금주의 번호를 이미 받아보셨습니다.").build());
             return ResponseEntity.ok(apiResponse);
         }
     }
@@ -179,9 +179,9 @@ public class WekaService {
             if (userLotto.getPatternRecognition().isEmpty()) {
                 userLotto.setPatternRecognition(numbersString);
                 userLottoRepository.save(userLotto);
-                return ResponseEntity.ok(ApiResponse.builder().check(true).data(predictedNumbers).build());
+                return ResponseEntity.ok(ApiResponse.success(predictedNumbers));
             } else {
-                ApiResponse apiResponse = ApiResponse.builder().check(true).data(Message.builder().message("금주의 번호를 이미 받아보셨습니다.").build()).build();
+                ApiResponse apiResponse = ApiResponse.success(Message.builder().message("금주의 번호를 이미 받아보셨습니다.").build());
                 return ResponseEntity.ok(apiResponse);
             }
         } catch (Exception e) {
@@ -223,9 +223,9 @@ public class WekaService {
         if (userLotto.getGenerateRandom().isEmpty()) {
             userLotto.setGenerateRandom(numbersString);
             userLottoRepository.save(userLotto);
-            return ResponseEntity.ok(ApiResponse.builder().check(true).data(lottoNumbers).build());
+            return ResponseEntity.ok(ApiResponse.success(lottoNumbers));
         } else {
-            ApiResponse apiResponse = ApiResponse.builder().check(true).data(Message.builder().message("금주의 번호를 이미 받아보셨습니다.").build()).build();
+            ApiResponse apiResponse = ApiResponse.success(Message.builder().message("금주의 번호를 이미 받아보셨습니다.").build());
             return ResponseEntity.ok(apiResponse);
         }
     }
@@ -278,9 +278,9 @@ public class WekaService {
             if (userLotto.getEnsembleLottoPrediction().isEmpty()) {
                 userLotto.setEnsembleLottoPrediction(numbersString);
                 userLottoRepository.save(userLotto);
-                return ResponseEntity.ok(ApiResponse.builder().check(true).data(sortedLottoNumbers).build());
+                return ResponseEntity.ok(ApiResponse.success(sortedLottoNumbers));
             } else {
-                ApiResponse apiResponse = ApiResponse.builder().check(true).data(Message.builder().message("금주의 번호를 이미 받아보셨습니다.").build()).build();
+                ApiResponse apiResponse = ApiResponse.success(Message.builder().message("금주의 번호를 이미 받아보셨습니다.").build());
                 return ResponseEntity.ok(apiResponse);
             }
         } catch (Exception e) {
@@ -329,9 +329,9 @@ public class WekaService {
         if (userLotto.getMonteCarloSimulation().isEmpty()) {
             userLotto.setMonteCarloSimulation(numbersString);
             userLottoRepository.save(userLotto);
-            return ResponseEntity.ok(ApiResponse.builder().check(true).data(topNumbers).build());
+            return ResponseEntity.ok(ApiResponse.success(topNumbers));
         } else {
-            ApiResponse apiResponse = ApiResponse.builder().check(true).data(Message.builder().message("금주의 번호를 이미 받아보셨습니다.").build()).build();
+            ApiResponse apiResponse = ApiResponse.success(Message.builder().message("금주의 번호를 이미 받아보셨습니다.").build());
             return ResponseEntity.ok(apiResponse);
         }
     }
@@ -340,12 +340,12 @@ public class WekaService {
         Optional<UserLotto> optionalUserLotto = userLottoRepository.findByUserEmail(userPrincipal.getUsername());
 
         if (optionalUserLotto.isPresent()) {
-            return ResponseEntity.ok(ApiResponse.builder().check(true).data(optionalUserLotto.get()).build());
+            return ResponseEntity.ok(ApiResponse.success(optionalUserLotto.get()));
         } else {
             UserLotto userLotto = new UserLotto();
             userLotto.setUserEmail(userPrincipal.getUsername());
             userLottoRepository.save(userLotto);
-            return ResponseEntity.ok(ApiResponse.builder().check(true).data(userLotto).build());
+            return ResponseEntity.ok(ApiResponse.success(userLotto));
         }
     }
 

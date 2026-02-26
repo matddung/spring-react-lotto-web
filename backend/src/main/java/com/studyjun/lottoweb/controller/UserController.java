@@ -113,7 +113,7 @@ public class UserController {
     })
     @PostMapping(value = "/refresh")
     public ResponseEntity<?> refresh(
-            @Parameter(description = "Schemas의 RefreshTokenRequest를 참고해주세요.", required = true) @RequestBody RefreshTokenRequest refreshTokenRequest
+            @Parameter(description = "Schemas의 RefreshTokenRequest를 참고해주세요.", required = true) @Valid @RequestBody RefreshTokenRequest refreshTokenRequest
     ) {
         return userService.refresh(refreshTokenRequest);
     }

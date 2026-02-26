@@ -17,7 +17,8 @@ const QuestionDetail = ({ question, currentUser, onClose, onSubmitAnswer }) => {
         return null;
     }
 
-    const isUserAdmin = currentUser && currentUser.information.role === 'ADMIN';
+    const currentUserInfo = currentUser?.information ?? currentUser?.data ?? currentUser;
+    const isUserAdmin = currentUserInfo && currentUserInfo.role === 'ADMIN';
 
     return (
         <div className="question-detail-overlay">

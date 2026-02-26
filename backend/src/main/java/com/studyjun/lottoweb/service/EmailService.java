@@ -41,7 +41,7 @@ public class EmailService {
         message.setFrom(new InternetAddress(ADMIN_ADDRESS, findPasswordRequest.getEmail()));
         updatePassword(tempPassword, findPasswordRequest.getEmail());
         mailSender.send(message);
-        return ResponseEntity.ok(ApiResponse.builder().check(true).data(Message.builder().message("임시 비밀번호를 이메일로 발송했습니다.").build()).build());
+        return ResponseEntity.ok(ApiResponse.success(Message.builder().message("임시 비밀번호를 이메일로 발송했습니다.").build()));
     }
 
     public String getTempString() {

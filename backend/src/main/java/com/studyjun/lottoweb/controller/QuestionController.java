@@ -36,7 +36,7 @@ public class QuestionController {
     @PostMapping(value = "/create")
     public ResponseEntity<?> createQuestion(
             @Parameter(description = "Accesstoken을 입력해주세요.", required = true) @CurrentUser UserPrincipal userPrincipal,
-            @Parameter(description = "Schemas의 CreateQuestionRequest를 참고해주세요.", required = true) @RequestBody CreateQuestionRequest createQuestionRequest
+            @Parameter(description = "Schemas의 CreateQuestionRequest를 참고해주세요.", required = true) @Valid @RequestBody CreateQuestionRequest createQuestionRequest
     ) {
         return questionService.createQuestion(userPrincipal, createQuestionRequest);
     }
