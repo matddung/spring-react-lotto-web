@@ -6,6 +6,7 @@ import com.studyjun.lottoweb.dto.request.*;
 import com.studyjun.lottoweb.dto.response.ApiResponse;
 import com.studyjun.lottoweb.dto.response.AuthResponse;
 import com.studyjun.lottoweb.dto.response.Message;
+import com.studyjun.lottoweb.dto.response.UserInfoResponse;
 import com.studyjun.lottoweb.entity.Question;
 import com.studyjun.lottoweb.entity.Token;
 import com.studyjun.lottoweb.entity.User;
@@ -40,37 +41,29 @@ public class UserService {
     private final TokenRepository tokenRepository;
     private final QuestionRepository questionRepository;
 
-    public ResponseEntity<?> getCurrentUser(UserPrincipal userPrincipal) {
-        Optional<User> user = userRepository.findById(userPrincipal.getId());
-        DefaultAssert.isOptionalPresent(user);
-        ApiResponse apiResponse = ApiResponse.success(user.get());
-
-        return ResponseEntity.ok(apiResponse);
+    public UserInfoResponse getCurrentUser(UserPrincipal userPrincipal) {
+        User user = getUser(userPrincipal.getId());
+        return UserInfoResponse.from(user);
     }
 
-    public ResponseEntity<?> delete(UserPrincipal userPrincipal) {
-        Optional<User> user = userRepository.findById(userPrincipal.getId());
-        DefaultAssert.isTrue(user.isPresent(), "유저가 올바르지 않습니다.");
+    public Message delete(UserPrincipal userPrincipal) {
+        User user = getUser(userPrincipal.getId());
 
-        Optional<Token> token = tokenRepository.findByUserEmail(user.get().getEmail());
+        Optional<Token> token = tokenRepository.findByUserEmail(user.getEmail());
         DefaultAssert.isTrue(token.isPresent(), "토큰이 유효하지 않습니다.");
 
-        List<Question> questions = questionRepository.findByAuthorId(user.get().getId());
+        List<Question> questions = questionRepository.findByAuthorId(user.getId());
         questionRepository.deleteAll(questions);
 
-        userRepository.delete(user.get());
+        userRepository.delete(user);
         tokenRepository.delete(token.get());
 
-        ApiResponse apiResponse = ApiResponse.success(Message.builder().message("회원 탈퇴가 성공하셨습니다.").build());
-
-        return ResponseEntity.ok(apiResponse);
+        return Message.builder().message("회원 탈퇴가 성공하셨습니다.").build();
     }
 
-    public ResponseEntity<?> passwordModify(UserPrincipal userPrincipal, ChangePasswordRequest passwordChangeRequest) {
-        Optional<User> userOptional = userRepository.findById(userPrincipal.getId());
-        DefaultAssert.isTrue(userOptional.isPresent(), "사용자를 찾을 수 없습니다.");
+    public Message passwordModify(UserPrincipal userPrincipal, ChangePasswordRequest passwordChangeRequest) {
+        User user = getUser(userPrincipal.getId());
 
-        User user = userOptional.get();
         boolean passwordCheck = passwordEncoder.matches(passwordChangeRequest.getOldPassword(), user.getPassword());
         DefaultAssert.isTrue(passwordCheck, "잘못된 비밀번호 입니다.");
 
@@ -81,16 +74,12 @@ public class UserService {
 
         userRepository.save(user);
 
-        ApiResponse apiResponse = ApiResponse.success(Message.builder().message("비밀번호 변경에 성공하였습니다.").build());
-
-        return ResponseEntity.ok(apiResponse);
+        return Message.builder().message("비밀번호 변경에 성공하였습니다.").build();
     }
 
-    public ResponseEntity<?> nicknameModify(UserPrincipal userPrincipal, ChangeNicknameRequest nicknameRequest) {
-        Optional<User> userOptional = userRepository.findById(userPrincipal.getId());
-        DefaultAssert.isTrue(userOptional.isPresent(), "사용자를 찾을 수 없습니다.");
+    public Message nicknameModify(UserPrincipal userPrincipal, ChangeNicknameRequest nicknameRequest) {
+        User user = getUser(userPrincipal.getId());
 
-        User user = userOptional.get();
         boolean nicknameCheck = userRepository.existsByNickname(nicknameRequest.getNewNickname());
         DefaultAssert.isTrue(!nicknameCheck, "중복된 닉네임입니다.");
 
@@ -98,12 +87,10 @@ public class UserService {
 
         userRepository.save(user);
 
-        ApiResponse apiResponse = ApiResponse.success(Message.builder().message("닉네임 변경에 성공하였습니다.").build());
-
-        return ResponseEntity.ok(apiResponse);
+        return Message.builder().message("닉네임 변경에 성공하였습니다.").build();
     }
 
-    public ResponseEntity<?> signIn(SignInRequest signInRequest) {
+    public AuthResponse signIn(SignInRequest signInRequest) {
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
                         signInRequest.getEmail(),
@@ -120,13 +107,10 @@ public class UserService {
                 .build();
         tokenRepository.save(token);
 
-        AuthResponse authResponse = AuthResponse.builder().accessToken(tokenDto.getAccessToken()).refreshToken(token.getRefreshToken()).build();
-        ApiResponse apiResponse = ApiResponse.success(authResponse);
-
-        return ResponseEntity.ok(apiResponse);
+        return AuthResponse.builder().accessToken(tokenDto.getAccessToken()).refreshToken(token.getRefreshToken()).build();
     }
 
-    public ResponseEntity<?> signUp(SignUpRequest signUpRequest) {
+    public Message signUp(SignUpRequest signUpRequest) {
         DefaultAssert.isTrue(!userRepository.existsByEmail(signUpRequest.getEmail()), "해당 이메일이 이미 존재합니다.");
 
         DefaultAssert.isTrue(!userRepository.existsByNickname(signUpRequest.getName()), "해당 닉네임이 이미 존재합니다.");
@@ -142,18 +126,11 @@ public class UserService {
 
         userRepository.save(user);
 
-        URI location = ServletUriComponentsBuilder
-                .fromCurrentContextPath().path("/auth/")
-                .buildAndExpand(user.getId()).toUri();
-
-        ApiResponse apiResponse = ApiResponse.success(Message.builder().message("회원가입에 성공하였습니다.").build());
-
-        return ResponseEntity.created(location).body(apiResponse);
+        return Message.builder().message("회원가입에 성공하였습니다.").build();
     }
 
-    public ResponseEntity<?> refresh(RefreshTokenRequest tokenRefreshRequest) {
-        boolean checkValid = valid(tokenRefreshRequest.getRefreshToken());
-        DefaultAssert.isAuthentication(checkValid);
+    public AuthResponse refresh(RefreshTokenRequest tokenRefreshRequest) {
+        valid(tokenRefreshRequest.getRefreshToken());
 
         Optional<Token> token = tokenRepository.findByRefreshToken(tokenRefreshRequest.getRefreshToken());
         Authentication authentication = customTokenProviderService.getAuthenticationByEmail(token.get().getUserEmail());
@@ -165,31 +142,28 @@ public class UserService {
             tokenDto = customTokenProviderService.refreshToken(authentication, token.get().getRefreshToken());
         } else {
             tokenDto = customTokenProviderService.createToken(authentication);
-        }        
+        }
 
         Token updateToken = token.get().updateRefreshToken(tokenDto.getRefreshToken());
         tokenRepository.save(updateToken);
 
         AuthResponse authResponse = AuthResponse.builder().accessToken(tokenDto.getAccessToken()).refreshToken(updateToken.getRefreshToken()).build();
-        ApiResponse apiResponse = ApiResponse.success(authResponse);
 
         log.info("authResponse : {}", authResponse);
 
-        return ResponseEntity.ok(apiResponse);
+        return authResponse;
     }
 
-    public ResponseEntity<?> logout(RefreshTokenRequest tokenRefreshRequest) {
-        boolean checkValid = valid(tokenRefreshRequest.getRefreshToken());
-        DefaultAssert.isAuthentication(checkValid);
+    public Message logout(RefreshTokenRequest tokenRefreshRequest) {
+        valid(tokenRefreshRequest.getRefreshToken());
 
         Optional<Token> token = tokenRepository.findByRefreshToken(tokenRefreshRequest.getRefreshToken());
         tokenRepository.delete(token.get());
-        ApiResponse apiResponse = ApiResponse.success(Message.builder().message("로그아웃 하였습니다.").build());
 
-        return ResponseEntity.ok(apiResponse);
+        return Message.builder().message("로그아웃 하였습니다.").build();
     }
 
-    private boolean valid(String refreshToken) {
+    private void valid(String refreshToken) {
         boolean validateCheck = customTokenProviderService.validateToken(refreshToken);
         DefaultAssert.isTrue(validateCheck, "Token 검증에 실패하였습니다.");
 
@@ -198,7 +172,11 @@ public class UserService {
 
         Authentication authentication = customTokenProviderService.getAuthenticationByEmail(token.get().getUserEmail());
         DefaultAssert.isTrue(token.get().getUserEmail().equals(authentication.getName()), "사용자 인증에 실패하였습니다.");
+    }
 
-        return true;
+    private User getUser(Long userId) {
+        Optional<User> userOptional = userRepository.findById(userId);
+        DefaultAssert.isTrue(userOptional.isPresent(), "사용자를 찾을 수 없습니다.");
+        return userOptional.get();
     }
 }

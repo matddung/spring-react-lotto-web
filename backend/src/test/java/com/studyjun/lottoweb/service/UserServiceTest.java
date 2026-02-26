@@ -69,27 +69,14 @@ class UserServiceTest {
         request.setName("newUser");
         request.setPassword("Passw0rd!");
 
-        MockHttpServletRequest servletRequest = new MockHttpServletRequest();
-        servletRequest.setScheme("http");
-        servletRequest.setServerName("localhost");
-        servletRequest.setServerPort(8080);
-        servletRequest.setContextPath("");
-        RequestContextHolder.setRequestAttributes(new ServletRequestAttributes(servletRequest));
-        try {
-            when(userRepository.existsByEmail("new@test.com")).thenReturn(false);
-            when(userRepository.existsByNickname("newUser")).thenReturn(false);
-            when(passwordEncoder.encode("Passw0rd!")).thenReturn("encodedPwd");
+        when(userRepository.existsByEmail("new@test.com")).thenReturn(false);
+        when(userRepository.existsByNickname("newUser")).thenReturn(false);
+        when(passwordEncoder.encode("Passw0rd!")).thenReturn("encodedPwd");
 
-            ResponseEntity<?> response = userService.signUp(request);
+        Message response = userService.signUp(request);
 
-            assertThat(response.getStatusCode()).isEqualTo(HttpStatus.CREATED);
-            ApiResponse body = (ApiResponse) response.getBody();
-            Message message = (Message) body.getData();
-            assertThat(message.getMessage()).isEqualTo("회원가입에 성공하였습니다.");
-            verify(userRepository).save(any(User.class));
-        } finally {
-            RequestContextHolder.resetRequestAttributes();
-        }
+        assertThat(response.getMessage()).isEqualTo("회원가입에 성공하였습니다.");
+        verify(userRepository).save(any(User.class));
     }
 
     @DisplayName("nicknameModify: 중복이 아니면 닉네임 변경에 성공한다")
@@ -102,13 +89,9 @@ class UserServiceTest {
         when(userRepository.findById(1L)).thenReturn(Optional.of(user));
         when(userRepository.existsByNickname("newNick")).thenReturn(false);
 
-        ResponseEntity<?> response = userService.nicknameModify(userPrincipal(1L), request);
+        Message response = userService.nicknameModify(userPrincipal(1L), request);
 
-        assertThat(response.getStatusCode().is2xxSuccessful()).isTrue();
-        ApiResponse body = (ApiResponse) response.getBody();
-        Message message = (Message) body.getData();
-        assertThat(message.getMessage()).isEqualTo("닉네임 변경에 성공하였습니다.");
-        verify(userRepository).save(user);
+        assertThat(response.getMessage()).isEqualTo("닉네임 변경에 성공하였습니다.");
     }
 
     @DisplayName("passwordModify: 기존 비밀번호와 신규 확인값이 맞으면 변경 성공")
@@ -124,13 +107,9 @@ class UserServiceTest {
         when(passwordEncoder.matches("oldPwd", user.getPassword())).thenReturn(true);
         when(passwordEncoder.encode("Newpass1!")).thenReturn("encodedNewPwd");
 
-        ResponseEntity<?> response = userService.passwordModify(userPrincipal(1L), request);
+        Message response = userService.passwordModify(userPrincipal(1L), request);
 
-        assertThat(response.getStatusCode().is2xxSuccessful()).isTrue();
-        ApiResponse body = (ApiResponse) response.getBody();
-        Message message = (Message) body.getData();
-        assertThat(message.getMessage()).isEqualTo("비밀번호 변경에 성공하였습니다.");
-        verify(userRepository).save(user);
+        assertThat(response.getMessage()).isEqualTo("비밀번호 변경에 성공하였습니다.");
     }
 
     @DisplayName("signUp: 이메일이 중복이면 BusinessException(INVALID_INPUT_VALUE)이 발생한다")

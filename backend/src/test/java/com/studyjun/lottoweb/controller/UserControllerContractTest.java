@@ -5,6 +5,7 @@ import com.studyjun.lottoweb.dto.request.RefreshTokenRequest;
 import com.studyjun.lottoweb.dto.request.SignInRequest;
 import com.studyjun.lottoweb.dto.request.SignUpRequest;
 import com.studyjun.lottoweb.dto.response.ApiResponse;
+import com.studyjun.lottoweb.dto.response.ApiResponseFactory;
 import com.studyjun.lottoweb.dto.response.AuthResponse;
 import com.studyjun.lottoweb.dto.response.Message;
 import com.studyjun.lottoweb.exception.BusinessException;
@@ -42,6 +43,9 @@ class UserControllerContractTest {
     @Mock
     private EmailService emailService;
 
+    @Mock
+    private ApiResponseFactory apiResponseFactory;
+
     @InjectMocks
     private UserController userController;
 
@@ -63,9 +67,10 @@ class UserControllerContractTest {
     @DisplayName("성공 응답 계약: signUp은 check=true와 data.message를 반환한다")
     @Test
     void signUp_success_contract() throws Exception {
-        ApiResponse body = ApiResponse.success(Message.builder().message("회원가입에 성공하였습니다.").build());
-        doReturn((ResponseEntity<?>) ResponseEntity.status(HttpStatus.CREATED).body(body))
-                .when(userService).signUp(any(SignUpRequest.class));
+        Message message = Message.builder().message("회원가입에 성공하였습니다.").build();
+        ApiResponse body = ApiResponse.success(message);
+        when(userService.signUp(any(SignUpRequest.class))).thenReturn(message);
+        when(apiResponseFactory.created(any())).thenReturn(ResponseEntity.status(201).body(body));
 
         SignUpRequest request = new SignUpRequest();
         request.setName("tester");
@@ -84,10 +89,10 @@ class UserControllerContractTest {
     @DisplayName("성공 응답 계약: signIn은 check=true와 토큰 필드를 반환한다")
     @Test
     void signIn_success_contract() throws Exception {
-        ApiResponse body = ApiResponse.success(
-                AuthResponse.builder().accessToken("access-token").refreshToken("refresh-token").build()
-        );
-        doReturn((ResponseEntity<?>) ResponseEntity.ok(body)).when(userService).signIn(any(SignInRequest.class));
+        AuthResponse authResponse = AuthResponse.builder().accessToken("access-token").refreshToken("refresh-token").build();
+        ApiResponse body = ApiResponse.success(authResponse);
+        when(userService.signIn(any(SignInRequest.class))).thenReturn(authResponse);
+        when(apiResponseFactory.ok(any())).thenReturn(ResponseEntity.ok(body));
 
         SignInRequest request = new SignInRequest();
         request.setEmail("tester@test.com");
@@ -107,10 +112,10 @@ class UserControllerContractTest {
     @DisplayName("성공 응답 계약: refresh는 check=true와 토큰 필드를 반환한다")
     @Test
     void refresh_success_contract() throws Exception {
-        ApiResponse body = ApiResponse.success(
-                AuthResponse.builder().accessToken("new-access").refreshToken("new-refresh").build()
-        );
-        doReturn((ResponseEntity<?>) ResponseEntity.ok(body)).when(userService).refresh(any(RefreshTokenRequest.class));
+        AuthResponse authResponse = AuthResponse.builder().accessToken("new-access").refreshToken("new-refresh").build();
+        ApiResponse body = ApiResponse.success(authResponse);
+        when(userService.refresh(any(RefreshTokenRequest.class))).thenReturn(authResponse);
+        when(apiResponseFactory.ok(any())).thenReturn(ResponseEntity.ok(body));
 
         RefreshTokenRequest request = new RefreshTokenRequest();
         request.setRefreshToken("valid-refresh-token");

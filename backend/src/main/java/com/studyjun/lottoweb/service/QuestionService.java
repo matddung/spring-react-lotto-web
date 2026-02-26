@@ -2,9 +2,7 @@ package com.studyjun.lottoweb.service;
 
 import com.studyjun.lottoweb.dto.request.CreateAnswerRequest;
 import com.studyjun.lottoweb.dto.request.CreateQuestionRequest;
-import com.studyjun.lottoweb.dto.response.ApiResponse;
-import com.studyjun.lottoweb.dto.response.ErrorResponse;
-import com.studyjun.lottoweb.dto.response.Message;
+import com.studyjun.lottoweb.dto.response.*;
 import com.studyjun.lottoweb.entity.Answer;
 import com.studyjun.lottoweb.entity.Question;
 import com.studyjun.lottoweb.entity.User;
@@ -38,60 +36,55 @@ public class QuestionService {
     private final UserRepository userRepository;
     private final AnswerRepository answerRepository;
 
-    public ResponseEntity<?> createQuestion(UserPrincipal userPrincipal, CreateQuestionRequest createQuestionRequest) {
-        Optional<User> userOptional = userRepository.findById(userPrincipal.getId());
-        DefaultAssert.isTrue(userOptional.isPresent(), "사용자를 찾을 수 없습니다.");
+    public Message createQuestion(UserPrincipal userPrincipal, CreateQuestionRequest createQuestionRequest) {
+        User user = getUser(userPrincipal.getId());
 
         Question question = Question.builder()
                 .subject(createQuestionRequest.getSubject())
                 .content(createQuestionRequest.getContent())
-                .author(userOptional.get())
+                .author(user)
                 .createdDate(LocalDateTime.now())
                 .isPrivate(createQuestionRequest.getIsPrivate())
                 .build();
 
         questionRepository.save(question);
 
-        ApiResponse apiResponse = ApiResponse.success(Message.builder().message("고객센터에 질문이 등록되었습니다.").build());
-        return ResponseEntity.ok(apiResponse);
+        return Message.builder().message("고객센터에 질문이 등록되었습니다.").build();
     }
 
-    public ResponseEntity<?> getAllQuestions(int page) {
+    public QuestionPageResponse getAllQuestions(int page) {
         Pageable pageable = PageRequest.of(page, 10, Sort.by(Sort.Direction.DESC, "id"));
         Page<Question> questions = questionRepository.findAll(pageable);
-        return ResponseEntity.ok(ApiResponse.success(questions));
+        return toQuestionPageResponse(questions);
     }
 
-    public ResponseEntity<?> getMyQuestions(UserPrincipal userPrincipal, int page) {
-        Optional<User> userOptional = userRepository.findById(userPrincipal.getId());
-        DefaultAssert.isTrue(userOptional.isPresent(), "사용자를 찾을 수 없습니다.");
+    public QuestionPageResponse getMyQuestions(UserPrincipal userPrincipal, int page) {
+        User user = getUser(userPrincipal.getId());
 
         Pageable pageable = PageRequest.of(page, 10, Sort.by(Sort.Direction.DESC, "id"));
-        Page<Question> questions = questionRepository.findByAuthorId(pageable, userPrincipal.getId());
-        return ResponseEntity.ok(ApiResponse.success(questions));
+        Page<Question> questions = questionRepository.findByAuthorId(pageable, user.getId());
+        return toQuestionPageResponse(questions);
     }
 
-    public ResponseEntity<?> showQuestionDetail(long id, UserPrincipal userPrincipal) {
+    public QuestionDetailResponse showQuestionDetail(long id, UserPrincipal userPrincipal) {
         Optional<Question> questionOptional = questionRepository.findById(id);
         DefaultAssert.isTrue(questionOptional.isPresent(), "질문을 찾을 수 없습니다.");
 
         Question question = questionOptional.get();
 
-        Optional<User> userOptional = userRepository.findById(userPrincipal.getId());
-        DefaultAssert.isTrue(userOptional.isPresent(), "사용자를 찾을 수 없습니다.");
-        User user = userOptional.get();
+        User user = getUser(userPrincipal.getId());
 
         if (!question.isPrivate() || user.getRole().equals("ADMIN") || question.getAuthor().equals(user)) {
-            return ResponseEntity.ok(ApiResponse.success(question));
+            return QuestionDetailResponse.from(question);
         }
 
         throw new BusinessException(ErrorCode.FORBIDDEN, "비밀글입니다.");
     }
 
-    public ResponseEntity<?> createAnswer(long questionId, UserPrincipal userPrincipal, CreateAnswerRequest createAnswerRequest) {
-        Optional<User> userOptional = userRepository.findById(userPrincipal.getId());
+    public Message createAnswer(long questionId, UserPrincipal userPrincipal, CreateAnswerRequest createAnswerRequest) {
+        User user = getUser(userPrincipal.getId());
 
-        boolean isManager = userOptional.get().getRole().equals("ADMIN");
+        boolean isManager = user.getRole().equals("ADMIN");
         DefaultAssert.isTrue(isManager, "관리자 권한이 없습니다.");
 
         Optional<Question> questionOptional = questionRepository.findById(questionId);
@@ -106,8 +99,22 @@ public class QuestionService {
 
         answerRepository.save(answer);
 
-        ApiResponse apiResponse = ApiResponse.success(Message.builder().message("답변이 등록되었습니다.").build());
+        return Message.builder().message("답변이 등록되었습니다.").build();
+    }
 
-        return ResponseEntity.ok(apiResponse);
+    private QuestionPageResponse toQuestionPageResponse(Page<Question> questions) {
+        return QuestionPageResponse.builder()
+                .content(questions.getContent().stream().map(QuestionSummaryResponse::from).toList())
+                .page(questions.getNumber())
+                .size(questions.getSize())
+                .totalElements(questions.getTotalElements())
+                .totalPages(questions.getTotalPages())
+                .build();
+    }
+
+    private User getUser(Long userId) {
+        Optional<User> userOptional = userRepository.findById(userId);
+        DefaultAssert.isTrue(userOptional.isPresent(), "사용자를 찾을 수 없습니다.");
+        return userOptional.get();
     }
 }

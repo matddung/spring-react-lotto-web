@@ -1,9 +1,7 @@
 package com.studyjun.lottoweb.controller;
 
 import com.studyjun.lottoweb.dto.request.*;
-import com.studyjun.lottoweb.dto.response.AuthResponse;
-import com.studyjun.lottoweb.dto.response.ErrorResponse;
-import com.studyjun.lottoweb.dto.response.Message;
+import com.studyjun.lottoweb.dto.response.*;
 import com.studyjun.lottoweb.entity.User;
 import com.studyjun.lottoweb.security.CurrentUser;
 import com.studyjun.lottoweb.security.UserPrincipal;
@@ -31,6 +29,7 @@ import java.io.UnsupportedEncodingException;
 public class UserController {
     private final UserService userService;
     private final EmailService emailService;
+    private final ApiResponseFactory apiResponseFactory;
 
     @Operation(summary = "유저 정보 확인", description = "현재 접속된 유저정보를 확인합니다.")
     @ApiResponses(value = {
@@ -41,7 +40,8 @@ public class UserController {
     public ResponseEntity<?> getCurrentUser(
             @Parameter(description = "Accesstoken을 입력해주세요.", required = true) @CurrentUser UserPrincipal userPrincipal
     ) {
-        return userService.getCurrentUser(userPrincipal);
+        UserInfoResponse response = userService.getCurrentUser(userPrincipal);
+        return apiResponseFactory.ok(response);
     }
 
     @Operation(summary = "유저 탈퇴", description = "현재 접속된 유저정보를 삭제합니다.")
@@ -53,7 +53,8 @@ public class UserController {
     public ResponseEntity<?> delete(
             @Parameter(description = "Accesstoken을 입력해주세요.", required = true) @CurrentUser UserPrincipal userPrincipal
     ) {
-        return userService.delete(userPrincipal);
+        Message response = userService.delete(userPrincipal);
+        return apiResponseFactory.ok(response);
     }
 
     @Operation(summary = "유저 비밀번호 수정", description = "현재 접속된 유저의 비밀번호를 새로 지정합니다.")
@@ -66,7 +67,8 @@ public class UserController {
             @Parameter(description = "Accesstoken을 입력해주세요.", required = true) @CurrentUser UserPrincipal userPrincipal,
             @Parameter(description = "Schemas의 ChangePasswordRequest를 참고해주세요.", required = true) @Valid @RequestBody ChangePasswordRequest passwordChangeRequest
     ) {
-        return userService.passwordModify(userPrincipal, passwordChangeRequest);
+        Message response = userService.passwordModify(userPrincipal, passwordChangeRequest);
+        return apiResponseFactory.ok(response);
     }
 
     @Operation(summary = "유저 닉네임 수정", description = "현재 접속된 유저의 닉네임을 새로 지정합니다.")
@@ -79,7 +81,8 @@ public class UserController {
             @Parameter(description = "Accesstoken을 입력해주세요.", required = true) @CurrentUser UserPrincipal userPrincipal,
             @Parameter(description = "Schemas의 ChangeNicknameRequest를 참고해주세요.", required = true) @Valid @RequestBody ChangeNicknameRequest nicknameChangeRequest
     ) {
-        return userService.nicknameModify(userPrincipal, nicknameChangeRequest);
+        Message response = userService.nicknameModify(userPrincipal, nicknameChangeRequest);
+        return apiResponseFactory.ok(response);
     }
 
     @Operation(summary = "유저 로그인", description = "유저 로그인을 수행합니다.")
@@ -91,7 +94,8 @@ public class UserController {
     public ResponseEntity<?> signIn(
             @Parameter(description = "Schemas의 SignInRequest를 참고해주세요.", required = true) @Valid @RequestBody SignInRequest signInRequest
     ) {
-        return userService.signIn(signInRequest);
+        AuthResponse response = userService.signIn(signInRequest);
+        return apiResponseFactory.ok(response);
     }
 
     @Operation(summary = "유저 회원가입", description = "유저 회원가입을 수행합니다.")
@@ -103,7 +107,8 @@ public class UserController {
     public ResponseEntity<?> signUp(
             @Parameter(description = "Schemas의 SignUpRequest를 참고해주세요.", required = true) @Valid @RequestBody SignUpRequest signUpRequest
     ) {
-        return userService.signUp(signUpRequest);
+        Message response = userService.signUp(signUpRequest);
+        return apiResponseFactory.created(response);
     }
 
     @Operation(summary = "토큰 갱신", description = "신규 토큰 갱신을 수행합니다.")
@@ -115,7 +120,8 @@ public class UserController {
     public ResponseEntity<?> refresh(
             @Parameter(description = "Schemas의 RefreshTokenRequest를 참고해주세요.", required = true) @Valid @RequestBody RefreshTokenRequest refreshTokenRequest
     ) {
-        return userService.refresh(refreshTokenRequest);
+        AuthResponse response = userService.refresh(refreshTokenRequest);
+        return apiResponseFactory.ok(response);
     }
 
     @Operation(summary = "유저 로그아웃", description = "유저 로그아웃을 수행합니다.")
@@ -128,7 +134,8 @@ public class UserController {
             @Parameter(description = "Accesstoken을 입력해주세요.", required = true) @CurrentUser UserPrincipal userPrincipal,
             @Parameter(description = "Schemas의 RefreshTokenRequest를 참고해주세요.", required = true) @Valid @RequestBody RefreshTokenRequest tokenRefreshRequest
     ) {
-        return userService.logout(tokenRefreshRequest);
+        Message response = userService.logout(tokenRefreshRequest);
+        return apiResponseFactory.ok(response);
     }
 
     @Operation(summary = "임시 비밀번호 메일 보내기", description = "유저의 이메일로 임시 비밀번호를 보냅니다.")
@@ -140,6 +147,7 @@ public class UserController {
     public ResponseEntity<?> findPassword (
             @Parameter(description = "Schemas의 FindPasswordRequest를 참고해주세요.", required = true) @Valid @RequestBody FindPasswordRequest findPasswordRequest
     ) throws MessagingException, UnsupportedEncodingException {
-        return emailService.sendTempPasswordMail(findPasswordRequest);
+        Message response = emailService.sendTempPasswordMail(findPasswordRequest);
+        return apiResponseFactory.ok(response);
     }
 }

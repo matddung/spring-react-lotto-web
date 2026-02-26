@@ -3,8 +3,7 @@ package com.studyjun.lottoweb.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.studyjun.lottoweb.dto.request.CreateAnswerRequest;
 import com.studyjun.lottoweb.dto.request.CreateQuestionRequest;
-import com.studyjun.lottoweb.dto.response.ApiResponse;
-import com.studyjun.lottoweb.dto.response.Message;
+import com.studyjun.lottoweb.dto.response.*;
 import com.studyjun.lottoweb.exception.BusinessException;
 import com.studyjun.lottoweb.exception.CustomExceptionHandler;
 import com.studyjun.lottoweb.exception.ErrorCode;
@@ -22,6 +21,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 
@@ -40,6 +40,9 @@ class QuestionControllerContractTest {
 
     @Mock
     private QuestionService questionService;
+
+    @Mock
+    private ApiResponseFactory apiResponseFactory;
 
     @InjectMocks
     private QuestionController questionController;
@@ -62,8 +65,10 @@ class QuestionControllerContractTest {
     @DisplayName("성공 계약: create 질문 생성은 check=true와 data.message를 반환한다")
     @Test
     void createQuestion_success_contract() throws Exception {
-        ApiResponse response = ApiResponse.success(Message.builder().message("고객센터에 질문이 등록되었습니다.").build());
-        doReturn((ResponseEntity<?>) ResponseEntity.ok(response)).when(questionService).createQuestion(any(), any(CreateQuestionRequest.class));
+        Message message = Message.builder().message("고객센터에 질문이 등록되었습니다.").build();
+        ApiResponse response = ApiResponse.success(message);
+        when(questionService.createQuestion(any(), any(CreateQuestionRequest.class))).thenReturn(message);
+        when(apiResponseFactory.ok(any())).thenReturn(ResponseEntity.ok(response));
 
         CreateQuestionRequest request = new CreateQuestionRequest();
         request.setSubject("문의");
@@ -81,8 +86,16 @@ class QuestionControllerContractTest {
     @DisplayName("성공 계약: list는 check=true와 data.content를 반환한다")
     @Test
     void getAllQuestions_success_contract() throws Exception {
-        ApiResponse response = ApiResponse.success(Map.of("content", List.of(Map.of("id", 1L))));
-        doReturn((ResponseEntity<?>) ResponseEntity.ok(response)).when(questionService).getAllQuestions(anyInt());
+        QuestionPageResponse pageResponse = QuestionPageResponse.builder()
+                .content(List.of(QuestionSummaryResponse.builder().id(1L).subject("제목").authorNickname("user").isPrivate(false).createdDate(LocalDateTime.now()).build()))
+                .page(0)
+                .size(10)
+                .totalElements(1)
+                .totalPages(1)
+                .build();
+        ApiResponse response = ApiResponse.success(pageResponse);
+        when(questionService.getAllQuestions(anyInt())).thenReturn(pageResponse);
+        when(apiResponseFactory.ok(any())).thenReturn(ResponseEntity.ok(response));
 
         mockMvc.perform(get("/api/question/list").param("page", "0"))
                 .andExpect(status().isOk())
@@ -93,8 +106,10 @@ class QuestionControllerContractTest {
     @DisplayName("성공 계약: answer 생성은 check=true와 data.message를 반환한다")
     @Test
     void createAnswer_success_contract() throws Exception {
-        ApiResponse response = ApiResponse.success(Message.builder().message("답변이 등록되었습니다.").build());
-        doReturn((ResponseEntity<?>) ResponseEntity.ok(response)).when(questionService).createAnswer(anyLong(), any(), any(CreateAnswerRequest.class));
+        Message message = Message.builder().message("답변이 등록되었습니다.").build();
+        ApiResponse response = ApiResponse.success(message);
+        when(questionService.createAnswer(anyLong(), any(), any(CreateAnswerRequest.class))).thenReturn(message);
+        when(apiResponseFactory.ok(any())).thenReturn(ResponseEntity.ok(response));
 
         CreateAnswerRequest request = new CreateAnswerRequest();
         request.setSubject("답변 제목");

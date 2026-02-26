@@ -2,6 +2,7 @@ package com.studyjun.lottoweb.controller;
 
 import com.studyjun.lottoweb.dto.request.CreateAnswerRequest;
 import com.studyjun.lottoweb.dto.request.CreateQuestionRequest;
+import com.studyjun.lottoweb.dto.response.ApiResponseFactory;
 import com.studyjun.lottoweb.dto.response.ErrorResponse;
 import com.studyjun.lottoweb.dto.response.Message;
 import com.studyjun.lottoweb.entity.Question;
@@ -27,6 +28,7 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/question")
 public class QuestionController {
     private final QuestionService questionService;
+    private final ApiResponseFactory apiResponseFactory;
 
     @Operation(summary = "고객센터 질문 등록", description = "고객센터에 질문 글을 남깁니다.")
     @ApiResponses(value = {
@@ -38,7 +40,8 @@ public class QuestionController {
             @Parameter(description = "Accesstoken을 입력해주세요.", required = true) @CurrentUser UserPrincipal userPrincipal,
             @Parameter(description = "Schemas의 CreateQuestionRequest를 참고해주세요.", required = true) @Valid @RequestBody CreateQuestionRequest createQuestionRequest
     ) {
-        return questionService.createQuestion(userPrincipal, createQuestionRequest);
+        Message response = questionService.createQuestion(userPrincipal, createQuestionRequest);
+        return apiResponseFactory.ok(response);
     }
 
     @Operation(summary = "고객센터 질문 목록", description = "고객센터에 있는 전체 질문 리스트를 불러옵니다.")
@@ -50,7 +53,7 @@ public class QuestionController {
     public ResponseEntity<?> getAllQuestions(
             @Parameter(description = "원하시는 page(int)를 입력해주세요.", required = true) @RequestParam int page
     ) {
-        return questionService.getAllQuestions(page);
+        return apiResponseFactory.ok(questionService.getAllQuestions(page));
     }
 
     @Operation(summary = "내 고객센터 질문 목록", description = "고객센터에 있는 내 질문 리스트를 불러옵니다.")
@@ -63,7 +66,7 @@ public class QuestionController {
             @Parameter(description = "Accesstoken을 입력해주세요.", required = true) @CurrentUser UserPrincipal userPrincipal,
             @Parameter(description = "원하시는 page(int)를 입력해주세요.", required = true) @RequestParam int page
     ) {
-        return questionService.getMyQuestions(userPrincipal, page);
+        return apiResponseFactory.ok(questionService.getMyQuestions(userPrincipal, page));
     }
 
     @Operation(summary = "고객센터 질문 보기", description = "질문을 상세히 봅니다.")
@@ -76,7 +79,7 @@ public class QuestionController {
             @Parameter(description = "Question의 id(PK)를 입력해주세요", required = true) @RequestParam long id,
             @Parameter(description = "Accesstoken을 입력해주세요.", required = true) @CurrentUser UserPrincipal userPrincipal
     ) {
-        return questionService.showQuestionDetail(id, userPrincipal);
+        return apiResponseFactory.ok(questionService.showQuestionDetail(id, userPrincipal));
     }
 
     @Operation(summary = "질문에 답변 달기(ADMIN 전용)", description = "질문에 답변을 답니다. ADMIN 계정만 사용할 수 있는 기능입니다.")
@@ -90,6 +93,7 @@ public class QuestionController {
             @Parameter(description = "Accesstoken을 입력해주세요.", required = true) @CurrentUser UserPrincipal userPrincipal,
             @Parameter(description = "Schemas의 CreateAnswerRequest를 참고해주세요.", required = true) @Valid @RequestBody CreateAnswerRequest createAnswerRequest
     ) {
-        return questionService.createAnswer(id, userPrincipal, createAnswerRequest);
+        Message response = questionService.createAnswer(id, userPrincipal, createAnswerRequest);
+        return apiResponseFactory.ok(response);
     }
 }

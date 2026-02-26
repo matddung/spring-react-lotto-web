@@ -4,6 +4,8 @@ import com.studyjun.lottoweb.dto.request.CreateAnswerRequest;
 import com.studyjun.lottoweb.dto.request.CreateQuestionRequest;
 import com.studyjun.lottoweb.dto.response.ApiResponse;
 import com.studyjun.lottoweb.dto.response.Message;
+import com.studyjun.lottoweb.dto.response.QuestionDetailResponse;
+import com.studyjun.lottoweb.dto.response.QuestionPageResponse;
 import com.studyjun.lottoweb.entity.Question;
 import com.studyjun.lottoweb.entity.User;
 import com.studyjun.lottoweb.exception.BusinessException;
@@ -18,6 +20,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.test.util.ReflectionTestUtils;
@@ -58,12 +62,9 @@ class QuestionServiceTest {
 
         when(userRepository.findById(1L)).thenReturn(Optional.of(user));
 
-        ResponseEntity<?> response = questionService.createQuestion(userPrincipal, request);
+        Message response = questionService.createQuestion(userPrincipal, request);
 
-        assertThat(response.getStatusCode().is2xxSuccessful()).isTrue();
-        ApiResponse body = (ApiResponse) response.getBody();
-        Message message = (Message) body.getData();
-        assertThat(message.getMessage()).isEqualTo("고객센터에 질문이 등록되었습니다.");
+        assertThat(response.getMessage()).isEqualTo("고객센터에 질문이 등록되었습니다.");
         verify(questionRepository).save(any(Question.class));
     }
 
@@ -82,12 +83,25 @@ class QuestionServiceTest {
         when(questionRepository.findById(10L)).thenReturn(Optional.of(question));
         when(userRepository.findById(1L)).thenReturn(Optional.of(viewer));
 
-        ResponseEntity<?> response = questionService.showQuestionDetail(10L, userPrincipal(1L));
+        QuestionDetailResponse response = questionService.showQuestionDetail(10L, userPrincipal(1L));
 
-        assertThat(response.getStatusCode().is2xxSuccessful()).isTrue();
-        ApiResponse body = (ApiResponse) response.getBody();
-        assertThat(body.isCheck()).isTrue();
-        assertThat(body.getData()).isEqualTo(question);
+        assertThat(response.getSubject()).isEqualTo("제목");
+        assertThat(response.getContent()).isEqualTo("내용");
+    }
+
+    @DisplayName("getAllQuestions: 페이지 응답 DTO로 변환한다")
+    @Test
+    void getAllQuestions_mapsToResponse() {
+        User author = user(1L, "USER");
+        Question question = Question.builder().subject("제목").content("내용").author(author).isPrivate(false).build();
+        ReflectionTestUtils.setField(question, "id", 1L);
+        when(questionRepository.findAll(PageRequest.of(0, 10, org.springframework.data.domain.Sort.by(org.springframework.data.domain.Sort.Direction.DESC, "id"))))
+                .thenReturn(new PageImpl<>(List.of(question)));
+
+        QuestionPageResponse response = questionService.getAllQuestions(0);
+
+        assertThat(response.getContent()).hasSize(1);
+        assertThat(response.getContent().get(0).getId()).isEqualTo(1L);
     }
 
     @DisplayName("createAnswer: 관리자 사용자는 답변 등록에 성공한다")
@@ -107,12 +121,9 @@ class QuestionServiceTest {
         when(userRepository.findById(99L)).thenReturn(Optional.of(admin));
         when(questionRepository.findById(55L)).thenReturn(Optional.of(question));
 
-        ResponseEntity<?> response = questionService.createAnswer(55L, userPrincipal(99L), request);
+        Message response = questionService.createAnswer(55L, userPrincipal(99L), request);
 
-        assertThat(response.getStatusCode().is2xxSuccessful()).isTrue();
-        ApiResponse body = (ApiResponse) response.getBody();
-        Message message = (Message) body.getData();
-        assertThat(message.getMessage()).isEqualTo("답변이 등록되었습니다.");
+        assertThat(response.getMessage()).isEqualTo("답변이 등록되었습니다.");
         verify(answerRepository).save(any());
     }
 

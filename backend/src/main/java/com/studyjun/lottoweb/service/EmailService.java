@@ -30,7 +30,7 @@ public class EmailService {
     private static final String ADMIN_ADDRESS = "matddung76@naver.com";
 
     @Async
-    public ResponseEntity<?> sendTempPasswordMail(FindPasswordRequest findPasswordRequest) throws UnsupportedEncodingException, MessagingException {
+    public Message sendTempPasswordMail(FindPasswordRequest findPasswordRequest) throws UnsupportedEncodingException, MessagingException {
         DefaultAssert.isTrue(userRepository.existsByEmail(findPasswordRequest.getEmail()), "해당 이메일이 존재하지 않습니다.");
         String tempPassword = getTempString();
         MimeMessage message = mailSender.createMimeMessage();
@@ -41,7 +41,7 @@ public class EmailService {
         message.setFrom(new InternetAddress(ADMIN_ADDRESS, findPasswordRequest.getEmail()));
         updatePassword(tempPassword, findPasswordRequest.getEmail());
         mailSender.send(message);
-        return ResponseEntity.ok(ApiResponse.success(Message.builder().message("임시 비밀번호를 이메일로 발송했습니다.").build()));
+        return Message.builder().message("임시 비밀번호를 이메일로 발송했습니다.").build();
     }
 
     public String getTempString() {

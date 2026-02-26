@@ -76,12 +76,9 @@ class EmailServiceTest {
         when(mailSender.createMimeMessage()).thenReturn(mimeMessage);
         when(encoder.encode(any(String.class))).thenReturn("encoded");
 
-        ResponseEntity<?> response = emailService.sendTempPasswordMail(request);
+        Message response = emailService.sendTempPasswordMail(request);
 
-        assertThat(response.getStatusCode().is2xxSuccessful()).isTrue();
-        ApiResponse body = (ApiResponse) response.getBody();
-        Message message = (Message) body.getData();
-        assertThat(message.getMessage()).isEqualTo("임시 비밀번호를 이메일로 발송했습니다.");
+        assertThat(response.getMessage()).isEqualTo("임시 비밀번호를 이메일로 발송했습니다.");
         verify(mailSender).send(any(MimeMessage.class));
     }
 
