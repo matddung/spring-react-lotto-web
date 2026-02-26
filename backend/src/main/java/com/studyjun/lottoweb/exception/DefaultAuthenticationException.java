@@ -10,7 +10,7 @@ public class DefaultAuthenticationException extends AuthenticationException {
 
     public DefaultAuthenticationException(String msg, Throwable t) {
         super(msg, t);
-        this.errorCode = ErrorCode.INVALID_REPRESENTATION;
+        this.errorCode = ErrorCode.INVALID_INPUT_VALUE;
     }
 
     public DefaultAuthenticationException(String msg) {

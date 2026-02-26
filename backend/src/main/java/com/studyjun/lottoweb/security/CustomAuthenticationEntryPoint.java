@@ -2,6 +2,7 @@ package com.studyjun.lottoweb.security;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.studyjun.lottoweb.dto.response.ErrorResponse;
+import com.studyjun.lottoweb.exception.ErrorCode;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -11,14 +12,17 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.AuthenticationEntryPoint;
 
 import java.io.IOException;
+import java.time.LocalDateTime;
 
 public class CustomAuthenticationEntryPoint implements AuthenticationEntryPoint {
-
     @Override
     public void commence(HttpServletRequest request, HttpServletResponse response, AuthenticationException authException) throws IOException, ServletException {
         ErrorResponse errorResponse = ErrorResponse.builder()
-                .status(HttpStatus.UNAUTHORIZED.value())
+                .success(false)
+                .code(ErrorCode.UNAUTHORIZED.getCode())
                 .message(authException.getLocalizedMessage())
+                .path(request.getRequestURI())
+                .timestamp(LocalDateTime.now())
                 .build();
 
         response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);

@@ -3,52 +3,75 @@ package com.studyjun.lottoweb.exception;
 import com.studyjun.lottoweb.dto.response.ApiResponse;
 import com.studyjun.lottoweb.dto.response.ErrorResponse;
 import com.studyjun.lottoweb.dto.response.Message;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindException;
+import org.springframework.validation.FieldError;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.context.request.ServletWebRequest;
+import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
-@Slf4j
-@ControllerAdvice
-public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
+import java.time.LocalDateTime;
+import java.util.stream.Collectors;
 
-    @ExceptionHandler(StackOverflowError.class)
-    public ResponseEntity<ErrorResponse> handleStackOverflowError(StackOverflowError ex) {
-        log.error("Stack overflow error occurred", ex);
-        ErrorResponse errorResponse = ErrorResponse.builder()
-                .status(HttpStatus.INTERNAL_SERVER_ERROR.value())
-                .message("Stack overflow error occurred")
-                .build();
-        return new ResponseEntity<>(errorResponse, HttpStatus.INTERNAL_SERVER_ERROR);
+@Slf4j
+@RestControllerAdvice
+public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
+    @ExceptionHandler(BusinessException.class)
+    public ResponseEntity<ErrorResponse> handleBusinessException(BusinessException ex, HttpServletRequest request) {
+        return ResponseEntity
+                .status(ex.getErrorCode().getStatus())
+                .body(buildErrorResponse(ex.getErrorCode(), ex.getMessage(), request.getRequestURI()));
+    }
+
+    @Override
+    protected ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException ex, HttpHeaders headers, HttpStatusCode status, WebRequest request) {
+        String message = ex.getBindingResult().getFieldErrors().stream()
+                .map(fieldError -> String.format("%s: %s", fieldError.getField(), fieldError.getDefaultMessage()))
+                .collect(Collectors.joining(", "));
+
+        ErrorResponse response = buildErrorResponse(
+                ErrorCode.INVALID_INPUT_VALUE,
+                message.isBlank() ? ErrorCode.INVALID_INPUT_VALUE.getMessage() : message,
+                extractPath(request)
+        );
+
+        return ResponseEntity.status(ErrorCode.INVALID_INPUT_VALUE.getStatus()).body(response);
     }
 
     @ExceptionHandler(Exception.class)
-    public ResponseEntity<ErrorResponse> handleGenericException(Exception ex) {
-        log.error("An error occurred: ", ex);
-        ErrorResponse errorResponse = ErrorResponse.builder()
-                .status(HttpStatus.INTERNAL_SERVER_ERROR.value())
-                .message("An error occurred: " + ex.getMessage())
-                .build();
-        return new ResponseEntity<>(errorResponse, HttpStatus.INTERNAL_SERVER_ERROR);
+    public ResponseEntity<ErrorResponse> handleException(Exception ex, HttpServletRequest request) {
+        log.error("Unhandled exception", ex);
+        ErrorResponse response = buildErrorResponse(
+                ErrorCode.INTERNAL_SERVER_ERROR,
+                ErrorCode.INTERNAL_SERVER_ERROR.getMessage(),
+                request.getRequestURI()
+        );
+        return ResponseEntity.status(ErrorCode.INTERNAL_SERVER_ERROR.getStatus()).body(response);
     }
 
-    @ExceptionHandler(DefaultException.class)
-    public ResponseEntity<ErrorResponse> handleDefaultException(DefaultException ex) {
-        ErrorResponse errorResponse = ErrorResponse.builder()
-                .status(HttpStatus.BAD_REQUEST.value())
-                .message(ex.getMessage())
+    private ErrorResponse buildErrorResponse(ErrorCode errorCode, String message, String path) {
+        return ErrorResponse.builder()
+                .success(false)
+                .code(errorCode.getCode())
+                .message(message)
+                .path(path)
+                .timestamp(LocalDateTime.now())
                 .build();
-        return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
     }
 
-    @ExceptionHandler(DefaultAuthenticationException.class)
-    public ResponseEntity<ErrorResponse> handleDefaultAuthenticationException(DefaultAuthenticationException ex) {
-        ErrorResponse errorResponse = ErrorResponse.builder()
-                .status(HttpStatus.UNAUTHORIZED.value())
-                .message(ex.getMessage())
-                .build();
-        return new ResponseEntity<>(errorResponse, HttpStatus.UNAUTHORIZED);
+    private String extractPath(WebRequest request) {
+        if (request instanceof ServletWebRequest servletWebRequest) {
+            return servletWebRequest.getRequest().getRequestURI();
+        }
+        return "";
     }
 }

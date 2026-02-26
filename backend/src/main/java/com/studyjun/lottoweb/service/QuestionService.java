@@ -8,6 +8,8 @@ import com.studyjun.lottoweb.dto.response.Message;
 import com.studyjun.lottoweb.entity.Answer;
 import com.studyjun.lottoweb.entity.Question;
 import com.studyjun.lottoweb.entity.User;
+import com.studyjun.lottoweb.exception.BusinessException;
+import com.studyjun.lottoweb.exception.ErrorCode;
 import com.studyjun.lottoweb.repository.AnswerRepository;
 import com.studyjun.lottoweb.repository.QuestionRepository;
 import com.studyjun.lottoweb.repository.UserRepository;
@@ -81,13 +83,9 @@ public class QuestionService {
 
         if (!question.isPrivate() || user.getRole().equals("ADMIN") || question.getAuthor().equals(user)) {
             return ResponseEntity.ok(ApiResponse.builder().check(true).data(question).build());
-        } else {
-            ErrorResponse errorResponse = ErrorResponse.builder()
-                    .status(HttpStatus.FORBIDDEN.value())
-                    .message("비밀글입니다.")
-                    .build();
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(errorResponse);
         }
+
+        throw new BusinessException(ErrorCode.FORBIDDEN, "비밀글입니다.");
     }
 
     public ResponseEntity<?> createAnswer(long questionId, UserPrincipal userPrincipal, CreateAnswerRequest createAnswerRequest) {

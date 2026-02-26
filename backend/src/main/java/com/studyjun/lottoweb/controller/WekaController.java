@@ -48,12 +48,7 @@ public class WekaController {
             @Parameter(description = "토요일의 날짜를 입력해주세요.", required = true) @RequestParam String date,
             @Parameter(description = "Accesstoken을 입력해주세요.", required = true) @CurrentUser UserPrincipal userPrincipal
     ) {
-        try {
-            return wekaService.patternRecognition(date, userPrincipal);
-        } catch (Exception e) {
-            ErrorResponse errorResponse = ErrorResponse.builder().status(HttpStatus.INTERNAL_SERVER_ERROR.value()).message("Error processing pattern recognition logic").build();
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
-        }
+        return wekaService.patternRecognition(date, userPrincipal);
     }
 
     @Operation(summary = "랜덤 알고리즘", description = "랜덤한 값을 반환합니다")
@@ -78,12 +73,7 @@ public class WekaController {
             @Parameter(description = "토요일의 날짜를 입력해주세요.", required = true) @RequestParam String date,
             @Parameter(description = "Accesstoken을 입력해주세요.", required = true) @CurrentUser UserPrincipal userPrincipal
     ) {
-        try {
-            return wekaService.ensembleLottoPrediction(date, userPrincipal);
-        } catch (Exception e) {
-            ErrorResponse errorResponse = ErrorResponse.builder().status(HttpStatus.INTERNAL_SERVER_ERROR.value()).message("Error processing ensemble prediction logic").build();
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
-        }
+        return wekaService.ensembleLottoPrediction(date, userPrincipal);
     }
 
     @Operation(summary = "몬테카를로 알고리즘", description = "몬테카를로 알고리즘을 통해 도출된 번호 6개를 반환합니다")

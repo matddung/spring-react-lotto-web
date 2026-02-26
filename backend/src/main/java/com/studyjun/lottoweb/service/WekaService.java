@@ -4,6 +4,8 @@ import com.studyjun.lottoweb.dto.response.ApiResponse;
 import com.studyjun.lottoweb.dto.response.LottoResponse;
 import com.studyjun.lottoweb.dto.response.Message;
 import com.studyjun.lottoweb.entity.UserLotto;
+import com.studyjun.lottoweb.exception.BusinessException;
+import com.studyjun.lottoweb.exception.ErrorCode;
 import com.studyjun.lottoweb.repository.UserLottoRepository;
 import com.studyjun.lottoweb.repository.UserRepository;
 import com.studyjun.lottoweb.security.UserPrincipal;
@@ -112,74 +114,78 @@ public class WekaService {
     }
 
     // 패턴 인식 - Weka의 분류기를 사용하여 패턴을 인식
-    public ResponseEntity<?> patternRecognition(String date, UserPrincipal userPrincipal) throws Exception {
-        double[] instanceValue = new double[data.numAttributes()];
+    public ResponseEntity<?> patternRecognition(String date, UserPrincipal userPrincipal) {
+        try {
+            double[] instanceValue = new double[data.numAttributes()];
 
-        instanceValue[data.numAttributes() - 1] = Double.parseDouble(date.replaceAll("-", ""));
+            instanceValue[data.numAttributes() - 1] = Double.parseDouble(date.replaceAll("-", ""));
 
-        for (int i = 0; i < data.numAttributes() - 1; i++) {
-            instanceValue[i] = 0.0;
-        }
-
-        // 데이터 정규화
-        Normalize normalize = new Normalize();
-        normalize.setInputFormat(data);
-        Instances normalizedData = Filter.useFilter(data, normalize);
-
-        Instance newInstance = new DenseInstance(1.0, instanceValue);
-        newInstance.setDataset(normalizedData);
-
-        double[] predictedValues = mlp.distributionForInstance(newInstance);
-
-        double minPredictedValue = Arrays.stream(predictedValues).min().orElse(0.0);
-        double maxPredictedValue = Arrays.stream(predictedValues).max().orElse(1.0);
-
-        int[] predictedNumbers;
-        if (minPredictedValue == maxPredictedValue) {
-            // 예측 값이 동일한 경우 기본적인 분포를 기반으로 숫자를 생성
-            predictedNumbers = generateFallbackLottoNumbers();
-        } else {
-            predictedNumbers = Arrays.stream(predictedValues)
-                    .map(d -> 1 + ((d - minPredictedValue) / (maxPredictedValue - minPredictedValue)) * (MAX_LOTTO_NUMBER - 1))
-                    .mapToInt(d -> (int) Math.round(d))
-                    .filter(num -> num >= 1 && num <= MAX_LOTTO_NUMBER)
-                    .distinct()
-                    .limit(NUMBER_OF_LOTTO_NUMBERS)
-                    .sorted()
-                    .toArray();
-
-            // 필요한 숫자의 개수가 부족할 경우 추가 숫자를 무작위로 채움
-            Set<Integer> numberSet = new HashSet<>();
-            for (int num : predictedNumbers) {
-                numberSet.add(num);
+            for (int i = 0; i < data.numAttributes() - 1; i++) {
+                instanceValue[i] = 0.0;
             }
 
-            while (numberSet.size() < NUMBER_OF_LOTTO_NUMBERS) {
-                int randomNum = random.nextInt(MAX_LOTTO_NUMBER) + 1;
-                numberSet.add(randomNum);
+            // 데이터 정규화
+            Normalize normalize = new Normalize();
+            normalize.setInputFormat(data);
+            Instances normalizedData = Filter.useFilter(data, normalize);
+
+            Instance newInstance = new DenseInstance(1.0, instanceValue);
+            newInstance.setDataset(normalizedData);
+
+            double[] predictedValues = mlp.distributionForInstance(newInstance);
+
+            double minPredictedValue = Arrays.stream(predictedValues).min().orElse(0.0);
+            double maxPredictedValue = Arrays.stream(predictedValues).max().orElse(1.0);
+
+            int[] predictedNumbers;
+            if (minPredictedValue == maxPredictedValue) {
+                // 예측 값이 동일한 경우 기본적인 분포를 기반으로 숫자를 생성
+                predictedNumbers = generateFallbackLottoNumbers();
+            } else {
+                predictedNumbers = Arrays.stream(predictedValues)
+                        .map(d -> 1 + ((d - minPredictedValue) / (maxPredictedValue - minPredictedValue)) * (MAX_LOTTO_NUMBER - 1))
+                        .mapToInt(d -> (int) Math.round(d))
+                        .filter(num -> num >= 1 && num <= MAX_LOTTO_NUMBER)
+                        .distinct()
+                        .limit(NUMBER_OF_LOTTO_NUMBERS)
+                        .sorted()
+                        .toArray();
+
+                // 필요한 숫자의 개수가 부족할 경우 추가 숫자를 무작위로 채움
+                Set<Integer> numberSet = new HashSet<>();
+                for (int num : predictedNumbers) {
+                    numberSet.add(num);
+                }
+
+                while (numberSet.size() < NUMBER_OF_LOTTO_NUMBERS) {
+                    int randomNum = random.nextInt(MAX_LOTTO_NUMBER) + 1;
+                    numberSet.add(randomNum);
+                }
+
+                predictedNumbers = numberSet.stream().mapToInt(Integer::intValue).sorted().toArray();
             }
 
-            predictedNumbers = numberSet.stream().mapToInt(Integer::intValue).sorted().toArray();
-        }
+            String numbersString = Arrays.stream(predictedNumbers)
+                    .mapToObj(String::valueOf)
+                    .collect(Collectors.joining(" "));
 
-        String numbersString = Arrays.stream(predictedNumbers)
-                .mapToObj(String::valueOf)
-                .collect(Collectors.joining(" "));
+            UserLotto userLotto = userLottoRepository.findByUserEmail(userPrincipal.getUsername())
+                    .orElseGet(() -> {
+                        UserLotto newUserLotto = new UserLotto();
+                        newUserLotto.setUserEmail(userPrincipal.getUsername());
+                        return newUserLotto;
+                    });
 
-        UserLotto userLotto = userLottoRepository.findByUserEmail(userPrincipal.getUsername())
-                .orElseGet(() -> {
-                    UserLotto newUserLotto = new UserLotto();
-                    newUserLotto.setUserEmail(userPrincipal.getUsername());
-                    return newUserLotto;
-                });
-
-        if (userLotto.getPatternRecognition().isEmpty()) {
-            userLotto.setPatternRecognition(numbersString);
-            userLottoRepository.save(userLotto);
-            return ResponseEntity.ok(ApiResponse.builder().check(true).data(predictedNumbers).build());
-        } else {
-            ApiResponse apiResponse = ApiResponse.builder().check(true).data(Message.builder().message("금주의 번호를 이미 받아보셨습니다.").build()).build();
-            return ResponseEntity.ok(apiResponse);
+            if (userLotto.getPatternRecognition().isEmpty()) {
+                userLotto.setPatternRecognition(numbersString);
+                userLottoRepository.save(userLotto);
+                return ResponseEntity.ok(ApiResponse.builder().check(true).data(predictedNumbers).build());
+            } else {
+                ApiResponse apiResponse = ApiResponse.builder().check(true).data(Message.builder().message("금주의 번호를 이미 받아보셨습니다.").build()).build();
+                return ResponseEntity.ok(apiResponse);
+            }
+        } catch (Exception e) {
+            throw new BusinessException(ErrorCode.INTERNAL_SERVER_ERROR, "패턴 인식 로직 처리 중 오류가 발생했습니다.");
         }
     }
 
@@ -225,56 +231,60 @@ public class WekaService {
     }
 
     // 합의 알고리즘 - 앙상블 학습을 사용
-    public ResponseEntity<?> ensembleLottoPrediction(String date, UserPrincipal userPrincipal) throws Exception {
-        double[] instanceValue = new double[data.numAttributes()];
+    public ResponseEntity<?> ensembleLottoPrediction(String date, UserPrincipal userPrincipal) {
+        try {
+            double[] instanceValue = new double[data.numAttributes()];
 
-        instanceValue[data.numAttributes() - 1] = Double.parseDouble(date.replaceAll("-", ""));
+            instanceValue[data.numAttributes() - 1] = Double.parseDouble(date.replaceAll("-", ""));
 
-        Instance newInstance = new DenseInstance(1.0, instanceValue);
-        newInstance.setDataset(data);
+            Instance newInstance = new DenseInstance(1.0, instanceValue);
+            newInstance.setDataset(data);
 
-        double[] predictedValues = bagging.distributionForInstance(newInstance);
+            double[] predictedValues = bagging.distributionForInstance(newInstance);
 
-        int[] predictedNumbers = Arrays.stream(predictedValues)
-                .mapToInt(d -> (int) Math.round(d))
-                .filter(num -> num >= 1 && num <= 45)
-                .distinct()
-                .limit(NUMBER_OF_LOTTO_NUMBERS)
-                .toArray();
+            int[] predictedNumbers = Arrays.stream(predictedValues)
+                    .mapToInt(d -> (int) Math.round(d))
+                    .filter(num -> num >= 1 && num <= 45)
+                    .distinct()
+                    .limit(NUMBER_OF_LOTTO_NUMBERS)
+                    .toArray();
 
-        Set<Integer> predictedNumberSet = new HashSet<>();
+            Set<Integer> predictedNumberSet = new HashSet<>();
 
-        for (int num : predictedNumbers) {
-            predictedNumberSet.add(num);
-        }
+            for (int num : predictedNumbers) {
+                predictedNumberSet.add(num);
+            }
 
-        while (predictedNumberSet.size() < NUMBER_OF_LOTTO_NUMBERS) {
-            int randomNum = random.nextInt(MAX_LOTTO_NUMBER) + 1;
-            predictedNumberSet.add(randomNum);
-        }
+            while (predictedNumberSet.size() < NUMBER_OF_LOTTO_NUMBERS) {
+                int randomNum = random.nextInt(MAX_LOTTO_NUMBER) + 1;
+                predictedNumberSet.add(randomNum);
+            }
 
-        List<Integer> sortedLottoNumbers = predictedNumberSet.stream()
-                .sorted()
-                .collect(Collectors.toList());
+            List<Integer> sortedLottoNumbers = predictedNumberSet.stream()
+                    .sorted()
+                    .collect(Collectors.toList());
 
-        String numbersString = sortedLottoNumbers.stream()
-                .map(String::valueOf)
-                .collect(Collectors.joining(" "));
+            String numbersString = sortedLottoNumbers.stream()
+                    .map(String::valueOf)
+                    .collect(Collectors.joining(" "));
 
-        UserLotto userLotto = userLottoRepository.findByUserEmail(userPrincipal.getUsername())
-                .orElseGet(() -> {
-                    UserLotto newUserLotto = new UserLotto();
-                    newUserLotto.setUserEmail(userPrincipal.getUsername());
-                    return newUserLotto;
-                });
+            UserLotto userLotto = userLottoRepository.findByUserEmail(userPrincipal.getUsername())
+                    .orElseGet(() -> {
+                        UserLotto newUserLotto = new UserLotto();
+                        newUserLotto.setUserEmail(userPrincipal.getUsername());
+                        return newUserLotto;
+                    });
 
-        if (userLotto.getEnsembleLottoPrediction().isEmpty()) {
-            userLotto.setEnsembleLottoPrediction(numbersString);
-            userLottoRepository.save(userLotto);
-            return ResponseEntity.ok(ApiResponse.builder().check(true).data(sortedLottoNumbers).build());
-        } else {
-            ApiResponse apiResponse = ApiResponse.builder().check(true).data(Message.builder().message("금주의 번호를 이미 받아보셨습니다.").build()).build();
-            return ResponseEntity.ok(apiResponse);
+            if (userLotto.getEnsembleLottoPrediction().isEmpty()) {
+                userLotto.setEnsembleLottoPrediction(numbersString);
+                userLottoRepository.save(userLotto);
+                return ResponseEntity.ok(ApiResponse.builder().check(true).data(sortedLottoNumbers).build());
+            } else {
+                ApiResponse apiResponse = ApiResponse.builder().check(true).data(Message.builder().message("금주의 번호를 이미 받아보셨습니다.").build()).build();
+                return ResponseEntity.ok(apiResponse);
+            }
+        } catch (Exception e) {
+            throw new BusinessException(ErrorCode.INTERNAL_SERVER_ERROR, "앙상블 예측 로직 처리 중 오류가 발생했습니다.");
         }
     }
 
@@ -367,7 +377,7 @@ public class WekaService {
         Attribute drawDateAttribute = data.attribute("drwNoDate");
 
         if (drawDateAttribute == null) {
-            throw new IllegalArgumentException("Attribute 'drwNoDate' not found in ARFF file.");
+            throw new BusinessException(ErrorCode.INTERNAL_SERVER_ERROR, "ARFF 파일에 drwNoDate 속성이 없습니다.");
         }
 
         boolean isDuplicate = false;
