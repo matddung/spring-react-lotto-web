@@ -3,10 +3,81 @@
 -----
 ![lotto-web-600x600](https://github.com/user-attachments/assets/1e5bd5b6-2524-4fb0-af2c-beec081230b4)
 
-## 👆 Introduce
+## 📌 Overview
 
 -----
-로또 번호를 추천해주는 서비스를 제공하는 플랫폼입니다. (현재 배포 중단 상태)
+로또 번호를 추천해주는 서비스를 제공하는 플랫폼입니다. (현재는 인프라 비용 및 리팩토링 작업으로 인해 운영은 중단된 상태입니다.)
+
+-----
+## ⚡ Quick Start
+로컬 실행은 **Backend → Frontend 순서**를 권장합니다.
+
+### Backend
+
+1. 서버 실행
+
+```bash
+cd backend
+./gradlew bootRun --args='--spring.profiles.active=local'
+```
+
+2실행 확인
+    - 기본 주소: `http://localhost:8080`
+    - Swagger: `http://localhost:8080/swagger-ui/index.html`
+
+### Frontend
+
+1. 의존성 설치
+
+```bash
+cd frontend
+npm install
+```
+
+2. 개발 서버 실행
+
+```bash
+npm start
+```
+
+3. 실행 확인
+    - 기본 주소: `http://localhost:3000`
+    - 프론트 기본 API 주소는 `frontend/src/constants/index.js`의 `API_BASE_URL`(`http://localhost:8080`)을 사용합니다.
+
+---
+
+### API 응답 규격
+
+원칙: **성공은 `ApiResponse`로 래핑하고, 실패는 `ErrorResponse`를 그대로 반환합니다.**
+
+>정상 응답은 HTTP 200 범위에서 반환되며, 실패는 HTTP 상태 코드와 함께 ErrorResponse가 반환됩니다.
+
+- 성공 예시 (`ApiResponse`)
+
+```json
+{
+  "check": true,
+  "data": {
+    "accessToken": "<JWT>",
+    "refreshToken": "<JWT>",
+    "tokenType": "Bearer"
+  }
+}
+```
+
+- 실패 예시 (`ErrorResponse`)
+
+```json
+{
+  "success": false,
+  "code": "AUTH_401",
+  "message": "Full authentication is required to access this resource",
+  "path": "/api/user",
+  "timestamp": "2025-01-01T12:34:56"
+}
+```
+
+---
 
 ### 주요 기능
 
@@ -16,24 +87,45 @@
 - 사용자의 편의를 위해 소셜 로그인을 구현하여 쉽게 회원 가입 및 로그인이 가능하도록 하였습니다.
 - Jenkins와 Docker, docker-compose를 통해 자동으로 빌드 및 배포가 진행되도록 설정하였습니다.
 
+----
+
+### ✍ Achieved
+
+#### 1. API/아키텍처 정리
+- API 응답을 성공(ApiResponse) / 실패(ErrorResponse) 단일 포맷으로 통일
+- GlobalExceptionHandler 도입으로 예외 응답 표준화
+#### 2. 테스트 기반 강화
+- MockMvc 기반 Controller 테스트로 응답 규격 회귀 테스트 고정
+- Service 단위 테스트로 핵심 비즈니스 로직 검증
+- 총 13개 테스트 클래스, 59개 테스트 케이스
+#### 3. 테스트로 발견한 결함 수정
+- JWT 필터의 refresh 예외 경로 수정(`/user/refresh` → `/api/user/refresh`)
+- 전용 단위 테스트 추가
+#### 4. 실행 환경 분리
+- DB 예약어(user) 충돌 해결 → users 변경
+- local(H2) / 운영(MySQL) 환경 분리
+
+---
+
 ### 🚀 Backend Skills
 
 ---
 ![시스템 아키텍처 drawio](https://github.com/user-attachments/assets/fbb27a26-79ff-4812-a760-082a806fd9cb)
-- Spring Boot 3.0.6
-- Java 17
-- MariaDB
-- Spring Data Jpa
-- Spring Security & OAuth2 & JWT
-- Spring Rest Docs
-- SMTP
-- Weka
-- Ngrok, WSL(Ubuntu)
-- AWS Infra(EC2, Route 53)
-- Nginx, CertBot
-- Docker, docker-compose
+### Core
+- Spring Boot
+- JPA
+- Spring Security
+- JWT
+### Infra
+- Docker
 - Jenkins
-- Prometheus & Grafana & Alertmanager
+- Nginx
+### Optional / Experimental
+- Prometheus
+- Weka
+- Ngrok
+
+----
 
 #### 기술적 의사 결정
 
@@ -43,19 +135,86 @@
 >2. Docker, docker-compose, Jenkins를 사용한 이유
 >- 애플리케이션의 환경 일관성을 보장하고, 이식성을 향상시키기 위해서입니다. Docker-compose는 복잡한 멀티 컨테이너 애플리케이션을 쉽게 정의하고 실행할 수 있게 해주며, Jenkins는 CI/CD 파이프라인을 통해 자동화된 빌드, 테스트, 배포를 가능하게 합니다.
 
->3. Jenkins를 로컬 환경에서 빌드한 이유
->- 로컬 환경에서 Jenkins를 빌드한 이유는 개발과 테스트를 빠르게 반복할 수 있도록 하기 위함입니다. 로컬 환경에서 CI/CD 파이프라인을 설정하면 코드 변경 사항을 즉시 확인할 수 있고, 외부 서버에 의존하지 않기 때문에 네트워크 지연이나 외부 요인에 영향을 받지 않습니다. 
-
->4. 프론트엔드 툴로 리액트를 선택한 이유
->- 리액트는 배우기 쉽고 대중적인 프론트엔드 라이브러리입니다. 컴포넌트 기반 아키텍처로 인해 재사용성과 유지보수성이 뛰어나며, 큰 커뮤니티와 풍부한 생태계를 가지고 있어 다양한 라이브러리와 도구를 쉽게 활용할 수 있습니다. 또한, 리액트는 빠른 렌더링 성능을 제공하여 사용자 경험을 향상시킬 수 있습니다.
-
->5. WSL로 로컬 환경을 리눅스 환경으로 만든 이유
+>3. WSL로 로컬 환경을 리눅스 환경으로 만든 이유
 >- Windows 환경보다 Linux 환경에서 Jenkins가 더 안정적이고 성능이 뛰어나기 때문입니다. Jenkins는 Linux 기반 서버에서 더 원활하게 동작하며, 리소스 관리와 스크립트 자동화에서 많은 이점을 제공합니다. WSL을 사용하면 로컬에서 Linux 환경을 손쉽게 설정할 수 있어, 개발 환경과 실제 배포 환경을 일치시켜 호환성 문제를 줄이고, 개발 효율성을 높일 수 있습니다.
 
-### ✍ Achieved
+----
+
+## 🔐 JWT 인증 흐름
+
+### 1) 로그인 요청/응답 규격
+
+#### 로그인 요청
+- **URL**: `POST /api/user/signIn`
+- **Body(JSON)**
+
+```json
+{
+  "email": "string@aa.bb",
+  "password": "string"
+}
+```
+
+- 유효성:
+    - `email`: 필수, 이메일 형식
+    - `password`: 필수, 8~50자
+
+#### 로그인 성공 응답
+- 모든 정상 응답은 공통 래퍼(`ApiResponse`)로 감싸서 내려옵니다.
+- 클라이언트 요청 헤더 예시:
+    - `Authorization: Bearer <accessToken>`
+
+#### 토큰 재발급 요청/응답
+- **URL**: `POST /api/user/refresh`
+- **Body(JSON)**
+
+```json
+{
+  "refreshToken": "<JWT>"
+}
+```
+
+- 성공 시 응답(`data`)에 신규 `accessToken`이 내려오고,
+    - refresh token 만료 전이면 기존 refresh token 유지
+    - refresh token 만료 후 재발급 로직이면 refresh token도 교체
+
+#### 에러 응답 규격
+- 인증/비즈니스/검증 실패 시 `ErrorResponse` 형태로 응답합니다.
+- 공통 필드:
+    - `success`: 항상 `false`
+    - `code`: 에러 코드 (`AUTH_401`, `AUTH_403`, `COMMON_400` 등)
+    - `message`: 사용자 안내 메시지
+    - `path`: 요청 URI
+    - `timestamp`: 에러 발생 시각
+  
+
+- 참고: 정상 응답(`ApiResponse`)과 달리 에러는 `check/data` 래퍼 없이 `ErrorResponse` 본문으로 내려옵니다.
 
 ---
-#### Troubleshooting
+
+### 2) 토큰 필요 API / 불필요 API
+
+`SecurityConfig` 기준으로 `ALLOWED_URIS`만 비인증 접근 가능이며, 그 외는 기본적으로 인증 필요(`anyRequest().authenticated()`)입니다.
+
+#### 토큰 불필요(permitAll)
+- `POST /api/user/signUp`
+- `POST /api/user/signIn`
+- `POST /api/user/find-password`
+- `POST /api/user/refresh`
+- `/oauth2/**`, `/login/**` (소셜 로그인 시작/콜백)
+- Swagger, 정적 리소스, `/actuator/prometheus` 등
+
+#### 토큰 필요(대표 API)
+- 유저: `GET /api/user`, `DELETE /api/user`, `PUT /api/user/password`, `PUT /api/user/nickname`, `POST /api/user/signOut`
+- 로또: `/api/lotto/*` 전체 (`top6`, `pattern-recognition`, `random`, `ensemble`, `monte-carlo`, `user-lotto-info`)
+- 질문: `POST /api/question/create`, `GET /api/question/my-list`, `GET /api/question/detail`, `POST /api/question/answer`
+- 관리자: `/api/admin/*` 전체
+
+#### 참고(토큰 없이 가능한 질문 API)
+- `GET /api/question/list`는 컨트롤러 파라미터에 `@CurrentUser`가 없어 비회원 목록 조회 용도로 동작합니다.
+- 
+---
+### Troubleshooting
 
 - [Ngrok을 이용한 Webhook 설정 및 로컬 서버 공개](https://velog.io/@studyjun/Ngrok%EC%9D%84-%EC%9D%B4%EC%9A%A9%ED%95%9C-Webhook-%EC%84%A4%EC%A0%95-%EB%B0%8F-%EB%A1%9C%EC%BB%AC-%EC%84%9C%EB%B2%84-%EA%B3%B5%EA%B0%9C)
 - [배포 환경에서 OAuth2 소셜 로그인을 위한 Nginx 설정 문제 해결](https://velog.io/@studyjun/%EB%B0%B0%ED%8F%AC-%ED%99%98%EA%B2%BD%EC%97%90%EC%84%9C-OAuth2-%EC%86%8C%EC%85%9C-%EB%A1%9C%EA%B7%B8%EC%9D%B8%EC%9D%84-%EC%9C%84%ED%95%9C-Nginx-%EC%84%A4%EC%A0%95-%EB%AC%B8%EC%A0%9C-%ED%95%B4%EA%B2%B0)
@@ -66,7 +225,7 @@
 - [Google 소셜 로그인 진행 시 닉네임 설정 문제](https://velog.io/@studyjun/Google-%EC%86%8C%EC%85%9C-%EB%A1%9C%EA%B7%B8%EC%9D%B8-%EC%A7%84%ED%96%89-%EC%8B%9C-%EB%8B%89%EB%84%A4%EC%9E%84-%EC%84%A4%EC%A0%95-%EB%AC%B8%EC%A0%9C)
 
 ------
-#### Improvement Backlog
+### Improvement Backlog
 
 - [~~Jenkins 느린 빌드 시간 문제~~](https://velog.io/@studyjun/Jenkins-%EB%8A%90%EB%A6%B0-%EB%B9%8C%EB%93%9C-%EC%8B%9C%EA%B0%84-%EB%AC%B8%EC%A0%9C)
 - [~~SSL 인증서 만료 시 자동 갱신 문제~~](https://velog.io/@studyjun/SSL-%EC%9D%B8%EC%A6%9D%EC%84%9C-%EB%A7%8C%EB%A3%8C-%EC%8B%9C-%EC%9E%90%EB%8F%99-%EA%B0%B1%EC%8B%A0-%EB%AC%B8%EC%A0%9C)
@@ -111,6 +270,9 @@ lottoweb
 │     │  │     └─ 📂util
 │     │  └─ 📂resources
 │     └─ 📂test
+│        ├─📂controller
+│        ├─📂exception
+│        └─📂service
 ├─ 📜docker-compose.yml
 └─ 📜Jenkinsfile
 ```
