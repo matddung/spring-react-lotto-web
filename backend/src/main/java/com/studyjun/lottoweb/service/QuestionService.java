@@ -6,6 +6,7 @@ import com.studyjun.lottoweb.dto.response.*;
 import com.studyjun.lottoweb.entity.Answer;
 import com.studyjun.lottoweb.entity.Question;
 import com.studyjun.lottoweb.entity.User;
+import com.studyjun.lottoweb.exception.AuthErrorCode;
 import com.studyjun.lottoweb.exception.BusinessException;
 import com.studyjun.lottoweb.exception.ErrorCode;
 import com.studyjun.lottoweb.repository.AnswerRepository;
@@ -78,7 +79,7 @@ public class QuestionService {
             return QuestionDetailResponse.from(question);
         }
 
-        throw new BusinessException(ErrorCode.FORBIDDEN, "비밀글입니다.");
+        throw new BusinessException(AuthErrorCode.FORBIDDEN, "비밀글입니다.");
     }
 
     public Message createAnswer(long questionId, UserPrincipal userPrincipal, CreateAnswerRequest createAnswerRequest) {

@@ -2,9 +2,7 @@ package com.studyjun.lottoweb.controller;
 
 import com.studyjun.lottoweb.dto.response.ApiResponse;
 import com.studyjun.lottoweb.dto.response.Message;
-import com.studyjun.lottoweb.exception.BusinessException;
-import com.studyjun.lottoweb.exception.CustomExceptionHandler;
-import com.studyjun.lottoweb.exception.ErrorCode;
+import com.studyjun.lottoweb.exception.*;
 import com.studyjun.lottoweb.service.AdminService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -50,7 +48,7 @@ class AdminControllerContractTest {
                 .build();
     }
 
-    @DisplayName("성공 계약: user-list는 check=true와 data.content를 반환한다")
+    @DisplayName("성공 계약: user-list는 success=true와 data.content를 반환한다")
     @Test
     void getAllUsers_success_contract() throws Exception {
         ApiResponse response = ApiResponse.success(Map.of("content", List.of(Map.of("id", 1L))));
@@ -58,12 +56,12 @@ class AdminControllerContractTest {
 
         mockMvc.perform(get("/api/admin/user-list").param("page", "0").contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.check").value(true))
+                .andExpect(jsonPath("$.success").value(true))
                 .andExpect(jsonPath("$.data").isMap())
                 .andExpect(jsonPath("$.data.content").isArray());
     }
 
-    @DisplayName("성공 계약: user-detail은 check=true와 user/question 필드를 반환한다")
+    @DisplayName("성공 계약: user-detail은 success=true와 user/question 필드를 반환한다")
     @Test
     void getUserHistory_success_contract() throws Exception {
         ApiResponse response = ApiResponse.success(Map.of("user", Map.of("id", 2L), "question", Map.of("content", List.of())));
@@ -71,12 +69,12 @@ class AdminControllerContractTest {
 
         mockMvc.perform(get("/api/admin/user-detail").param("id", "2").param("page", "0"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.check").value(true))
+                .andExpect(jsonPath("$.success").value(true))
                 .andExpect(jsonPath("$.data.user.id").value(2))
                 .andExpect(jsonPath("$.data.question.content").isArray());
     }
 
-    @DisplayName("성공 계약: user-delete는 check=true와 data.message를 반환한다")
+    @DisplayName("성공 계약: user-delete는 success=true와 data.message를 반환한다")
     @Test
     void deleteUser_success_contract() throws Exception {
         ApiResponse response = ApiResponse.success(Message.builder().message("유저 삭제가 완료되었습니다.").build());
@@ -84,7 +82,7 @@ class AdminControllerContractTest {
 
         mockMvc.perform(delete("/api/admin/user-delete").param("id", "2"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.check").value(true))
+                .andExpect(jsonPath("$.success").value(true))
                 .andExpect(jsonPath("$.data.message").value("유저 삭제가 완료되었습니다."));
     }
 
@@ -92,12 +90,12 @@ class AdminControllerContractTest {
     @Test
     void getAllUsers_failure_contract() throws Exception {
         when(adminService.getAllUsers(any(), anyInt()))
-                .thenThrow(new BusinessException(ErrorCode.FORBIDDEN, "ADMIN 계정이 아닙니다."));
+                .thenThrow(new BusinessException(AuthErrorCode.FORBIDDEN, "ADMIN 계정이 아닙니다."));
 
         mockMvc.perform(get("/api/admin/user-list").param("page", "0"))
                 .andExpect(status().isForbidden())
                 .andExpect(jsonPath("$.success").value(false))
-                .andExpect(jsonPath("$.code").value(ErrorCode.FORBIDDEN.getCode()))
+                .andExpect(jsonPath("$.code").value(AuthErrorCode.FORBIDDEN.getCode()))
                 .andExpect(jsonPath("$.path").value("/api/admin/user-list"));
     }
 
@@ -105,12 +103,12 @@ class AdminControllerContractTest {
     @Test
     void deleteUser_failure_contract() throws Exception {
         when(adminService.deleteUser(anyLong(), any()))
-                .thenThrow(new BusinessException(ErrorCode.INVALID_INPUT_VALUE, "사용자를 찾을 수 없습니다."));
+                .thenThrow(new BusinessException(CommonErrorCode.INVALID_INPUT_VALUE, "사용자를 찾을 수 없습니다."));
 
         mockMvc.perform(delete("/api/admin/user-delete").param("id", "999"))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.success").value(false))
-                .andExpect(jsonPath("$.code").value(ErrorCode.INVALID_INPUT_VALUE.getCode()))
+                .andExpect(jsonPath("$.code").value(CommonErrorCode.INVALID_INPUT_VALUE.getCode()))
                 .andExpect(jsonPath("$.path").value("/api/admin/user-delete"));
     }
 }

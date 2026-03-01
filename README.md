@@ -212,7 +212,7 @@ npm start
 
 #### 참고(토큰 없이 가능한 질문 API)
 - `GET /api/question/list`는 컨트롤러 파라미터에 `@CurrentUser`가 없어 비회원 목록 조회 용도로 동작합니다.
-- 
+
 ---
 ### Troubleshooting
 

@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.studyjun.lottoweb.dto.response.LottoResponse;
 import com.studyjun.lottoweb.exception.BusinessException;
 import com.studyjun.lottoweb.exception.ErrorCode;
+import com.studyjun.lottoweb.exception.ServerErrorCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
@@ -23,7 +24,7 @@ public class LottoUpdateService {
         File file = new File(path.toString());
         if (!file.exists()) {
             if (!file.createNewFile()) {
-                throw new BusinessException(ErrorCode.INTERNAL_SERVER_ERROR, "파일 생성에 실패했습니다: " + file.getAbsolutePath());
+                throw new BusinessException(ServerErrorCode.INTERNAL_SERVER_ERROR, "파일 생성에 실패했습니다: " + file.getAbsolutePath());
             }
         }
         return file.getAbsolutePath();

@@ -8,7 +8,9 @@ import com.studyjun.lottoweb.dto.response.QuestionDetailResponse;
 import com.studyjun.lottoweb.dto.response.QuestionPageResponse;
 import com.studyjun.lottoweb.entity.Question;
 import com.studyjun.lottoweb.entity.User;
+import com.studyjun.lottoweb.exception.AuthErrorCode;
 import com.studyjun.lottoweb.exception.BusinessException;
+import com.studyjun.lottoweb.exception.CommonErrorCode;
 import com.studyjun.lottoweb.exception.ErrorCode;
 import com.studyjun.lottoweb.repository.AnswerRepository;
 import com.studyjun.lottoweb.repository.QuestionRepository;
@@ -146,7 +148,7 @@ class QuestionServiceTest {
                 .isInstanceOf(BusinessException.class)
                 .satisfies(ex -> {
                     BusinessException be = (BusinessException) ex;
-                    assertThat(be.getErrorCode()).isEqualTo(ErrorCode.FORBIDDEN);
+                    assertThat(be.getErrorCode()).isEqualTo(AuthErrorCode.FORBIDDEN);
                     assertThat(be.getMessage()).isEqualTo("비밀글입니다.");
                 });
     }
@@ -165,7 +167,7 @@ class QuestionServiceTest {
                 .isInstanceOf(BusinessException.class)
                 .satisfies(ex -> {
                     BusinessException be = (BusinessException) ex;
-                    assertThat(be.getErrorCode()).isEqualTo(ErrorCode.INVALID_INPUT_VALUE);
+                    assertThat(be.getErrorCode()).isEqualTo(CommonErrorCode.INVALID_INPUT_VALUE);
                     assertThat(be.getMessage()).isEqualTo("관리자 권한이 없습니다.");
                 });
     }

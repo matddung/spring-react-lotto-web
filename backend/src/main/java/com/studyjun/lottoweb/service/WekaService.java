@@ -6,6 +6,7 @@ import com.studyjun.lottoweb.dto.response.Message;
 import com.studyjun.lottoweb.entity.UserLotto;
 import com.studyjun.lottoweb.exception.BusinessException;
 import com.studyjun.lottoweb.exception.ErrorCode;
+import com.studyjun.lottoweb.exception.ServerErrorCode;
 import com.studyjun.lottoweb.repository.UserLottoRepository;
 import com.studyjun.lottoweb.repository.UserRepository;
 import com.studyjun.lottoweb.security.UserPrincipal;
@@ -185,7 +186,7 @@ public class WekaService {
                 return ResponseEntity.ok(apiResponse);
             }
         } catch (Exception e) {
-            throw new BusinessException(ErrorCode.INTERNAL_SERVER_ERROR, "패턴 인식 로직 처리 중 오류가 발생했습니다.");
+            throw new BusinessException(ServerErrorCode.INTERNAL_SERVER_ERROR, "패턴 인식 로직 처리 중 오류가 발생했습니다.");
         }
     }
 
@@ -284,7 +285,7 @@ public class WekaService {
                 return ResponseEntity.ok(apiResponse);
             }
         } catch (Exception e) {
-            throw new BusinessException(ErrorCode.INTERNAL_SERVER_ERROR, "앙상블 예측 로직 처리 중 오류가 발생했습니다.");
+            throw new BusinessException(ServerErrorCode.INTERNAL_SERVER_ERROR, "앙상블 예측 로직 처리 중 오류가 발생했습니다.");
         }
     }
 
@@ -377,7 +378,7 @@ public class WekaService {
         Attribute drawDateAttribute = data.attribute("drwNoDate");
 
         if (drawDateAttribute == null) {
-            throw new BusinessException(ErrorCode.INTERNAL_SERVER_ERROR, "ARFF 파일에 drwNoDate 속성이 없습니다.");
+            throw new BusinessException(ServerErrorCode.INTERNAL_SERVER_ERROR, "ARFF 파일에 drwNoDate 속성이 없습니다.");
         }
 
         boolean isDuplicate = false;

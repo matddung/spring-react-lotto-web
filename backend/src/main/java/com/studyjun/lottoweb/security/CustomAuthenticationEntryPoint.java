@@ -2,6 +2,7 @@ package com.studyjun.lottoweb.security;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.studyjun.lottoweb.dto.response.ErrorResponse;
+import com.studyjun.lottoweb.exception.AuthErrorCode;
 import com.studyjun.lottoweb.exception.ErrorCode;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -19,7 +20,7 @@ public class CustomAuthenticationEntryPoint implements AuthenticationEntryPoint 
     public void commence(HttpServletRequest request, HttpServletResponse response, AuthenticationException authException) throws IOException, ServletException {
         ErrorResponse errorResponse = ErrorResponse.builder()
                 .success(false)
-                .code(ErrorCode.UNAUTHORIZED.getCode())
+                .code(AuthErrorCode.UNAUTHORIZED.getCode())
                 .message(authException.getLocalizedMessage())
                 .path(request.getRequestURI())
                 .timestamp(LocalDateTime.now())

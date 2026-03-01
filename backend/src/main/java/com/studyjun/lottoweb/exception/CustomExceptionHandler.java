@@ -39,23 +39,23 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
                 .collect(Collectors.joining(", "));
 
         ErrorResponse response = buildErrorResponse(
-                ErrorCode.INVALID_INPUT_VALUE,
-                message.isBlank() ? ErrorCode.INVALID_INPUT_VALUE.getMessage() : message,
+                CommonErrorCode.INVALID_INPUT_VALUE,
+                message.isBlank() ? CommonErrorCode.INVALID_INPUT_VALUE.getMessage() : message,
                 extractPath(request)
         );
 
-        return ResponseEntity.status(ErrorCode.INVALID_INPUT_VALUE.getStatus()).body(response);
+        return ResponseEntity.status(CommonErrorCode.INVALID_INPUT_VALUE.getStatus()).body(response);
     }
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorResponse> handleException(Exception ex, HttpServletRequest request) {
         log.error("Unhandled exception", ex);
         ErrorResponse response = buildErrorResponse(
-                ErrorCode.INTERNAL_SERVER_ERROR,
-                ErrorCode.INTERNAL_SERVER_ERROR.getMessage(),
+                ServerErrorCode.INTERNAL_SERVER_ERROR,
+                ServerErrorCode.INTERNAL_SERVER_ERROR.getMessage(),
                 request.getRequestURI()
         );
-        return ResponseEntity.status(ErrorCode.INTERNAL_SERVER_ERROR.getStatus()).body(response);
+        return ResponseEntity.status(ServerErrorCode.INTERNAL_SERVER_ERROR.getStatus()).body(response);
     }
 
     private ErrorResponse buildErrorResponse(ErrorCode errorCode, String message, String path) {

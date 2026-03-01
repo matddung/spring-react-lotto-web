@@ -16,8 +16,14 @@ async function refreshAccessToken() {
     }
 
     const data = await response.json();
-    localStorage.setItem(ACCESS_TOKEN, data.accessToken);
-    return data.accessToken;
+    const refreshedToken = data?.data?.accessToken ?? data?.accessToken;
+
+    if (!refreshedToken) {
+        throw new Error('Failed to parse refreshed access token');
+    }
+
+    localStorage.setItem(ACCESS_TOKEN, refreshedToken);
+    return refreshedToken;
 }
 
 async function fetchWithInterceptor(url, options = {}) {

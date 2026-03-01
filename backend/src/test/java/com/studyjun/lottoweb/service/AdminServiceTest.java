@@ -6,6 +6,7 @@ import com.studyjun.lottoweb.dto.response.Message;
 import com.studyjun.lottoweb.entity.Question;
 import com.studyjun.lottoweb.entity.User;
 import com.studyjun.lottoweb.exception.BusinessException;
+import com.studyjun.lottoweb.exception.CommonErrorCode;
 import com.studyjun.lottoweb.exception.ErrorCode;
 import com.studyjun.lottoweb.repository.QuestionRepository;
 import com.studyjun.lottoweb.repository.UserRepository;
@@ -56,7 +57,7 @@ class AdminServiceTest {
 
         assertThat(response.getStatusCode().is2xxSuccessful()).isTrue();
         ApiResponse body = (ApiResponse) response.getBody();
-        assertThat(body.isCheck()).isTrue();
+        assertThat(body.isSuccess()).isTrue();
         assertThat(body.getData()).isEqualTo(users);
     }
 
@@ -109,7 +110,7 @@ class AdminServiceTest {
                 .isInstanceOf(BusinessException.class)
                 .satisfies(ex -> {
                     BusinessException be = (BusinessException) ex;
-                    assertThat(be.getErrorCode()).isEqualTo(ErrorCode.INVALID_INPUT_VALUE);
+                    assertThat(be.getErrorCode()).isEqualTo(CommonErrorCode.INVALID_INPUT_VALUE);
                     assertThat(be.getMessage()).isEqualTo("ADMIN 계정이 아닙니다.");
                 });
     }
@@ -124,7 +125,7 @@ class AdminServiceTest {
                 .isInstanceOf(BusinessException.class)
                 .satisfies(ex -> {
                     BusinessException be = (BusinessException) ex;
-                    assertThat(be.getErrorCode()).isEqualTo(ErrorCode.INVALID_INPUT_VALUE);
+                    assertThat(be.getErrorCode()).isEqualTo(CommonErrorCode.INVALID_INPUT_VALUE);
                     assertThat(be.getMessage()).isEqualTo("사용자를 찾을 수 없습니다.");
                 });
     }

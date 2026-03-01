@@ -7,6 +7,7 @@ import com.studyjun.lottoweb.dto.response.ApiResponse;
 import com.studyjun.lottoweb.dto.response.Message;
 import com.studyjun.lottoweb.entity.User;
 import com.studyjun.lottoweb.exception.BusinessException;
+import com.studyjun.lottoweb.exception.CommonErrorCode;
 import com.studyjun.lottoweb.exception.ErrorCode;
 import com.studyjun.lottoweb.repository.QuestionRepository;
 import com.studyjun.lottoweb.repository.TokenRepository;
@@ -126,7 +127,7 @@ class UserServiceTest {
                 .isInstanceOf(BusinessException.class)
                 .satisfies(ex -> {
                     BusinessException be = (BusinessException) ex;
-                    assertThat(be.getErrorCode()).isEqualTo(ErrorCode.INVALID_INPUT_VALUE);
+                    assertThat(be.getErrorCode()).isEqualTo(CommonErrorCode.INVALID_INPUT_VALUE);
                     assertThat(be.getMessage()).isEqualTo("해당 이메일이 이미 존재합니다.");
                 });
     }
@@ -145,7 +146,7 @@ class UserServiceTest {
                 .isInstanceOf(BusinessException.class)
                 .satisfies(ex -> {
                     BusinessException be = (BusinessException) ex;
-                    assertThat(be.getErrorCode()).isEqualTo(ErrorCode.INVALID_INPUT_VALUE);
+                    assertThat(be.getErrorCode()).isEqualTo(CommonErrorCode.INVALID_INPUT_VALUE);
                     assertThat(be.getMessage()).isEqualTo("중복된 닉네임입니다.");
                 });
     }

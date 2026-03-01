@@ -44,8 +44,8 @@ class CustomExceptionHandlerWebMvcTest {
         mockMvc.perform(get("/test/errors/unhandled"))
                 .andExpect(status().isInternalServerError())
                 .andExpect(jsonPath("$.success").value(false))
-                .andExpect(jsonPath("$.code").value(ErrorCode.INTERNAL_SERVER_ERROR.getCode()))
-                .andExpect(jsonPath("$.message").value(ErrorCode.INTERNAL_SERVER_ERROR.getMessage()))
+                .andExpect(jsonPath("$.code").value(ServerErrorCode.INTERNAL_SERVER_ERROR.getCode()))
+                .andExpect(jsonPath("$.message").value(ServerErrorCode.INTERNAL_SERVER_ERROR.getMessage()))
                 .andExpect(jsonPath("$.path").value("/test/errors/unhandled"))
                 .andExpect(jsonPath("$.timestamp").isNotEmpty());
     }
@@ -56,7 +56,7 @@ class CustomExceptionHandlerWebMvcTest {
         mockMvc.perform(get("/test/errors/business"))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.success").value(false))
-                .andExpect(jsonPath("$.code").value(ErrorCode.INVALID_INPUT_VALUE.getCode()))
+                .andExpect(jsonPath("$.code").value(CommonErrorCode.INVALID_INPUT_VALUE.getCode()))
                 .andExpect(jsonPath("$.path").value("/test/errors/business"))
                 .andExpect(jsonPath("$.timestamp").isNotEmpty());
     }
@@ -69,7 +69,7 @@ class CustomExceptionHandlerWebMvcTest {
                         .content(objectMapper.writeValueAsString(new ValidationRequest(""))))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.success").value(false))
-                .andExpect(jsonPath("$.code").value(ErrorCode.INVALID_INPUT_VALUE.getCode()))
+                .andExpect(jsonPath("$.code").value(CommonErrorCode.INVALID_INPUT_VALUE.getCode()))
                 .andExpect(jsonPath("$.message").value("name: 이름은 필수입니다."));
     }
 
@@ -92,7 +92,7 @@ class CustomExceptionHandlerWebMvcTest {
 
         @GetMapping("/business")
         String business() {
-            throw new BusinessException(ErrorCode.INVALID_INPUT_VALUE, "비즈니스 예외 테스트");
+            throw new BusinessException(CommonErrorCode.INVALID_INPUT_VALUE, "비즈니스 예외 테스트");
         }
 
         @PostMapping("/validation")

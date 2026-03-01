@@ -4,9 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.studyjun.lottoweb.dto.request.CreateAnswerRequest;
 import com.studyjun.lottoweb.dto.request.CreateQuestionRequest;
 import com.studyjun.lottoweb.dto.response.*;
-import com.studyjun.lottoweb.exception.BusinessException;
-import com.studyjun.lottoweb.exception.CustomExceptionHandler;
-import com.studyjun.lottoweb.exception.ErrorCode;
+import com.studyjun.lottoweb.exception.*;
 import com.studyjun.lottoweb.service.QuestionService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -62,7 +60,7 @@ class QuestionControllerContractTest {
                 .build();
     }
 
-    @DisplayName("성공 계약: create 질문 생성은 check=true와 data.message를 반환한다")
+    @DisplayName("성공 계약: create 질문 생성은 success=true와 data.message를 반환한다")
     @Test
     void createQuestion_success_contract() throws Exception {
         Message message = Message.builder().message("고객센터에 질문이 등록되었습니다.").build();
@@ -79,11 +77,11 @@ class QuestionControllerContractTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.check").value(true))
+                .andExpect(jsonPath("$.success").value(true))
                 .andExpect(jsonPath("$.data.message").value("고객센터에 질문이 등록되었습니다."));
     }
 
-    @DisplayName("성공 계약: list는 check=true와 data.content를 반환한다")
+    @DisplayName("성공 계약: list는 success=true와 data.content를 반환한다")
     @Test
     void getAllQuestions_success_contract() throws Exception {
         QuestionPageResponse pageResponse = QuestionPageResponse.builder()
@@ -99,11 +97,11 @@ class QuestionControllerContractTest {
 
         mockMvc.perform(get("/api/question/list").param("page", "0"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.check").value(true))
+                .andExpect(jsonPath("$.success").value(true))
                 .andExpect(jsonPath("$.data.content").isArray());
     }
 
-    @DisplayName("성공 계약: answer 생성은 check=true와 data.message를 반환한다")
+    @DisplayName("성공 계약: answer 생성은 success=true와 data.message를 반환한다")
     @Test
     void createAnswer_success_contract() throws Exception {
         Message message = Message.builder().message("답변이 등록되었습니다.").build();
@@ -120,7 +118,7 @@ class QuestionControllerContractTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.check").value(true))
+                .andExpect(jsonPath("$.success").value(true))
                 .andExpect(jsonPath("$.data.message").value("답변이 등록되었습니다."));
     }
 
@@ -128,12 +126,12 @@ class QuestionControllerContractTest {
     @Test
     void showQuestionDetail_failure_contract() throws Exception {
         when(questionService.showQuestionDetail(anyLong(), any()))
-                .thenThrow(new BusinessException(ErrorCode.FORBIDDEN, "비밀글입니다."));
+                .thenThrow(new BusinessException(AuthErrorCode.FORBIDDEN, "비밀글입니다."));
 
         mockMvc.perform(get("/api/question/detail").param("id", "3"))
                 .andExpect(status().isForbidden())
                 .andExpect(jsonPath("$.success").value(false))
-                .andExpect(jsonPath("$.code").value(ErrorCode.FORBIDDEN.getCode()))
+                .andExpect(jsonPath("$.code").value(AuthErrorCode.FORBIDDEN.getCode()))
                 .andExpect(jsonPath("$.path").value("/api/question/detail"));
     }
 
@@ -149,7 +147,7 @@ class QuestionControllerContractTest {
                         .content(objectMapper.writeValueAsString(invalid)))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.success").value(false))
-                .andExpect(jsonPath("$.code").value(ErrorCode.INVALID_INPUT_VALUE.getCode()))
+                .andExpect(jsonPath("$.code").value(CommonErrorCode.INVALID_INPUT_VALUE.getCode()))
                 .andExpect(jsonPath("$.path").value("/api/question/create"));
     }
 }

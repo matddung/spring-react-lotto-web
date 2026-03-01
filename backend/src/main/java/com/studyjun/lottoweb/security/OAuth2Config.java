@@ -2,6 +2,7 @@ package com.studyjun.lottoweb.security;
 
 import com.studyjun.lottoweb.exception.BusinessException;
 import com.studyjun.lottoweb.exception.ErrorCode;
+import com.studyjun.lottoweb.exception.ServerErrorCode;
 import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
@@ -28,13 +29,13 @@ public class OAuth2Config {
         @PostConstruct
         public void init() {
             if (tokenSecret == null) {
-                throw new BusinessException(ErrorCode.INVALID_CONFIGURATION, "Token secret 값이 설정되지 않았습니다.");
+                throw new BusinessException(ServerErrorCode.INVALID_CONFIGURATION, "Token secret 값이 설정되지 않았습니다.");
             }
             if (accessTokenExpirationMsec == 0) {
-                throw new BusinessException(ErrorCode.INVALID_CONFIGURATION, "Access token 만료시간이 설정되지 않았습니다.");
+                throw new BusinessException(ServerErrorCode.INVALID_CONFIGURATION, "Access token 만료시간이 설정되지 않았습니다.");
             }
             if (refreshTokenExpirationMsec == 0) {
-                throw new BusinessException(ErrorCode.INVALID_CONFIGURATION, "Refresh token 만료시간이 설정되지 않았습니다.");
+                throw new BusinessException(ServerErrorCode.INVALID_CONFIGURATION, "Refresh token 만료시간이 설정되지 않았습니다.");
             }
         }
 

@@ -5,6 +5,7 @@ import com.studyjun.lottoweb.dto.response.ApiResponse;
 import com.studyjun.lottoweb.dto.response.Message;
 import com.studyjun.lottoweb.entity.User;
 import com.studyjun.lottoweb.exception.BusinessException;
+import com.studyjun.lottoweb.exception.CommonErrorCode;
 import com.studyjun.lottoweb.exception.ErrorCode;
 import com.studyjun.lottoweb.repository.UserRepository;
 import jakarta.mail.Session;
@@ -93,7 +94,7 @@ class EmailServiceTest {
                 .isInstanceOf(BusinessException.class)
                 .satisfies(ex -> {
                     BusinessException be = (BusinessException) ex;
-                    assertThat(be.getErrorCode()).isEqualTo(ErrorCode.INVALID_INPUT_VALUE);
+                    assertThat(be.getErrorCode()).isEqualTo(CommonErrorCode.INVALID_INPUT_VALUE);
                     assertThat(be.getMessage()).isEqualTo("해당 이메일이 존재하지 않습니다.");
                 });
     }
@@ -107,7 +108,7 @@ class EmailServiceTest {
                 .isInstanceOf(BusinessException.class)
                 .satisfies(ex -> {
                     BusinessException be = (BusinessException) ex;
-                    assertThat(be.getErrorCode()).isEqualTo(ErrorCode.INVALID_INPUT_VALUE);
+                    assertThat(be.getErrorCode()).isEqualTo(CommonErrorCode.INVALID_INPUT_VALUE);
                     assertThat(be.getMessage()).isEqualTo("사용자를 찾을 수 없습니다.");
                 });
     }

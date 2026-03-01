@@ -1,30 +1,40 @@
 import { API_BASE_URL } from '../constants';
 import { request } from './APIRequest';
 
-export function getAllUsers(page) {
-    return request({
+const extractPayload = (response) => response?.data ?? response;
+
+export async function getAllUsers(page) {
+    const response = await request({
         url: `${API_BASE_URL}/api/admin/user-list?page=${page}`,
         method: 'GET'
     });
+
+    return extractPayload(response);
 }
 
-export function getUserHistory(id, page) {
-    return request({
+export async function getUserHistory(id, page) {
+    const response = await request({
         url: `${API_BASE_URL}/api/admin/user-detail?id=${id}&page=${page}`,
         method: 'GET'
     });
+
+    return extractPayload(response);
 }
 
-export function getUnansweredQuestions(page) {
-    return request({
+export async function getUnansweredQuestions(page) {
+    const response = await request({
         url: `${API_BASE_URL}/api/admin/unanswered-questions?page=${page}`,
         method: 'GET'
     });
+
+    return extractPayload(response);
 }
 
-export function deleteUser(id) {
-    return request({
+export async function deleteUser(id) {
+    const response = await request({
         url: `${API_BASE_URL}/api/admin/user-delete?id=${id}`,
         method: 'DELETE'
     });
+
+    return extractPayload(response);
 }

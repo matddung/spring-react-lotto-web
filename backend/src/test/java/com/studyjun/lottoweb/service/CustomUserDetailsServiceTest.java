@@ -2,6 +2,7 @@ package com.studyjun.lottoweb.service;
 
 import com.studyjun.lottoweb.entity.User;
 import com.studyjun.lottoweb.exception.BusinessException;
+import com.studyjun.lottoweb.exception.CommonErrorCode;
 import com.studyjun.lottoweb.exception.ErrorCode;
 import com.studyjun.lottoweb.repository.UserRepository;
 import com.studyjun.lottoweb.security.UserPrincipal;
@@ -83,7 +84,7 @@ class CustomUserDetailsServiceTest {
                 .isInstanceOf(BusinessException.class)
                 .satisfies(ex -> {
                     BusinessException be = (BusinessException) ex;
-                    assertThat(be.getErrorCode()).isEqualTo(ErrorCode.RESOURCE_NOT_FOUND);
+                    assertThat(be.getErrorCode()).isEqualTo(CommonErrorCode.RESOURCE_NOT_FOUND);
                 });
     }
 
